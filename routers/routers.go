@@ -22,6 +22,7 @@ func SetupRouters() (r *gin.Engine) {
 	{
 		console.GET("/GetConsumers", servers.GetConsumers)
 		console.GET("/GetConfig", servers.GetConfig)
+		console.GET("/GetMessageLog", servers.GetMessageList)
 	}
 
 	//生产者接口（http post请求，用于接收生产者客户端发送的消息）

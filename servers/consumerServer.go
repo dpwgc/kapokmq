@@ -21,18 +21,21 @@ var UpGrader = websocket.Upgrader{
 	},
 }
 
-func init() {
-	//从配置文件中获取推送消息的速度、消息推送失败后的重试次数
-	pushMessagesSpeed = viper.GetInt("mq.pushMessagesSpeed")
+func InitConsumersConn() {
+	sendCount = viper.GetInt("mq.sendCount")
 	sendRetryCount = viper.GetInt("mq.sendRetryCount")
+	pushMessagesSpeed = viper.GetInt("mq.pushMessagesSpeed")
 	//启动消息推送协程，推送消息到各个消费者客户端
-	go pushMessagesToConsumers()
+	go pushServer()
 }
+
+//每一批推送的消息数量
+var sendCount int
 
 //消息推送失败后的重试次数
 var sendRetryCount int
 
-//推送消息的速度
+//推送消息的速度(单批次消息推送间隔时间，单位：秒)
 var pushMessagesSpeed int
 
 //连接的消费者客户端,把每个消费者都放进来。Key为{topic}|{consumerId}，topic与consumerId两者之间用字符”|“分隔。Value为websocket连接
@@ -73,79 +76,76 @@ func ConsumersConn(c *gin.Context) {
 	}
 }
 
-//推送消息到各个消费者客户端
-func pushMessagesToConsumers() {
+//消息推送服务
+func pushServer() {
+	cnt := 0
 	for {
-		//推送速度控制，延时执行
-		time.Sleep(time.Second * time.Duration(pushMessagesSpeed))
+		if cnt == sendCount {
+			//消息推送的时间间隔（每发送{sendCount}条消息，间隔一段时间）
+			time.Sleep(time.Second * time.Duration(pushMessagesSpeed))
+		}
+		//推送消息
+		pushMessagesToConsumers()
+		cnt++
+	}
+}
 
-		//读取消息通道中的消息
-		message := <-messageChan
+//并发推送消息到各个消费者客户端
+func pushMessagesToConsumers() {
 
-		//控制通道
-		controlChan := make(chan int)
+	//如果没有消费者客户端，等待
+	if len(consumers) == 0 {
+		return
+	}
 
-		//遍历消费者客户端集合
-		for key, consumer := range consumers {
+	//读取消息通道中的消息
+	message := <-messageChan
 
-			//多协程并发推送消息
-			go func(key string, consumer *websocket.Conn) {
+	//控制通道
+	controlChan := make(chan int)
 
-				//字符串分割获取该消息所属主题
-				topic := strings.Split(key, "|")[0]
+	//遍历消费者客户端集合
+	for key, consumer := range consumers {
 
-				//找到与该消息主题对应的客户端(相同的topic)
-				if message.Topic == topic && len(message.Topic) > 0 && len(message.MessageData) > 0 {
+		//多协程并发推送消息
+		go func(key string, consumer *websocket.Conn) {
 
+			//字符串分割获取该消息所属主题
+			topic := strings.Split(key, "|")[0]
+
+			//找到与该消息主题对应的客户端(相同的topic)
+			if message.Topic == topic && len(message.Topic) > 0 && len(message.MessageCode) > 0 {
+
+				//重试机制
+				for i := 0; i < sendRetryCount; i++ {
 					//发送消息到消费者客户端
 					err := consumer.WriteJSON(message)
-
-					//如果报错
-					if err != nil {
-						//重试机制
-						for i := 0; i < sendRetryCount; i++ {
-							//重新发送消息到消费者客户端
-							retryErr := consumer.WriteJSON(message)
-							//如果发送成功
-							if retryErr == nil {
-								//将消息标记为已确认状态
-								message.Status = 1
-
-								/*
-								 * TODO
-								 * 对已确认消费的消息进行其他处理
-								 */
-
-								//结束循环
-								break
-							}
-							//如果到达重试次数，但仍未发送成功
-							if i == sendRetryCount-1 && retryErr != nil {
-								//客户端关闭
-								consumer.Close()
-								//删除map中的客户端
-								delete(consumers, key)
-							}
-						}
-					} else {
+					//如果发送成功
+					if err == nil {
 						//将消息标记为已确认状态
 						message.Status = 1
-
-						/*
-						 * TODO
-						 * 对已确认消费的消息进行其他处理
-						 */
+						//记录到消息列表
+						messageList = append(messageList, message)
+						//结束循环
+						break
+					}
+					//如果到达重试次数，但仍未发送成功
+					if i == sendRetryCount-1 && err != nil {
+						//客户端关闭
+						consumer.Close()
+						//删除map中的客户端
+						delete(consumers, key)
 					}
 				}
-				//向控制通道发送信息，表示该协程处理完毕
-				controlChan <- 1
-			}(key, consumer)
-		}
+			}
+			//向控制通道发送信息，表示该协程处理完毕
+			controlChan <- 1
+		}(key, consumer)
+	}
 
-		//待全部协程执行完成后，进入下一轮
-		for range consumers {
-			//收到协程执行完毕的信息
-			<-controlChan
-		}
+	//待全部推送协程执行完成后，进入下一条消息的推送
+	for range consumers {
+		//收到协程执行完毕的信息
+		<-controlChan
 	}
 }

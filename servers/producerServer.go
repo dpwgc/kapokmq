@@ -33,6 +33,8 @@ func ProducerSend(c *gin.Context) {
 
 	//把消息写入消息通道
 	messageChan <- message
+	//记录到消息列表
+	messageList = append(messageList, message)
 
 	//发送成功，返回消息标识码
 	c.JSON(0, gin.H{

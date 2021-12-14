@@ -14,7 +14,7 @@
 
 * 订阅推送：将单条消息通过WebSocket结合go并发推送到多个与消息topic主题相同的消费者客户端。
 
-* 流量削峰：用Golang channel的缓冲区充当队列存储大量积压的消息，按固定时间间隔挨个消费缓冲区中的消息。
+* 流量削峰：用Golang channel的缓冲区充当队列存储大量积压的消息，按指定时间间隔批量推送缓冲区中的消息。
 
 * 消息推送失败重试机制。
 
@@ -34,13 +34,15 @@ messageChan <- message
 
 ##### 消费者消息推送 `consumerServer`
 
-* 消费者客户端与消息队列之间通过WebSocket连接。
+* 消费者客户端通过WebSocket连接到消息队列。
 
 * 消息队列从消息通道中读取出消息后，通过for循环结合go协程并发遍历消费者客户端集合，判断该消费者是否与消息同属于一个主题，如果是，则将消息通过WebSocket推送给该客户端。
 
 ```
 //读取消息通道中的消息
 message := <-messageChan
+
+...
 
 //遍历消费者客户端集合
 for key, consumer := range consumers {
@@ -60,8 +62,8 @@ for key, consumer := range consumers {
 * 使用golang的通道充当队列，通道的缓冲空间大小决定了消息队列的容量。
 
 ```
- //消息通道，用于存放消息(有缓冲)
- var messageChan = make(chan models.Message,viper.GetInt("mq.messageChanBuffer"))
+//消息通道，用于存放待消费的消息(有缓冲区)
+var messageChan = make(chan models.Message, messageChanBuffer)
 ```
 
 ##### 控制台 `consoleServer`
@@ -74,6 +76,9 @@ GET http://localhost:port/Console/GetConsumers
 
 //获取消息队列详细配置 GetConfig
 GET http://localhost:port/Console/GetConfig
+
+//获取指定状态的消息记录列表
+GET http://localhost:port/Console/GetMessageList
 ```
 
 
