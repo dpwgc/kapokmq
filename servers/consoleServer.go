@@ -23,6 +23,7 @@ func GetConsumers(c *gin.Context) {
 		topic := strings.Split(key, "|")[0]
 		consumerId := strings.Split(key, "|")[1]
 
+		//key为消费者客户端Id，value为主题topic
 		resMap[consumerId] = topic
 	}
 
@@ -60,6 +61,23 @@ func GetMessageList(c *gin.Context) {
 		if message.Status == intStatus {
 			resArr = append(resArr, message)
 		}
+	}
+
+	c.JSON(0, gin.H{
+		"code": 0,
+		"data": resArr,
+	})
+}
+
+//获取所有状态的消息记录列表
+func GetAllMessageList(c *gin.Context) {
+
+	var resArr []models.Message
+
+	//遍历消息记录集合
+	for _, message := range messageList {
+
+		resArr = append(resArr, message)
 	}
 
 	c.JSON(0, gin.H{

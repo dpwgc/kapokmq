@@ -22,7 +22,8 @@ func SetupRouters() (r *gin.Engine) {
 	{
 		console.GET("/GetConsumers", servers.GetConsumers)
 		console.GET("/GetConfig", servers.GetConfig)
-		console.GET("/GetMessageLog", servers.GetMessageList)
+		console.GET("/GetMessageList", servers.GetMessageList)
+		console.GET("/GetAllMessageList", servers.GetAllMessageList)
 	}
 
 	//生产者接口（http post请求，用于接收生产者客户端发送的消息）
@@ -40,7 +41,7 @@ func Cors() gin.HandlerFunc {
 		method := c.Request.Method
 		origin := c.Request.Header.Get("Origin")
 		var headerKeys []string
-		for k, _ := range c.Request.Header {
+		for k := range c.Request.Header {
 			headerKeys = append(headerKeys, k)
 		}
 		headerStr := strings.Join(headerKeys, ", ")

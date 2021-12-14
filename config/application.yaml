@@ -11,8 +11,3 @@ mq:
   sendCount: 5
   # 消息推送失败后的重试次数
   sendRetryCount: 3
-
-  # 未消费消息记录通道的缓冲空间大小
-  unconsumeLogChanBuffer: 100
-  # 已经消费消息记录通道的缓冲空间大小
-  consumeLogChanBuffer: 100
