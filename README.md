@@ -87,20 +87,24 @@ GET http://localhost:port/Console/GetAllMessageList
 
 ```
 //生产者接口（http post请求，用于接收生产者客户端发送的消息）
-r.POST("/ProducerSend",servers.ProducerSend)
+r.POST("/Producer/Send",servers.ProducerSend)
 
 //消费者连接（WebSocket连接，用于推送消息到消费者客户端）
-r.GET("/ConsumersConn/:topic/:consumerId", servers.ConsumersConn)
+r.GET("/Consumers/Conn/:topic/:consumerId", servers.ConsumersConn)
 ```
 
 #### 访问路径
 
 ###### 生产者客户端发送消息到消息队列
 
-* POST `http://localhost:port/ProducerSend`
+* POST `http://localhost:port/Producer/Send`
 
 ```
 POST请求参数：
+Header:
+secretKey     //访问密钥
+
+Body:
 messageData   //消息内容  类型：string
 topic         //所属主题  类型：string（不能包含符号“|”）
 ```
@@ -192,8 +196,10 @@ server:
   port: 8011
 
 mq:
+  # 生产者、控制台访问密钥（放在请求头部）
+  secretKey: test_secret_key
   # 消息通道的缓冲空间大小（消息队列的容量）
-  messageChanBuffer: 100
+  messageChanBuffer: 10000
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
