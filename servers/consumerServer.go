@@ -125,8 +125,6 @@ func pushMessagesToConsumers() {
 					if err == nil {
 						//将消息标记为已确认状态
 						message.Status = 1
-						//记录到消息列表
-						messageList = append(messageList, message)
 						//结束循环
 						break
 					}
@@ -149,4 +147,6 @@ func pushMessagesToConsumers() {
 		//收到协程执行完毕的信息
 		<-controlChan
 	}
+	//将消息记录到消息列表
+	messageList = append(messageList, message)
 }
