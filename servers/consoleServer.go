@@ -47,7 +47,7 @@ func GetConfig(c *gin.Context) {
 	})
 }
 
-//获取指定状态的消息记录列表
+//获取指定状态的消息记录列表（可用该接口进行消息记录持久化操作）
 func GetMessageList(c *gin.Context) {
 
 	status, _ := c.GetPostForm("status")
@@ -69,7 +69,7 @@ func GetMessageList(c *gin.Context) {
 	})
 }
 
-//获取所有状态的消息记录列表
+//获取所有状态的消息记录列表（可用该接口进行消息记录持久化操作）
 func GetAllMessageList(c *gin.Context) {
 
 	var resArr []models.Message
