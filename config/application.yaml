@@ -3,6 +3,8 @@ server:
   port: 8011
 
 mq:
+  # 生产者、控制台访问密钥（放在请求头部）
+  secretKey: test_secret_key
   # 消息通道的缓冲空间大小（消息队列的容量）
   messageChanBuffer: 100
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）

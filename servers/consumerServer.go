@@ -83,6 +83,7 @@ func pushServer() {
 		if cnt == sendCount {
 			//消息推送的时间间隔（每发送{sendCount}条消息，间隔一段时间）
 			time.Sleep(time.Second * time.Duration(pushMessagesSpeed))
+			cnt = 0
 		}
 		//推送消息
 		pushMessagesToConsumers()

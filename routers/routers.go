@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"DPMQ/middlewares"
 	"DPMQ/servers"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,7 @@ func SetupRouters() (r *gin.Engine) {
 
 	//控制台接口（http post请求，用于查看消息队列的基本信息）
 	console := r.Group("/Console")
+	console.Use(middlewares.SafeMiddleWare)
 	{
 		console.GET("/GetConsumers", servers.GetConsumers)
 		console.GET("/GetConfig", servers.GetConfig)
@@ -27,11 +29,17 @@ func SetupRouters() (r *gin.Engine) {
 	}
 
 	//生产者接口（http post请求，用于接收生产者客户端发送的消息）
-	r.POST("/ProducerSend", servers.ProducerSend)
+	producer := r.Group("/Producer")
+	producer.Use(middlewares.SafeMiddleWare)
+	{
+		producer.POST("/Send", servers.ProducerSend)
+	}
 
 	//消费者连接（websocket连接，用于推送消息到消费者客户端）
-	r.GET("/ConsumersConn/:topic/:consumerId", servers.ConsumersConn)
-
+	consumers := r.Group("/Consumers")
+	{
+		consumers.GET("/Conn/:topic/:consumerId", servers.ConsumersConn)
+	}
 	return
 }
 
