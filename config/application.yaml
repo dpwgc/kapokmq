@@ -13,3 +13,11 @@ mq:
   sendCount: 5
   # 消息推送失败后的重试次数
   sendRetryCount: 3
+  # 持久化文件存储路径
+  persistentPath: ./data.csv
+  # 是否进行持久化（1：是。0：否）
+  isPersistent: 1
+  # 数据恢复策略（0：清空本地数据，不进行数据恢复。1：将本地数据恢复到内存）
+  recoveryStrategy: 1
+  # 两次持久化的间隔时间（单位：秒）
+  persistentTime: 2

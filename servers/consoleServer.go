@@ -56,7 +56,7 @@ func GetMessageList(c *gin.Context) {
 	var resArr []models.Message
 
 	//遍历消息记录集合
-	for _, message := range messageList {
+	for _, message := range MessageList {
 
 		if message.Status == intStatus {
 			resArr = append(resArr, message)
@@ -75,7 +75,7 @@ func GetAllMessageList(c *gin.Context) {
 	var resArr []models.Message
 
 	//遍历消息记录集合
-	for _, message := range messageList {
+	for _, message := range MessageList {
 
 		resArr = append(resArr, message)
 	}

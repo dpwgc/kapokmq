@@ -32,7 +32,7 @@ func ProducerSend(c *gin.Context) {
 	message.CreateTime = utils.GetLocalDateTime()
 
 	//把消息写入消息通道
-	messageChan <- message
+	MessageChan <- message
 
 	//发送成功，返回消息标识码
 	c.JSON(0, gin.H{

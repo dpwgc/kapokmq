@@ -100,7 +100,7 @@ func pushMessagesToConsumers() {
 	}
 
 	//读取消息通道中的消息
-	message := <-messageChan
+	message := <-MessageChan
 
 	//控制通道
 	controlChan := make(chan int)
@@ -148,5 +148,5 @@ func pushMessagesToConsumers() {
 		<-controlChan
 	}
 	//将消息记录到消息列表
-	messageList = append(messageList, message)
+	MessageList = append(MessageList, message)
 }

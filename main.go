@@ -2,6 +2,7 @@ package main
 
 import (
 	"DPMQ/config"
+	"DPMQ/persistent"
 	"DPMQ/routers"
 	"DPMQ/servers"
 	_ "fmt"
@@ -24,6 +25,13 @@ func main() {
 
 	//初始化消息队列
 	servers.InitMQ()
+
+	//加载文件读写模块
+	persistent.InitFileRW()
+
+	persistent.InitRecovery()
+
+	persistent.InitPers()
 
 	//初始化消费者客户端连接模块
 	servers.InitConsumersConn()
