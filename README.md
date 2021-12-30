@@ -274,7 +274,7 @@ mq:
 在Linux上部署
 
 /dpmq                     # 文件根目录
-    DPMQ                  # 打包后的二进制文件(程序后台执行:setsid ./main)
+    DPMQ                  # 打包后的二进制文件(程序后台执行:setsid ./DPMQ)
     /config               # 配置目录
         application.yaml  # 配置文件
     /log                  # 日志目录
