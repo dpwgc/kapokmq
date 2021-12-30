@@ -1,7 +1,7 @@
 package persistent
 
 import (
-	"DPMQ/servers"
+	"DPMQ/server"
 	"encoding/csv"
 	"encoding/json"
 	"github.com/spf13/viper"
@@ -24,11 +24,11 @@ func InitFileRW() {
 	_, err := os.Stat(path)
 	if err != nil {
 		//创建持久化文件
-		servers.Loger.Println(err)
-		servers.Loger.Println("Create persistent file: " + path)
+		server.Loger.Println(err)
+		server.Loger.Println("Create persistent file: " + path)
 		_, err = os.Create(path)
 		if err != nil {
-			servers.Loger.Println(err)
+			server.Loger.Println(err)
 		}
 	}
 }
@@ -47,14 +47,14 @@ func Write() {
 	jsonStr := string(copyBytes)
 	err = writer.Write([]string{jsonStr})
 	if err != nil {
-		servers.Loger.Println(err)
+		server.Loger.Println(err)
 		return
 	}
 	writer.Flush()
 	//关闭文件流
 	err = wFile.Close()
 	if err != nil {
-		servers.Loger.Println(err)
+		server.Loger.Println(err)
 	}
 }
 
@@ -64,36 +64,36 @@ func Read() {
 	//读文件，设置为只读，权限设置为777
 	rFile, err = os.OpenFile(path, os.O_RDONLY, 0777)
 	if err != nil {
-		servers.Loger.Println(err)
+		server.Loger.Println(err)
 		return
 	}
 	reader := csv.NewReader(rFile)
 	reader.FieldsPerRecord = -1
 	record, err := reader.ReadAll()
 	if err != nil {
-		servers.Loger.Println(err)
+		server.Loger.Println(err)
 		return
 	}
 	if len(record) == 0 {
-		servers.Loger.Println("The file is empty")
+		server.Loger.Println("The file is empty")
 		return
 	}
 	//解析本地持久化文件的数据到MessageList
-	err = json.Unmarshal([]byte(record[0][0]), &servers.MessageList)
+	err = json.Unmarshal([]byte(record[0][0]), &server.MessageList)
 	if err != nil {
-		servers.Loger.Println(err)
+		server.Loger.Println(err)
 		return
 	}
 
 	//将未消费的消息插入消息队列
-	for _, m := range servers.MessageList {
+	for _, m := range server.MessageList {
 		if m.Status == 0 {
-			servers.MessageChan <- m
+			server.MessageChan <- m
 		}
 	}
 
 	err = rFile.Close()
 	if err != nil {
-		servers.Loger.Println(err)
+		server.Loger.Println(err)
 	}
 }

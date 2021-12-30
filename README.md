@@ -154,23 +154,33 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 
 * config.go `项目配置文件加载`
 
-##### models 实体类
+##### model 实体类
 
 * model.go `消息模板`
 
-##### routers 路由
+##### persistent 持久化
 
-* routers.go `路由配置`
+* fileRW.go `文件读写`
 
-##### servers 服务层
+* persData.go `持久化到硬盘`
 
-* producerServer `生产者消息接收`
+* recovery.go `数据恢复`
 
-* consumerServer `消费者消息推送`
+##### router 路由
 
-* mqServer `消息通道`
+* router.go `路由配置`
 
-* consoleServer `控制台`
+##### server 服务层
+
+* producer.go `生产者消息接收`
+
+* consumer.go `消费者消息推送`
+
+* console.go `控制台接口`
+
+* mq.go `消息通道`
+
+* log.go `日志记录`
 
 ##### utils 工具类
 

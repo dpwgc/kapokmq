@@ -1,7 +1,7 @@
-package servers
+package server
 
 import (
-	"DPMQ/models"
+	"DPMQ/model"
 	"DPMQ/utils"
 	"github.com/gin-gonic/gin"
 	"strings"
@@ -24,7 +24,7 @@ func ProducerSend(c *gin.Context) {
 		return
 	}
 
-	message := models.Message{}
+	message := model.Message{}
 	message.MessageCode = utils.CreateCode(messageData)
 	message.MessageData = messageData
 	message.Topic = topic

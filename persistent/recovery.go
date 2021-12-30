@@ -1,7 +1,7 @@
 package persistent
 
 import (
-	"DPMQ/servers"
+	"DPMQ/server"
 	"github.com/spf13/viper"
 )
 
@@ -18,7 +18,7 @@ func InitRecovery() {
 	//从本地持久化文件中获取数据
 	if recoveryStrategy == 1 {
 		//本地恢复数据
-		servers.Loger.Println("Recovery from local")
+		server.Loger.Println("Recovery from local")
 		recoveryFromLocal()
 	}
 

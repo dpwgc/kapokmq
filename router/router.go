@@ -1,8 +1,8 @@
-package routers
+package router
 
 import (
-	"DPMQ/middlewares"
-	"DPMQ/servers"
+	"DPMQ/middleware"
+	"DPMQ/server"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -20,25 +20,25 @@ func SetupRouters() (r *gin.Engine) {
 
 	//控制台接口（http post请求，用于查看消息队列的基本信息）
 	console := r.Group("/Console")
-	console.Use(middlewares.SafeMiddleWare)
+	console.Use(middleware.SafeMiddleWare)
 	{
-		console.GET("/GetConsumers", servers.GetConsumers)
-		console.GET("/GetConfig", servers.GetConfig)
-		console.GET("/GetMessageList", servers.GetMessageList)
-		console.GET("/GetAllMessageList", servers.GetAllMessageList)
+		console.GET("/GetConsumers", server.GetConsumers)
+		console.GET("/GetConfig", server.GetConfig)
+		console.GET("/GetMessageList", server.GetMessageList)
+		console.GET("/GetAllMessageList", server.GetAllMessageList)
 	}
 
 	//生产者接口（http post请求，用于接收生产者客户端发送的消息）
 	producer := r.Group("/Producer")
-	producer.Use(middlewares.SafeMiddleWare)
+	producer.Use(middleware.SafeMiddleWare)
 	{
-		producer.POST("/Send", servers.ProducerSend)
+		producer.POST("/Send", server.ProducerSend)
 	}
 
 	//消费者连接（websocket连接，用于推送消息到消费者客户端）
 	consumers := r.Group("/Consumers")
 	{
-		consumers.GET("/Conn/:topic/:consumerId", servers.ConsumersConn)
+		consumers.GET("/Conn/:topic/:consumerId", server.ConsumersConn)
 	}
 	return
 }

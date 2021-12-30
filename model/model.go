@@ -1,4 +1,4 @@
-package models
+package model
 
 //消息模板
 

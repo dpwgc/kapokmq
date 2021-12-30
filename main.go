@@ -3,8 +3,8 @@ package main
 import (
 	"DPMQ/config"
 	"DPMQ/persistent"
-	"DPMQ/routers"
-	"DPMQ/servers"
+	"DPMQ/router"
+	"DPMQ/server"
 	_ "fmt"
 	_ "github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -21,10 +21,10 @@ func main() {
 	config.InitConfig()
 
 	//加载日志模块
-	servers.InitLog()
+	server.InitLog()
 
 	//初始化消息队列
-	servers.InitMQ()
+	server.InitMQ()
 
 	//加载文件读写模块
 	persistent.InitFileRW()
@@ -34,10 +34,10 @@ func main() {
 	persistent.InitPers()
 
 	//初始化消费者客户端连接模块
-	servers.InitConsumersConn()
+	server.InitConsumersConn()
 
 	//设置路由
-	r := routers.SetupRouters()
+	r := router.SetupRouters()
 
 	//获取端口号
 	port := viper.GetString("server.port")
