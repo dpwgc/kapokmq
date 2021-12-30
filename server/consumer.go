@@ -25,6 +25,8 @@ func InitConsumersConn() {
 	sendCount = viper.GetInt("mq.sendCount")
 	sendRetryCount = viper.GetInt("mq.sendRetryCount")
 	pushMessagesSpeed = viper.GetInt("mq.pushMessagesSpeed")
+
+	Loger.Println("Start pushServer")
 	//启动消息推送协程，推送消息到各个消费者客户端
 	go pushServer()
 }
@@ -65,6 +67,7 @@ func ConsumersConn(c *gin.Context) {
 	consumers[topic+"|"+consumerId] = ws
 
 	if err != nil {
+		Loger.Println(err)
 		delete(consumers, topic+"|"+consumerId) //删除map中的消费者
 		return
 	}
@@ -93,11 +96,6 @@ func pushServer() {
 
 //并发推送消息到各个消费者客户端
 func pushMessagesToConsumers() {
-
-	//如果没有消费者客户端，等待
-	if len(consumers) == 0 {
-		return
-	}
 
 	//读取消息通道中的消息
 	message := <-MessageChan
@@ -128,6 +126,7 @@ func pushMessagesToConsumers() {
 						//结束循环
 						break
 					}
+					Loger.Println(err)
 					//如果到达重试次数，但仍未发送成功
 					if i == sendRetryCount-1 && err != nil {
 						//客户端关闭

@@ -5,7 +5,6 @@ import (
 	"DPMQ/persistent"
 	"DPMQ/router"
 	"DPMQ/server"
-	_ "fmt"
 	_ "github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	_ "net/http"

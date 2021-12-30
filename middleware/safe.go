@@ -13,7 +13,7 @@ func SafeMiddleWare(c *gin.Context) {
 	if secretKey != viper.GetString("mq.secretKey") {
 		c.JSON(-1, gin.H{
 			"code": -1,
-			"msg":  "密钥匹配出错",
+			"msg":  "key matching error",
 		})
 		c.Abort()
 	}

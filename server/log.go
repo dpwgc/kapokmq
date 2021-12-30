@@ -14,7 +14,7 @@ var Loger *log.Logger
 
 func InitLog() {
 
-	file := "./log/dp-mq-" + time.Now().Format("2006-01") + ".log"
+	file := "./log/dpmq-" + time.Now().Format("2006-01") + ".log"
 	logFile, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
 	if err != nil {
 		//创建log目录

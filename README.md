@@ -1,6 +1,6 @@
 # DPMQ.消息队列
 
-## 基于Golang Gin整合Gorilla WebSocket实现的简易消息队列
+## 基于Golang Gin整合Gorilla WebSocket实现的消息队列
 
 `Golang` `Gin` `Gorilla` `WebSocket` `MQ`
 
@@ -13,6 +13,8 @@
 * 流量削峰：用Golang channel的缓冲区充当队列存储大量积压的消息，按指定时间间隔批量推送缓冲区中的消息。
 
 * 消息推送失败重试机制。
+
+* 支持数据持久化。
 ***
 
 ### 主要部分
@@ -105,7 +107,7 @@ Header:
 secretKey     //访问密钥
 
 Body:
-messageData   //消息内容  类型：string
+messageData   //消息内容  类型：json string
 topic         //所属主题  类型：string（不能包含符号“|”）
 ```
 
@@ -178,7 +180,7 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 
 * console.go `控制台接口`
 
-* mq.go `消息通道`
+* mq.go `消息队列`
 
 * log.go `日志记录`
 
@@ -194,11 +196,9 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 
 ***
 
-### 使用说明
+### 配置说明
 
-* 填写application.yaml内的配置，运行main.go
-
-* application.yaml 配置说明：
+* application.yaml
 
 ```
 server:
@@ -216,6 +216,69 @@ mq:
   sendCount: 5
   # 消息推送失败后的重试次数
   sendRetryCount: 3
+  # 持久化文件存储路径
+  persistentPath: ./data.csv
+  # 是否进行持久化（1：是。0：否）
+  isPersistent: 1
+  # 数据恢复策略（0：清空本地数据，不进行数据恢复。1：将本地数据恢复到内存）
+  recoveryStrategy: 1
+  # 两次持久化的间隔时间（单位：秒）
+  persistentTime: 2
+```
+
+***
+
+### 打包方式
+
+* 填写application.yaml内的配置。
+
+* 运行项目：
+
+```
+（1）GoLand直接运行main.go(调试)
+```
+
+```
+（2）打包成exe运行(windows部署)
+
+  GoLand终端cd到项目根目录，执行go build main.go命令，生成main.exe文件
+```
+
+```
+（3）打包成二进制文件运行(linux部署)
+
+  cmd终端cd到项目根目录，依次执行下列命令：
+  SET CGO_ENABLED=0
+  SET GOOS=linux
+  SET GOARCH=amd64
+  go build main.go
+  生成main文件
+```
+
+***
+
+### 部署方式
+
+```
+在Windows上部署
+
+/dpmq                     # 文件根目录
+    DPMQ.exe              # 打包后的exe文件
+    /config               # 配置目录
+        application.yaml  # 配置文件
+    /log                  # 日志目录
+    data.csv              # 持久化文件
+```
+
+```
+在Linux上部署
+
+/dpmq                     # 文件根目录
+    DPMQ                  # 打包后的二进制文件(程序后台执行:setsid ./main)
+    /config               # 配置目录
+        application.yaml  # 配置文件
+    /log                  # 日志目录
+    data.csv              # 持久化文件
 ```
 
 ***
