@@ -19,6 +19,9 @@ func main() {
 	//加载配置
 	config.InitConfig()
 
+	//加载日志模块
+	servers.InitLog()
+
 	//初始化消息队列
 	servers.InitMQ()
 
