@@ -1,6 +1,7 @@
 package persistent
 
 import (
+	"DPMQ/model"
 	"DPMQ/server"
 	"encoding/csv"
 	"encoding/json"
@@ -34,14 +35,14 @@ func InitFileRW() {
 }
 
 //写入持久化文件
-func Write() {
+func Write(copyMessageList []model.Message) {
 	var err error
 	//写文件，设置为只写、覆盖，权限设置为777
 	wFile, err = os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
 
 	writer := csv.NewWriter(wFile)
 
-	//将复制得到的消息列表转为[]Byte数据
+	//将消息列表拷贝转为[]Byte数据
 	copyBytes, _ := json.Marshal(copyMessageList)
 	//将数据以json字符串形式存入持久化文件
 	jsonStr := string(copyBytes)

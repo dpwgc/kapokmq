@@ -1,7 +1,6 @@
 package persistent
 
 import (
-	"DPMQ/model"
 	"DPMQ/server"
 	"github.com/spf13/viper"
 	"time"
@@ -25,20 +24,9 @@ func InitPers() {
 	go func() {
 		server.Loger.Println("Start persistence")
 		for {
-			//复制消息列表
-			copyData()
-			//持久化写入
-			Write()
+			//将消息列表持久化写入文件
+			Write(server.MessageList)
 			time.Sleep(time.Second * time.Duration(persistentTime))
 		}
 	}()
-}
-
-//消息列表拷贝
-var copyMessageList []model.Message
-
-//复制该主节点的数据
-func copyData() {
-
-	copyMessageList = server.MessageList
 }
