@@ -3,6 +3,7 @@ package server
 import (
 	"DPMQ/model"
 	"github.com/spf13/viper"
+	"sync"
 )
 
 func InitMQ() {
@@ -20,4 +21,4 @@ func InitMQ() {
 var MessageChan chan model.Message
 
 //消息列表，存放所有消息记录
-var MessageList []model.Message
+var MessageList sync.Map

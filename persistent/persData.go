@@ -25,7 +25,7 @@ func InitPers() {
 		server.Loger.Println("Start persistence")
 		for {
 			//将消息列表持久化写入文件
-			Write(server.MessageList)
+			Write()
 			time.Sleep(time.Second * time.Duration(persistentTime))
 		}
 	}()

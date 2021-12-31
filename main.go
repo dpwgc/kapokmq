@@ -36,7 +36,7 @@ func main() {
 	server.InitConsumersConn()
 
 	//设置路由
-	r := router.SetupRouters()
+	r := router.InitRouters()
 
 	//获取端口号
 	port := viper.GetString("server.port")

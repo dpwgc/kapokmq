@@ -35,15 +35,23 @@ func InitFileRW() {
 }
 
 //写入持久化文件
-func Write(copyMessageList []model.Message) {
+func Write() {
+
 	var err error
 	//写文件，设置为只写、覆盖，权限设置为777
 	wFile, err = os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
 
 	writer := csv.NewWriter(wFile)
 
+	//复制消息列表
+	copyMap := make(map[string]interface{})
+	server.MessageList.Range(func(key, value interface{}) bool {
+		copyMap[key.(string)] = value
+		return true
+	})
+
 	//将消息列表拷贝转为[]Byte数据
-	copyBytes, _ := json.Marshal(copyMessageList)
+	copyBytes, _ := json.Marshal(copyMap)
 	//将数据以json字符串形式存入持久化文件
 	jsonStr := string(copyBytes)
 	err = writer.Write([]string{jsonStr})
@@ -79,22 +87,30 @@ func Read() {
 		server.Loger.Println("The file is empty")
 		return
 	}
-	//解析本地持久化文件的数据到MessageList
-	err = json.Unmarshal([]byte(record[0][0]), &server.MessageList)
+
+	copyMap, err := jsonToMessage(record[0][0])
 	if err != nil {
 		server.Loger.Println(err)
 		return
 	}
 
-	//将未消费的消息插入消息队列
-	for _, m := range server.MessageList {
-		if m.Status == 0 {
-			server.MessageChan <- m
-		}
+	//将本地持久化文件数据（localMap）循环写入从节点map（DataMap）
+	for key, value := range copyMap {
+		server.MessageList.Store(key, value)
 	}
-
 	err = rFile.Close()
 	if err != nil {
 		server.Loger.Println(err)
 	}
+}
+
+//json字符串转Data结构体
+func jsonToMessage(jsonStr string) (map[string]model.Message, error) {
+	m := make(map[string]model.Message)
+	err := json.Unmarshal([]byte(jsonStr), &m)
+	if err != nil {
+		server.Loger.Println(err)
+		return nil, err
+	}
+	return m, nil
 }

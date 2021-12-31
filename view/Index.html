@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Console</title>
+    <style type="text/css">
+        * {
+            box-sizing: border-box;
+            background: #262626;
+        }
+        .bj {
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            color: #262626;
+        }
+        .bj h1 {
+            color: #ffffff;
+            background: #262626;
+        }
+        .box {
+            margin-top: 50px;
+            color: #262626;
+            background: #ffffff;
+        }
+        .box table {
+            border:1px solid #ffffff;
+            width: 100%;
+        }
+        .box h3 {
+            margin: 0 auto;
+            color: #ffffff;
+            background: #262626;
+        }
+        .box th {
+            color: #ffffff;
+            background: #262626;
+        }
+        .box td {
+            color: #262626;
+            background: #f9f0ff;
+        }
+    </style>
+</head>
+<body>
+<div class="bj">
+    <h1>Console</h1>
+    <div class="box">
+        <h3>Consumer</h3>
+        <table>
+            <tr>
+                <th>Topic</th>
+                <th>ConsumerId</th>
+            </tr>
+            {{ range $v := .consumers}}
+            <tr>
+                <td>{{ $v.Topic }}</td>
+                <td>{{ $v.ConsumerId }}</td>
+            </tr>
+            {{ end }}
+        </table>
+    </div>
+    <div class="box">
+        <h3>Config</h3>
+        <table>
+            <tr>
+                <th>messageChanBuffer</th>
+                <th>pushMessagesSpeed</th>
+                <th>sendCount</th>
+                <th>sendRetryCount</th>
+            </tr>
+            <tr>
+                <td>{{ .configMap.messageChanBuffer }}</td>
+                <td>{{ .configMap.pushMessagesSpeed }}</td>
+                <td>{{ .configMap.sendCount }}</td>
+                <td>{{ .configMap.sendRetryCount }}</td>
+            </tr>
+
+            <tr>
+                <th>persistentPath</th>
+                <th>isPersistent</th>
+                <th>recoveryStrategy</th>
+                <th>persistentTime</th>
+            </tr>
+            <tr>
+                <td>{{ .configMap.persistentPath }}</td>
+                <td>{{ .configMap.isPersistent }}</td>
+                <td>{{ .configMap.recoveryStrategy }}</td>
+                <td>{{ .configMap.persistentTime }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

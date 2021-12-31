@@ -3,6 +3,7 @@ package router
 import (
 	"DPMQ/middleware"
 	"DPMQ/server"
+	"DPMQ/server/console"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -13,19 +14,30 @@ import (
  * 路由
  */
 
-func SetupRouters() (r *gin.Engine) {
+func InitRouters() (r *gin.Engine) {
 
 	r = gin.Default()
+
 	r.Use(Cors())
 
-	//控制台接口（http post请求，用于查看消息队列的基本信息）
-	console := r.Group("/Console")
-	console.Use(middleware.SafeMiddleWare)
+	r.LoadHTMLGlob("view/*")
+
+	//控制台页面
+	consolePage := r.Group("/ConsolePage")
 	{
-		console.GET("/GetConsumers", server.GetConsumers)
-		console.GET("/GetConfig", server.GetConfig)
-		console.GET("/GetMessageList", server.GetMessageList)
-		console.GET("/GetAllMessageList", server.GetAllMessageList)
+		consolePage.GET("/Index", console.Index)
+		consolePage.GET("/GetMessageList", console.GetMessageListPage)
+		consolePage.GET("/GetAllMessageList", console.GetAllMessageListPage)
+	}
+
+	//控制台接口（http post请求，用于查看消息队列的基本信息）
+	consoleApi := r.Group("/Console")
+	consoleApi.Use(middleware.SafeMiddleWare)
+	{
+		consoleApi.GET("/GetConsumers", console.GetConsumers)
+		consoleApi.GET("/GetConfig", console.GetConfig)
+		consoleApi.GET("/GetMessageList", console.GetMessageList)
+		consoleApi.GET("/GetAllMessageList", console.GetAllMessageList)
 	}
 
 	//生产者接口（http post请求，用于接收生产者客户端发送的消息）

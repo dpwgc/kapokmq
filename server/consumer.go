@@ -41,7 +41,7 @@ var sendRetryCount int
 var pushMessagesSpeed int
 
 //连接的消费者客户端,把每个消费者都放进来。Key为{topic}|{consumerId}，topic与consumerId两者之间用字符”|“分隔。Value为websocket连接
-var consumers = make(map[string]*websocket.Conn)
+var Consumers = make(map[string]*websocket.Conn)
 
 //消费者连接，监听消息队列内部各个主题消息的更新
 func ConsumersConn(c *gin.Context) {
@@ -64,11 +64,11 @@ func ConsumersConn(c *gin.Context) {
 	ws, err := UpGrader.Upgrade(c.Writer, c.Request, nil)
 
 	//将当前连接的消费者放入map中
-	consumers[topic+"|"+consumerId] = ws
+	Consumers[topic+"|"+consumerId] = ws
 
 	if err != nil {
 		Loger.Println(err)
-		delete(consumers, topic+"|"+consumerId) //删除map中的消费者
+		delete(Consumers, topic+"|"+consumerId) //删除map中的消费者
 		return
 	}
 	defer ws.Close()
@@ -97,6 +97,11 @@ func pushServer() {
 //并发推送消息到各个消费者客户端
 func pushMessagesToConsumers() {
 
+	//如果没有消费者，暂停推送服务
+	if len(Consumers) <= 0 {
+		return
+	}
+
 	//读取消息通道中的消息
 	message := <-MessageChan
 
@@ -104,7 +109,7 @@ func pushMessagesToConsumers() {
 	controlChan := make(chan int)
 
 	//遍历消费者客户端集合
-	for key, consumer := range consumers {
+	for key, consumer := range Consumers {
 
 		//多协程并发推送消息
 		go func(key string, consumer *websocket.Conn) {
@@ -132,7 +137,7 @@ func pushMessagesToConsumers() {
 						//客户端关闭
 						consumer.Close()
 						//删除map中的客户端
-						delete(consumers, key)
+						delete(Consumers, key)
 					}
 				}
 			}
@@ -142,10 +147,10 @@ func pushMessagesToConsumers() {
 	}
 
 	//待全部推送协程执行完成后，进入下一条消息的推送
-	for range consumers {
+	for range Consumers {
 		//收到协程执行完毕的信息
 		<-controlChan
 	}
 	//将消息记录到消息列表
-	MessageList = append(MessageList, message)
+	MessageList.Store(message.MessageCode, message)
 }
