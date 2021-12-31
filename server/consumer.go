@@ -97,11 +97,6 @@ func pushServer() {
 //并发推送消息到各个消费者客户端
 func pushMessagesToConsumers() {
 
-	//如果没有消费者，暂停推送服务
-	if len(Consumers) <= 0 {
-		return
-	}
-
 	//读取消息通道中的消息
 	message := <-MessageChan
 
@@ -126,7 +121,7 @@ func pushMessagesToConsumers() {
 					err := consumer.WriteJSON(message)
 					//如果发送成功
 					if err == nil {
-						//将消息标记为已确认状态
+						//将消息标记为已消费状态
 						message.Status = 1
 						//结束循环
 						break
@@ -150,6 +145,10 @@ func pushMessagesToConsumers() {
 	for range Consumers {
 		//收到协程执行完毕的信息
 		<-controlChan
+	}
+	//将未确认消费的消息标记为未消费状态
+	if message.Status == -1 {
+		message.Status = 0
 	}
 	//将消息记录到消息列表
 	MessageList.Store(message.MessageCode, message)

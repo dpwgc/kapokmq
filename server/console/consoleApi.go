@@ -6,6 +6,7 @@ import (
 	"DPMQ/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -73,13 +74,18 @@ func GetMessageList(c *gin.Context) {
 	//遍历消息列表
 	server.MessageList.Range(func(key, message interface{}) bool {
 
-		ts := utils.ToTimestamp(message.(model.Message).CreateTime)
+		ts := message.(model.Message).CreateTime
 
 		//消息符合搜索条件
 		if message.(model.Message).Status == intStatus && ts >= start && ts <= end {
 			messageList = append(messageList, message.(model.Message))
 		}
 		return true
+	})
+
+	//消息列表排序 按创建时间降序 由大到小
+	sort.SliceStable(messageList, func(i int, j int) bool {
+		return messageList[i].CreateTime > messageList[j].CreateTime
 	})
 
 	c.JSON(0, gin.H{
@@ -104,13 +110,18 @@ func GetAllMessageList(c *gin.Context) {
 	//遍历消息列表
 	server.MessageList.Range(func(key, message interface{}) bool {
 
-		ts := utils.ToTimestamp(message.(model.Message).CreateTime)
+		ts := message.(model.Message).CreateTime
 
 		//消息创建时间符合搜索时间
 		if ts >= start && ts <= end {
 			messageList = append(messageList, message.(model.Message))
 		}
 		return true
+	})
+
+	//消息列表排序 按创建时间降序 由大到小
+	sort.SliceStable(messageList, func(i int, j int) bool {
+		return messageList[i].CreateTime > messageList[j].CreateTime
 	})
 
 	c.JSON(0, gin.H{

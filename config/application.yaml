@@ -21,3 +21,7 @@ mq:
   recoveryStrategy: 1
   # 两次持久化的间隔时间（单位：秒）
   persistentTime: 2
+  # 重新推送消息的速度（{rePushSpeed}秒/一批消息）
+  rePushSpeed: 5
+  # 消息清理时间阈值（当消息存在{clearTime}秒后，删除该消息）
+  clearTime: 259200

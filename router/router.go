@@ -23,11 +23,9 @@ func InitRouters() (r *gin.Engine) {
 	r.LoadHTMLGlob("view/*")
 
 	//控制台页面
-	consolePage := r.Group("/ConsolePage")
+	consolePage := r.Group("/Console")
 	{
-		consolePage.GET("/Index", console.Index)
-		consolePage.GET("/GetMessageList", console.GetMessageListPage)
-		consolePage.GET("/GetAllMessageList", console.GetAllMessageListPage)
+		consolePage.GET("/", console.Index)
 	}
 
 	//控制台接口（http post请求，用于查看消息队列的基本信息）

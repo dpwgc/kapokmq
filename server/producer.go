@@ -28,8 +28,8 @@ func ProducerSend(c *gin.Context) {
 	message.MessageCode = utils.CreateCode(messageData)
 	message.MessageData = messageData
 	message.Topic = topic
-	message.Status = 0
-	message.CreateTime = utils.GetLocalDateTime()
+	message.Status = -1
+	message.CreateTime = utils.GetLocalDateTimestamp()
 
 	//把消息写入消息通道
 	MessageChan <- message

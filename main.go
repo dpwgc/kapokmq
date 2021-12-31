@@ -32,6 +32,8 @@ func main() {
 
 	persistent.InitPers()
 
+	server.InitRePush()
+
 	//初始化消费者客户端连接模块
 	server.InitConsumersConn()
 

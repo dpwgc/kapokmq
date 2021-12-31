@@ -12,14 +12,17 @@
 
 * 流量削峰：用Golang channel的缓冲区充当队列存储大量积压的消息，按指定时间间隔批量推送缓冲区中的消息。
 
-* 消息推送失败重试机制。
+* 消息推送失败重试机制，定时重推过期消息。
 
 * 支持数据持久化。
+
+* 定期清除早期消息。
+
 ***
 
 ### 主要部分
 
-##### 生产者消息接收 `producerServer`
+##### 生产者消息接收 `producer.go`
 
 * 生产者客户端通过HTTP请求发送消息到消息队列，消息被写入消息通道。
 
@@ -28,7 +31,7 @@
 messageChan <- message
 ```
 
-##### 消费者消息推送 `consumerServer`
+##### 消费者消息推送 `consumer.go`
 
 * 消费者客户端通过WebSocket连接到消息队列。
 
@@ -53,7 +56,7 @@ for key, consumer := range consumers {
 }
 ```
 
-##### 消息通道 `mqServer`
+##### 消息通道 `mq.go`
 
 * 使用golang的通道充当队列，通道的缓冲空间大小决定了消息队列的容量。
 
@@ -62,9 +65,9 @@ for key, consumer := range consumers {
 var messageChan = make(chan models.Message, messageChanBuffer)
 ```
 
-##### 控制台 `consoleServer`
+##### 控制台 `console`
 
-* 用于获取消费者客户端列表及消息队列配置信息。
+* 用于获取消费者客户端列表及消息队列配置信息。`consoleApi.go`
 
 ```
 //获取全部消费者客户端集合 GetConsumers
@@ -80,12 +83,19 @@ GET http://localhost:port/Console/GetMessageList
 GET http://localhost:port/Console/GetAllMessageList
 ```
 
+* 用于获取消费者客户端列表、消息队列配置信息、各状态消息列表。`consolePage.go`
+
+```
+//前端网页 - 控制台页面
+GET http://localhost:port/Console/
+```
+
 
 ***
 
 ### 连接方式
 
-#### 路由 `routers.go`
+#### 路由 `router.go`
 
 ```
 //生产者接口（http post请求，用于接收生产者客户端发送的消息）
@@ -141,7 +151,7 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
     "MessageCode":"8c01b728ef82ba754a63e61daa43e83c61b744c7",
     "MessageData":"hello",
     "Topic":"test_topic",
-    "CreateTime":"2021-12-13 21:04:07",
+    "CreateTime":"1640975470",
     "Status":0
 }
 ```
@@ -174,15 +184,21 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 
 ##### server 服务层
 
+* console `控制台`
+
+    * consoleApi.go `控制台接口`
+
+    * consolePage.go `控制台页面`
+
 * producer.go `生产者消息接收`
 
 * consumer.go `消费者消息推送`
 
-* console.go `控制台接口`
-
 * mq.go `消息队列`
 
 * log.go `日志记录`
+
+* rePush `消息重推与过期消息清理`
 
 ##### utils 工具类
 
@@ -191,6 +207,8 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 * localTime.go `获取本地时间`
 
 * md5Sign.go `md5加密`
+
+* toTimestamp.go `日期字符串转时间戳`
 
 ##### main.go 主函数
 
@@ -224,6 +242,10 @@ mq:
   recoveryStrategy: 1
   # 两次持久化的间隔时间（单位：秒）
   persistentTime: 2
+  # 重新推送消息的速度（{rePushSpeed}秒/一批消息）
+  rePushSpeed: 5
+  # 消息清理时间阈值（当消息存在{clearTime}秒后，删除该消息）
+  clearTime: 259200
 ```
 
 ***
@@ -267,6 +289,8 @@ mq:
     /config               # 配置目录
         application.yaml  # 配置文件
     /log                  # 日志目录
+    /view                 # 前端目录
+        Index.html        # 控制台页面
     data.csv              # 持久化文件
 ```
 
@@ -278,6 +302,8 @@ mq:
     /config               # 配置目录
         application.yaml  # 配置文件
     /log                  # 日志目录
+    /view                 # 前端目录
+        Index.html        # 控制台页面
     data.csv              # 持久化文件
 ```
 
