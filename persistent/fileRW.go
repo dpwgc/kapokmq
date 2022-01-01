@@ -3,7 +3,7 @@ package persistent
 import (
 	"DPMQ/model"
 	"DPMQ/server"
-	"encoding/csv"
+	"encoding/gob"
 	"encoding/json"
 	"github.com/spf13/viper"
 	"os"
@@ -15,23 +15,24 @@ import (
 
 var wFile *os.File
 var rFile *os.File
-var path string
+var file string
 
 //初始化文件
 func InitFileRW() {
 
-	path = viper.GetString("mq.persistentPath")
+	file = viper.GetString("mq.persistentFile")
 	//判断持久化文件是否存在
-	_, err := os.Stat(path)
+	f, err := os.Open(file)
 	if err != nil {
 		//创建持久化文件
 		server.Loger.Println(err)
-		server.Loger.Println("Create persistent file: " + path)
-		_, err = os.Create(path)
+		server.Loger.Println("Create persistent file: " + file)
+		_, err = os.Create(file)
 		if err != nil {
 			server.Loger.Println(err)
 		}
 	}
+	defer f.Close()
 }
 
 //写入持久化文件
@@ -39,9 +40,9 @@ func Write() {
 
 	var err error
 	//写文件，设置为只写、覆盖，权限设置为777
-	wFile, err = os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
+	wFile, err = os.OpenFile(file, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
 
-	writer := csv.NewWriter(wFile)
+	writer := gob.NewEncoder(wFile)
 
 	//复制消息列表
 	copyMap := make(map[string]interface{})
@@ -50,16 +51,13 @@ func Write() {
 		return true
 	})
 
-	//将消息列表拷贝转为[]Byte数据
+	//将消息列表拷贝转为[]Byte数据存入
 	copyBytes, _ := json.Marshal(copyMap)
-	//将数据以json字符串形式存入持久化文件
-	jsonStr := string(copyBytes)
-	err = writer.Write([]string{jsonStr})
+	err = writer.Encode(copyBytes)
 	if err != nil {
 		server.Loger.Println(err)
 		return
 	}
-	writer.Flush()
 	//关闭文件流
 	err = wFile.Close()
 	if err != nil {
@@ -71,24 +69,26 @@ func Write() {
 func Read() {
 	var err error
 	//读文件，设置为只读，权限设置为777
-	rFile, err = os.OpenFile(path, os.O_RDONLY, 0777)
+	rFile, err = os.OpenFile(file, os.O_RDONLY, 0777)
 	if err != nil {
 		server.Loger.Println(err)
 		return
 	}
-	reader := csv.NewReader(rFile)
-	reader.FieldsPerRecord = -1
-	record, err := reader.ReadAll()
+
+	//取出数据
+	reader := gob.NewDecoder(rFile)
+	var info []byte
+	err = reader.Decode(&info)
 	if err != nil {
 		server.Loger.Println(err)
 		return
 	}
-	if len(record) == 0 {
+	if len(info) == 0 {
 		server.Loger.Println("The file is empty")
 		return
 	}
 
-	copyMap, err := jsonToMessage(record[0][0])
+	copyMap, err := jsonToMessage(string(info))
 	if err != nil {
 		server.Loger.Println(err)
 		return

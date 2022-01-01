@@ -14,7 +14,7 @@
 
 * 消息推送失败重试机制，定时重推过期消息。
 
-* 支持数据持久化。
+* 支持数据持久化，定期将消息持久化到二进制文件。
 
 * 自定义过期时间，定期清除过期消息。
 
@@ -81,16 +81,16 @@ var messageChan = make(chan models.Message, messageChanBuffer)
 
 ```
 //获取全部消费者客户端集合 GetConsumers
-GET http://localhost:port/Console/GetConsumers
+POST http://localhost:port/Console/GetConsumers
 
 //获取消息队列详细配置 GetConfig
-GET http://localhost:port/Console/GetConfig
+POST http://localhost:port/Console/GetConfig
 
 //获取指定状态的消息记录列表
-GET http://localhost:port/Console/GetMessageList
+POST http://localhost:port/Console/GetMessageList
 
 //统计各状态消息的数量
-GET http://localhost:port/Console/CountMessage
+POST http://localhost:port/Console/CountMessage
 ```
 
 * 控制台网页端
@@ -145,7 +145,7 @@ topic         //所属主题  类型：string（不能包含符号“|”）
 
 ###### 消息队列通过WebSocket连接推送消息给消费者客户端
 
-* WebSocket `ws://localhost:port/ConsumersConn/{topic}/{consumersId}`
+* WebSocket `ws://localhost:port/Consumers/Conn/{topic}/{consumersId}`
 
 ```
 WebSocket链接中的参数：
@@ -243,19 +243,21 @@ mq:
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
-  sendCount: 5
+  sendCount: 20
   # 消息推送失败后的重试次数
   sendRetryCount: 3
-  # 持久化文件存储路径
-  persistentPath: ./data.csv
+  # 持久化文件
+  persistentFile: data
   # 是否进行持久化（1：是。0：否）
   isPersistent: 1
   # 数据恢复策略（0：清空本地数据，不进行数据恢复。1：将本地数据恢复到内存）
   recoveryStrategy: 1
   # 两次持久化的间隔时间（单位：秒）
-  persistentTime: 2
-  # 重新推送消息的速度（{rePushSpeed}秒/一批消息）
-  rePushSpeed: 5
+  persistentTime: 5
+  # 重推消息的速度（{rePushSpeed}秒/一批消息）
+  rePushSpeed: 3
+  # 单批次重推的消息数量
+  rePushCount: 60
   # 消息清理时间阈值（当消息存在{clearTime}秒后，删除该消息）
   clearTime: 259200
 ```
@@ -275,7 +277,7 @@ mq:
 ```
 （2）打包成exe运行(windows部署)
 
-  GoLand终端cd到项目根目录，执行go build main.go命令，生成main.exe文件
+  GoLand终端cd到项目根目录，执行go build命令，生成exe文件
 ```
 
 ```
@@ -285,8 +287,8 @@ mq:
   SET CGO_ENABLED=0
   SET GOOS=linux
   SET GOARCH=amd64
-  go build main.go
-  生成main文件
+  go build
+  生成二进制执行文件
 ```
 
 ***
@@ -302,7 +304,7 @@ mq:
         application.yaml  # 配置文件
     /log                  # 日志目录
     /view                 # 前端-Vue项目打包文件
-    data.csv              # 持久化文件
+    data                  # 持久化文件
 ```
 
 ```
@@ -314,7 +316,7 @@ mq:
         application.yaml  # 配置文件
     /log                  # 日志目录
     /view                 # 前端-Vue项目打包文件
-    data.csv              # 持久化文件
+    data                  # 持久化文件
 ```
 
 ***

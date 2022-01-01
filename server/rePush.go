@@ -12,16 +12,24 @@ import (
 
 func InitRePush() {
 	rePushSpeed = viper.GetInt("mq.rePushSpeed")
+	rePushCount = viper.GetInt("mq.rePushCount")
 	clearTime = viper.GetInt64("mq.clearTime")
 	go func() {
+		cnt := 0
 		for {
-			time.Sleep(time.Second * time.Duration(rePushSpeed))
+			if cnt == rePushCount {
+				//消息重推的时间间隔（每重推{rePushCount}条消息，间隔一段时间）
+				time.Sleep(time.Second * time.Duration(rePushSpeed))
+				cnt = 0
+			}
 			rePushMessage()
+			cnt++
 		}
 	}()
 }
 
 var rePushSpeed int
+var rePushCount int
 var clearTime int64
 
 func rePushMessage() {
