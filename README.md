@@ -16,7 +16,17 @@
 
 * 支持数据持久化。
 
-* 定期清除早期消息。
+* 自定义过期时间，定期清除过期消息。
+
+* 网页端控制台。
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/1.jpg)
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/2.jpg)
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/3.jpg)
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/4.jpg)
 
 ***
 
@@ -67,7 +77,7 @@ var messageChan = make(chan models.Message, messageChanBuffer)
 
 ##### 控制台 `console`
 
-* 用于获取消费者客户端列表及消息队列配置信息。`consoleApi.go`
+* 控制台接口：用于获取消费者客户端列表及消息队列配置信息。`console.go`
 
 ```
 //获取全部消费者客户端集合 GetConsumers
@@ -79,17 +89,15 @@ GET http://localhost:port/Console/GetConfig
 //获取指定状态的消息记录列表
 GET http://localhost:port/Console/GetMessageList
 
-//获取所有状态的消息记录列表
-GET http://localhost:port/Console/GetAllMessageList
+//统计各状态消息的数量
+GET http://localhost:port/Console/CountMessage
 ```
 
-* 用于获取消费者客户端列表、消息队列配置信息、各状态消息列表。`consolePage.go`
+* 控制台网页端
 
 ```
-//前端网页 - 控制台页面
-GET http://localhost:port/Console/
+http://localhost:port/#/Console
 ```
-
 
 ***
 
@@ -166,6 +174,12 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 
 * config.go `项目配置文件加载`
 
+##### middleware 中间件
+
+* cors.go `跨域配置`
+
+* safe.go `安全验证`
+
 ##### model 实体类
 
 * model.go `消息模板`
@@ -184,11 +198,7 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 
 ##### server 服务层
 
-* console `控制台`
-
-    * consoleApi.go `控制台接口`
-
-    * consolePage.go `控制台页面`
+* console,go `控制台接口`
 
 * producer.go `生产者消息接收`
 
@@ -209,6 +219,8 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 * md5Sign.go `md5加密`
 
 * toTimestamp.go `日期字符串转时间戳`
+
+##### view 前端Vue项目打包文件
 
 ##### main.go 主函数
 
@@ -289,8 +301,7 @@ mq:
     /config               # 配置目录
         application.yaml  # 配置文件
     /log                  # 日志目录
-    /view                 # 前端目录
-        Index.html        # 控制台页面
+    /view                 # 前端-Vue项目打包文件
     data.csv              # 持久化文件
 ```
 
@@ -302,8 +313,7 @@ mq:
     /config               # 配置目录
         application.yaml  # 配置文件
     /log                  # 日志目录
-    /view                 # 前端目录
-        Index.html        # 控制台页面
+    /view                 # 前端-Vue项目打包文件
     data.csv              # 持久化文件
 ```
 

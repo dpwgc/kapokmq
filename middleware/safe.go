@@ -6,7 +6,7 @@ import (
 )
 
 //安全验证中间件
-func SafeMiddleWare(c *gin.Context) {
+func Safe(c *gin.Context) {
 
 	secretKey := c.GetHeader("secretKey")
 

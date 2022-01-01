@@ -2,14 +2,15 @@ package utils
 
 import (
 	"fmt"
+	"github.com/go-basic/uuid"
 	"time"
 )
 
 //生成消息标识码
 
 func CreateCode(messageData string) string {
-	// 40位字符:md5(username+timestamp+token_salt)+timestamp[:8]
 	ts := fmt.Sprintf("%x", time.Now().Unix())
-	tokenPrefix := Md5Sign(messageData + ts + "_DPMQ")
+	uuid := uuid.New()
+	tokenPrefix := Md5Sign(messageData + ts + uuid)
 	return tokenPrefix + ts[:8]
 }
