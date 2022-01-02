@@ -18,15 +18,13 @@
 
 * 自定义过期时间，定期清除过期消息。
 
-* 网页端控制台。
+* 网页端控制台：包含查看消息队列配置、生成近一周消息增长折线图、查看各状态消息数量、查看消费者客户端列表及搜索消息功能。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/1.jpg)
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/2.jpg)
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/3.jpg)
-
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/4.jpg)
 
 ***
 
