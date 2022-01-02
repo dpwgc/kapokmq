@@ -66,7 +66,7 @@ func ConsumersConn(c *gin.Context) {
 	//登录验证
 	for {
 		//连接成功，等待消费者客户端输入访问密钥
-		err = ws.WriteJSON("Please enter the secret key")
+		err = ws.WriteMessage(1, []byte("Please enter the secret key"))
 		if err != nil {
 			Loger.Println(err)
 			return
@@ -80,7 +80,7 @@ func ConsumersConn(c *gin.Context) {
 		}
 		if string(sk) == secretKey {
 			//访问密钥匹配成功
-			err = ws.WriteJSON("Secret key matching succeeded")
+			err = ws.WriteMessage(1, []byte("Secret key matching succeeded"))
 			if err != nil {
 				Loger.Println(err)
 				return
@@ -89,7 +89,7 @@ func ConsumersConn(c *gin.Context) {
 		}
 
 		//访问密钥匹配失败
-		err = ws.WriteJSON("Secret key matching error")
+		err = ws.WriteMessage(1, []byte("Secret key matching error"))
 		if err != nil {
 			Loger.Println(err)
 			return
