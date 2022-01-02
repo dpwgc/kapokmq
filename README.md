@@ -1,6 +1,12 @@
 # DPMQ.消息队列
 
-## 基于Golang Gin整合Gorilla WebSocket实现的消息队列
+## 基于Golang整合Gorilla WebSocket实现的消息队列
+
+### Golang客户端：
+
+* https://github.com/dpwgc/dpmq-go-client 
+* 
+* https://gitee.com/dpwgc/dpmq-go-client
 
 `Golang` `Gin` `Gorilla` `WebSocket` `MQ`
 
