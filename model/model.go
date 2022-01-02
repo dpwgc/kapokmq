@@ -7,7 +7,7 @@ type Message struct {
 	Topic        string      //消息所属主题
 	CreateTime   int64       //消息创建时间
 	ConsumedTime int64       //消息被消费时间
-	Status       int         //消息状态（-1：刚进入无状态，0：未被消费，1：已被消费）
+	Status       int         //消息状态（-1：未进入队列，0：未被消费，1：已被消费）
 }
 
 // Consumer 消费者客户端模板
@@ -16,4 +16,12 @@ type Consumer struct {
 	Topic      string //消费者所属主题
 	ConsumerIp string //消费者ip地址
 	JoinTime   int64  //消费者加入时间
+}
+
+// Producer 生产者客户端模板
+type Producer struct {
+	ProducerId string //生产者Id
+	Topic      string //生产者所属主题
+	ProducerIp string //生产者ip地址
+	JoinTime   int64  //生产者加入时间
 }
