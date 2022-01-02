@@ -74,18 +74,28 @@ func GetMessageList(c *gin.Context) {
 	status, _ := c.GetPostForm("status")
 	intStatus, _ := strconv.Atoi(status)
 
+	//主题
+	topic, _ := c.GetPostForm("topic")
+
 	var messageList []model.Message
 
-	//返回全部状态的消息
-	if intStatus == 3 {
+	//如果主题为空-返回全部主题的消息
+	if len(topic) == 0 {
 		//遍历消息列表
 		MessageList.Range(func(key, message interface{}) bool {
 
 			ts := message.(model.Message).CreateTime
 
-			//消息创建时间符合搜索时间
-			if ts >= start && ts <= end {
+			//搜索全部状态的消息-搜索全部主题的消息-消息符合搜索条件
+			if intStatus == 3 && ts >= start && ts <= end {
 				messageList = append(messageList, message.(model.Message))
+				return true
+			}
+
+			//搜索指定状态的消息-搜索全部主题的消息-消息符合搜索条件
+			if message.(model.Message).Status == intStatus && ts >= start && ts <= end {
+				messageList = append(messageList, message.(model.Message))
+				return true
 			}
 			return true
 		})
@@ -97,9 +107,16 @@ func GetMessageList(c *gin.Context) {
 
 			ts := message.(model.Message).CreateTime
 
-			//消息符合搜索条件
-			if message.(model.Message).Status == intStatus && ts >= start && ts <= end {
+			//搜索全部状态的消息-搜索指定主题的消息-消息符合搜索条件
+			if intStatus == 3 && ts >= start && ts <= end && message.(model.Message).Topic == topic {
 				messageList = append(messageList, message.(model.Message))
+				return true
+			}
+
+			//搜索指定状态的消息-搜索指定主题的消息-消息符合搜索条件
+			if message.(model.Message).Status == intStatus && ts >= start && ts <= end && message.(model.Message).Topic == topic {
+				messageList = append(messageList, message.(model.Message))
+				return true
 			}
 			return true
 		})
