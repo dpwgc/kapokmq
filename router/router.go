@@ -45,5 +45,10 @@ func InitRouters() (r *gin.Engine) {
 	{
 		consumers.GET("/Conn/:topic/:consumerId", server.ConsumersConn)
 	}
+	//生产者连接（websocket连接，用于发送消息到消息队列）ws://127.0.0.1:8011/Producers/Conn/test_topic/1
+	producers := r.Group("/Producers")
+	{
+		producers.GET("/Conn/:topic/:producerId", server.ProducersConn)
+	}
 	return
 }
