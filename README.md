@@ -139,7 +139,7 @@ topic         //所属主题  类型：string（不能包含符号“|”）
 消息发送失败，返回数据（msg为报错信息）：
 {
     "code": -1,
-    "msg": "topic不能包含字符“|”"
+    "msg": "Topic cannot contain '|'"
 }
 ```
 
