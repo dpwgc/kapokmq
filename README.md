@@ -275,14 +275,14 @@ mq:
   secretKey: dpmq
 
   # 消息通道的缓冲空间大小（消息队列的容量）
-  messageChanBuffer: 10000
+  messageChanBuffer: 1000000
 
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
-  sendCount: 20
+  sendCount: 100
   # 消息推送失败后的立即重试的次数
-  sendRetryCount: 3
+  sendRetryCount: 1
 
   # 持久化文件
   persistentFile: data
@@ -299,7 +299,7 @@ mq:
   isClean: 1
 
   # 检查消息的速度（{rePushSpeed}秒/一批消息）
-  checkSpeed: 3
+  checkSpeed: 5
 
   # 消息清理时间阈值（当消息存在{clearTime}秒后，删除该消息）
   cleanTime: 259200
