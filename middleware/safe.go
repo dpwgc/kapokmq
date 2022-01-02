@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//安全验证中间件
+// Safe 安全验证中间件
 func Safe(c *gin.Context) {
 
 	secretKey := c.GetHeader("secretKey")
