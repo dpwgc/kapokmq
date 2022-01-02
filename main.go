@@ -11,10 +11,6 @@ import (
 	_ "net/http"
 )
 
-/**
- * main
- */
-
 func main() {
 
 	//加载配置
@@ -46,5 +42,8 @@ func main() {
 
 	//获取端口号
 	port := viper.GetString("server.port")
-	_ = r.Run(fmt.Sprintf("%s%s", ":", port))
+	err := r.Run(fmt.Sprintf("%s%s", ":", port))
+	if err != nil {
+		panic(err)
+	}
 }
