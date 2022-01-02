@@ -13,7 +13,7 @@ func Safe(c *gin.Context) {
 	if secretKey != viper.GetString("mq.secretKey") {
 		c.JSON(-1, gin.H{
 			"code": -1,
-			"msg":  "key matching error",
+			"msg":  "Secret key matching error",
 		})
 		c.Abort()
 	}
