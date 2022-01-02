@@ -11,7 +11,6 @@ func InitCheck() {
 
 	isRePush = viper.GetInt("mq.isRePush")
 	checkSpeed = viper.GetInt("mq.checkSpeed")
-	checkCount = viper.GetInt("mq.checkCount")
 
 	isClean = viper.GetInt("mq.isClean")
 	cleanTime = viper.GetInt64("mq.cleanTime")
@@ -22,22 +21,15 @@ func InitCheck() {
 	}
 
 	go func() {
-		cnt := 0
 		for {
-			if cnt == checkCount {
-				//消息重推的时间间隔（每重推{rePushCount}条消息，间隔一段时间）
-				time.Sleep(time.Second * time.Duration(checkSpeed))
-				cnt = 0
-			}
+			time.Sleep(time.Second * time.Duration(checkSpeed))
 			checkMessage()
-			cnt++
 		}
 	}()
 }
 
 var isRePush int
 
-var checkCount int
 var checkSpeed int
 
 var isClean int
@@ -51,16 +43,20 @@ func checkMessage() {
 
 	MessageList.Range(func(key, message interface{}) bool {
 
+		msg := message.(model.Message)
+
 		//该消息超出记录时间限制，彻底删除该消息
-		if ts-message.(model.Message).CreateTime > cleanTime && isClean == 1 {
+		if ts-msg.CreateTime > cleanTime && isClean == 1 {
 			MessageList.Delete(key)
 			return true
 		}
 
 		//如果该消息未推送
-		if message.(model.Message).Status == 0 && isRePush == 1 {
-			//重新推送该消息
-			MessageChan <- message.(model.Message)
+		if msg.Status == 0 && isRePush == 1 {
+
+			//将消息标记为无状态，重新推送该消息
+			msg.Status = -1
+			MessageChan <- msg
 			return true
 		}
 		return true
