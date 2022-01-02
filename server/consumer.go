@@ -15,7 +15,7 @@ import (
  * 使用websocket将消息推送给各个消费者客户端
  */
 
-//websocket跨域配置
+// UpGrader websocket跨域配置
 var UpGrader = websocket.Upgrader{
 	//跨域设置
 	CheckOrigin: func(r *http.Request) bool {
@@ -23,6 +23,7 @@ var UpGrader = websocket.Upgrader{
 	},
 }
 
+// InitConsumersConn 初始化消费者连接模块
 func InitConsumersConn() {
 	sendCount = viper.GetInt("mq.sendCount")
 	sendRetryCount = viper.GetInt("mq.sendRetryCount")
@@ -42,10 +43,10 @@ var sendRetryCount int
 //推送消息的速度(单批次消息推送间隔时间，单位：秒)
 var pushMessagesSpeed int
 
-//连接的消费者客户端,把每个消费者都放进来。Key为{topic}|{consumerId}，topic与consumerId两者之间用字符”|“分隔。Value为websocket连接
+// Consumers 连接的消费者客户端,把每个消费者都放进来。Key为{topic}|{consumerId}，topic与consumerId两者之间用字符”|“分隔。Value为websocket连接
 var Consumers = make(map[model.Consumer]*websocket.Conn)
 
-//消费者连接，监听消息队列内部各个主题消息的更新
+// ConsumersConn 消费者连接，监听消息队列内部各个主题消息的更新
 func ConsumersConn(c *gin.Context) {
 
 	//消息所属主题
@@ -76,7 +77,12 @@ func ConsumersConn(c *gin.Context) {
 		delete(Consumers, key) //删除map中的消费者
 		return
 	}
-	defer ws.Close()
+	defer func(ws *websocket.Conn) {
+		err = ws.Close()
+		if err != nil {
+			Loger.Println(err)
+		}
+	}(ws)
 
 	for {
 		//开个死循环，将连接挂起，保证连接不被断开
@@ -136,7 +142,10 @@ func pushMessagesToConsumers() {
 					//如果到达重试次数，但仍未发送成功
 					if i == sendRetryCount-1 && err != nil {
 						//客户端关闭
-						consumer.Close()
+						err = consumer.Close()
+						if err != nil {
+							Loger.Println(err)
+						}
 						//删除map中的客户端
 						delete(Consumers, key)
 					}
