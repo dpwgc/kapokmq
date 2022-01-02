@@ -126,7 +126,7 @@ r.GET("/Consumers/Conn/:topic/:consumerId", servers.ConsumersConn)
 
 ##### 生产者客户端发送消息到消息队列
 
-* WebSocket `ws://localhost:port/Producers/Conn/{topic}/{consumersId}`
+* WebSocket连接方式 `ws://localhost:port/Producers/Conn/{topic}/{producersId}`
 
 ```
 WebSocket链接中的参数：
@@ -140,7 +140,7 @@ ProducerId   //生产者客户端Id
 例：[]byte(messageData)
 ```
 
-* POST `http://localhost:port/Producer/Send`
+* POST请求方式 `http://localhost:port/Producer/Send`
 
 ```
 POST请求参数：
