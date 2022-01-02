@@ -7,26 +7,21 @@ import (
 	"github.com/spf13/viper"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 /**
- * 控制台服务
+ * 控制台服务接口
  */
 
-//获取全部消费者客户端集合
+// GetConsumers 获取全部消费者客户端集合
 func GetConsumers(c *gin.Context) {
 
-	consumers := []model.Consumer{}
-	consumer := model.Consumer{}
+	var consumers []model.Consumer
 
 	//遍历消费者客户端列表
 	for key := range Consumers {
 
-		consumer.Topic = strings.Split(key, "|")[0]
-		consumer.ConsumerId = strings.Split(key, "|")[1]
-
-		consumers = append(consumers, consumer)
+		consumers = append(consumers, key)
 	}
 
 	c.JSON(0, gin.H{
@@ -35,20 +30,28 @@ func GetConsumers(c *gin.Context) {
 	})
 }
 
-//获取消息队列详细配置
+// GetConfig 获取消息队列详细配置
 func GetConfig(c *gin.Context) {
 
 	configMap := make(map[string]interface{}, 3)
 	configMap["messageChanBuffer"] = viper.GetInt("mq.messageChanBuffer")
+
 	configMap["pushMessagesSpeed"] = viper.GetInt("mq.pushMessagesSpeed")
 	configMap["sendCount"] = viper.GetInt("mq.sendCount")
 	configMap["sendRetryCount"] = viper.GetInt("mq.sendRetryCount")
+
 	configMap["persistentPath"] = viper.GetString("mq.persistentPath")
 	configMap["isPersistent"] = viper.GetInt("mq.isPersistent")
 	configMap["recoveryStrategy"] = viper.GetInt("mq.recoveryStrategy")
 	configMap["persistentTime"] = viper.GetInt("mq.persistentTime")
-	configMap["rePushSpeed"] = viper.GetInt("mq.rePushSpeed")
-	configMap["clearTime"] = viper.GetInt("mq.clearTime")
+
+	configMap["isRePush"] = viper.GetInt("mq.isRePush")
+	configMap["isClean"] = viper.GetInt("mq.isClean")
+
+	configMap["checkSpeed"] = viper.GetInt("mq.checkSpeed")
+	configMap["checkCount"] = viper.GetInt("mq.checkCount")
+
+	configMap["cleanTime"] = viper.GetInt("mq.cleanTime")
 
 	c.JSON(0, gin.H{
 		"code": 0,
@@ -56,7 +59,7 @@ func GetConfig(c *gin.Context) {
 	})
 }
 
-//获取指定状态的消息记录列表（可用该接口进行消息记录持久化操作）
+// GetMessageList 获取指定状态的消息记录列表（可用该接口进行消息记录持久化操作）
 func GetMessageList(c *gin.Context) {
 
 	//搜索区间
@@ -113,7 +116,7 @@ func GetMessageList(c *gin.Context) {
 	})
 }
 
-//统计各状态消息的数量
+// CountMessage 统计各状态消息的数量
 func CountMessage(c *gin.Context) {
 
 	count := make(map[string]int64, 4)

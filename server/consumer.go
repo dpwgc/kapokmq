@@ -1,12 +1,12 @@
 package server
 
 import (
-	"fmt"
+	"DPMQ/model"
+	"DPMQ/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/spf13/viper"
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 )
@@ -43,29 +43,26 @@ var sendRetryCount int
 var pushMessagesSpeed int
 
 //连接的消费者客户端,把每个消费者都放进来。Key为{topic}|{consumerId}，topic与consumerId两者之间用字符”|“分隔。Value为websocket连接
-var Consumers = make(map[string]*websocket.Conn)
+var Consumers = make(map[model.Consumer]*websocket.Conn)
 
 //消费者连接，监听消息队列内部各个主题消息的更新
 func ConsumersConn(c *gin.Context) {
 
 	//消息所属主题
 	topic := c.Param("topic")
-	//判断topic字符串是否含有字符“|”，如果有，则断开连接，避免影响后续字符串切割操作
-	if strings.Contains(topic, "|") {
-		return
-	}
-
 	//消费者id
 	consumerId := c.Param("consumerId")
-	//判断consumerId字符串是否含有字符“|”，如果有，则断开连接，避免影响后续字符串切割操作
-	if strings.Contains(consumerId, "|") {
-		return
-	}
+	//消费者ip地址
+	consumerIp := c.ClientIP()
 
 	//升级get请求为webSocket协议
 	ws, err := UpGrader.Upgrade(c.Writer, c.Request, nil)
 
-	key := fmt.Sprintf("%s|%s", topic, consumerId)
+	key := model.Consumer{}
+	key.ConsumerId = consumerId
+	key.Topic = topic
+	key.ConsumerIp = consumerIp
+	key.JoinTime = utils.GetLocalDateTimestamp()
 
 	lock := sync.RWMutex{}
 
@@ -115,10 +112,10 @@ func pushMessagesToConsumers() {
 	for key, consumer := range Consumers {
 
 		//多协程并发推送消息
-		go func(key string, consumer *websocket.Conn) {
+		go func(key model.Consumer, consumer *websocket.Conn) {
 
 			//字符串分割获取该消息所属主题
-			topic := strings.Split(key, "|")[0]
+			topic := key.Topic
 
 			//找到与该消息主题对应的客户端(相同的topic)
 			if message.Topic == topic && len(message.Topic) > 0 && len(message.MessageCode) > 0 {
@@ -131,6 +128,7 @@ func pushMessagesToConsumers() {
 					if err == nil {
 						//将消息标记为已消费状态
 						message.Status = 1
+						message.ConsumedTime = utils.GetLocalDateTimestamp()
 						//结束循环
 						break
 					}
