@@ -18,7 +18,7 @@ var wFile *os.File
 var rFile *os.File
 var dataFile string
 
-//初始化文件
+// InitFileRW 初始化文件读写模块
 func InitFileRW() {
 
 	dataFile = viper.GetString("mq.persistentFile")
@@ -33,10 +33,15 @@ func InitFileRW() {
 			server.Loger.Println(err)
 		}
 	}
-	defer f.Close()
+	defer func(f *os.File) {
+		err = f.Close()
+		if err != nil {
+			server.Loger.Println(err)
+		}
+	}(f)
 }
 
-//写入持久化文件
+// Write 写入持久化文件
 func Write() {
 
 	var err error
@@ -66,7 +71,7 @@ func Write() {
 	}
 }
 
-//加载持久化文件内的数据到内存中
+// Read 加载持久化文件内的数据到内存中
 func Read() {
 	var err error
 	//读文件，设置为只读，权限设置为777

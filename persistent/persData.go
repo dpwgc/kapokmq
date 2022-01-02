@@ -10,6 +10,7 @@ import (
  * 持久化数据到硬盘
  */
 
+// InitPers 加载数据持久化模块
 func InitPers() {
 
 	//是否开启持久化
