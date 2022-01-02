@@ -4,7 +4,6 @@ import (
 	"DPMQ/model"
 	"DPMQ/utils"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 // ProducerSend 接收消息生产者发送过来的消息
@@ -17,15 +16,6 @@ func ProducerSend(c *gin.Context) {
 		c.JSON(-1, gin.H{
 			"code": -1,
 			"msg":  "Required data cannot be empty",
-		})
-		return
-	}
-
-	//判断topic字符串是否含有字符“|”，如果有，则返回错误信息，避免影响后续字符串切割操作
-	if strings.Contains(topic, "|") {
-		c.JSON(-1, gin.H{
-			"code": -1,
-			"msg":  "Topic cannot contain '|'",
 		})
 		return
 	}

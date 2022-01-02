@@ -86,10 +86,10 @@ POST http://localhost:port/Console/GetConsumers
 //获取消息队列详细配置 GetConfig
 POST http://localhost:port/Console/GetConfig
 
-//获取指定状态的消息记录列表
+//获取指定状态的消息记录列表 GetMessageList
 POST http://localhost:port/Console/GetMessageList
 
-//统计各状态消息的数量
+//统计各状态消息的数量 CountMessage
 POST http://localhost:port/Console/CountMessage
 ```
 
@@ -101,7 +101,7 @@ http://localhost:port/#/Console
 
 ***
 
-### 连接方式
+### 客户端连接
 
 #### 路由 `router.go`
 
@@ -139,7 +139,7 @@ topic         //所属主题  类型：string（不能包含符号“|”）
 消息发送失败，返回数据（msg为报错信息）：
 {
     "code": -1,
-    "msg": "Topic cannot contain '|'"
+    "msg": "Required data cannot be empty"
 }
 ```
 
@@ -160,7 +160,8 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
     "MessageData":"hello",
     "Topic":"test_topic",
     "CreateTime":"1640975470",
-    "Status":0
+    "ConsumedTime":"1640975520",
+    "Status":-1
 }
 ```
 
@@ -182,7 +183,7 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 
 ##### model 实体类
 
-* model.go `消息模板`
+* model.go `数据模板`
 
 ##### persistent 持久化
 
@@ -208,7 +209,7 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 
 * log.go `日志记录`
 
-* rePush `消息重推与过期消息清理`
+* check.go `消息检查-消息重推与过期消息清理`
 
 ##### utils 工具类
 
@@ -238,14 +239,17 @@ server:
 mq:
   # 生产者、控制台访问密钥（放在请求头部）
   secretKey: test_secret_key
+
   # 消息通道的缓冲空间大小（消息队列的容量）
   messageChanBuffer: 10000
+
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
   sendCount: 20
   # 消息推送失败后的重试次数
   sendRetryCount: 3
+
   # 持久化文件
   persistentFile: data
   # 是否进行持久化（1：是。0：否）
@@ -254,12 +258,19 @@ mq:
   recoveryStrategy: 1
   # 两次持久化的间隔时间（单位：秒）
   persistentTime: 5
-  # 重推消息的速度（{rePushSpeed}秒/一批消息）
-  rePushSpeed: 3
-  # 单批次重推的消息数量
-  rePushCount: 60
+
+  # 是否开启自动重推未确认消费消息功能（1：是。0：否）
+  isRePush: 1
+  # 是否开启自动清理过期消息功能（1：是。0：否）
+  isClean: 1
+
+  # 检查消息的速度（{rePushSpeed}秒/一批消息）
+  checkSpeed: 3
+  # 单批次检查的消息数量
+  checkCount: 60
+
   # 消息清理时间阈值（当消息存在{clearTime}秒后，删除该消息）
-  clearTime: 259200
+  cleanTime: 259200
 ```
 
 ***
