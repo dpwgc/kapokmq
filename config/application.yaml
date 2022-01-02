@@ -4,7 +4,7 @@ server:
 
 mq:
   # 生产者、控制台访问密钥（放在请求头部）
-  secretKey: test_secret_key
+  secretKey: dpmq
 
   # 消息通道的缓冲空间大小（消息队列的容量）
   messageChanBuffer: 10000
@@ -13,7 +13,7 @@ mq:
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
   sendCount: 20
-  # 消息推送失败后的重试次数
+  # 消息推送失败后的立即重试的次数
   sendRetryCount: 3
 
   # 持久化文件
@@ -32,8 +32,6 @@ mq:
 
   # 检查消息的速度（{rePushSpeed}秒/一批消息）
   checkSpeed: 3
-  # 单批次检查的消息数量
-  checkCount: 60
 
   # 消息清理时间阈值（当消息存在{clearTime}秒后，删除该消息）
   cleanTime: 259200
