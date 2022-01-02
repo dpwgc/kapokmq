@@ -13,6 +13,14 @@ import (
  * 控制台服务接口
  */
 
+// Ping 检查MQ是否在运行
+func Ping(c *gin.Context) {
+
+	c.JSON(0, gin.H{
+		"code": 0,
+	})
+}
+
 // GetConsumers 获取全部消费者客户端集合
 func GetConsumers(c *gin.Context) {
 
