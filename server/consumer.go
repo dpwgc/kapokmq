@@ -147,8 +147,6 @@ func pushMessagesToConsumers() {
 
 	//读取消息通道中的消息
 	message := <-MessageChan
-	//将消息记录到消息列表
-	MessageList.Store(message.MessageCode, message)
 
 	//控制通道
 	controlChan := make(chan int)
