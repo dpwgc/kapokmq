@@ -1,11 +1,13 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/spf13/viper"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -63,12 +65,18 @@ func ConsumersConn(c *gin.Context) {
 	//升级get请求为webSocket协议
 	ws, err := UpGrader.Upgrade(c.Writer, c.Request, nil)
 
+	key := fmt.Sprintf("%s|%s", topic, consumerId)
+
+	lock := sync.RWMutex{}
+
 	//将当前连接的消费者放入map中
-	Consumers[topic+"|"+consumerId] = ws
+	lock.RLock()
+	Consumers[key] = ws
+	lock.RUnlock()
 
 	if err != nil {
 		Loger.Println(err)
-		delete(Consumers, topic+"|"+consumerId) //删除map中的消费者
+		delete(Consumers, key) //删除map中的消费者
 		return
 	}
 	defer ws.Close()

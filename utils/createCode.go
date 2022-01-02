@@ -10,7 +10,8 @@ import (
 
 func CreateCode(messageData string) string {
 	ts := fmt.Sprintf("%x", time.Now().Unix())
-	uuid := uuid.New()
-	tokenPrefix := Md5Sign(messageData + ts + uuid)
+	uu := uuid.New()
+	data := fmt.Sprintf("%s%s%s", messageData, ts, uu)
+	tokenPrefix := Md5Sign(data)
 	return tokenPrefix + ts[:8]
 }

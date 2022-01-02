@@ -5,6 +5,7 @@ import (
 	"DPMQ/persistent"
 	"DPMQ/router"
 	"DPMQ/server"
+	"fmt"
 	_ "github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	_ "net/http"
@@ -28,19 +29,22 @@ func main() {
 	//加载文件读写模块
 	persistent.InitFileRW()
 
+	//加载数据恢复模块
 	persistent.InitRecovery()
 
+	//加载持久化模块
 	persistent.InitPers()
 
-	server.InitRePush()
+	//加载消息检查模块
+	server.InitCheck()
 
 	//初始化消费者客户端连接模块
 	server.InitConsumersConn()
 
-	//设置路由
+	//初始化路由
 	r := router.InitRouters()
 
 	//获取端口号
 	port := viper.GetString("server.port")
-	_ = r.Run(":" + port)
+	_ = r.Run(fmt.Sprintf("%s%s", ":", port))
 }

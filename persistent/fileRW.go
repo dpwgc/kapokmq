@@ -5,6 +5,7 @@ import (
 	"DPMQ/server"
 	"encoding/gob"
 	"encoding/json"
+	"fmt"
 	"github.com/spf13/viper"
 	"os"
 )
@@ -15,19 +16,19 @@ import (
 
 var wFile *os.File
 var rFile *os.File
-var file string
+var dataFile string
 
 //初始化文件
 func InitFileRW() {
 
-	file = viper.GetString("mq.persistentFile")
+	dataFile = viper.GetString("mq.persistentFile")
 	//判断持久化文件是否存在
-	f, err := os.Open(file)
+	f, err := os.Open(dataFile)
 	if err != nil {
 		//创建持久化文件
 		server.Loger.Println(err)
-		server.Loger.Println("Create persistent file: " + file)
-		_, err = os.Create(file)
+		server.Loger.Println(fmt.Sprintf("%s%s", "Create persistent file: ", dataFile))
+		_, err = os.Create(dataFile)
 		if err != nil {
 			server.Loger.Println(err)
 		}
@@ -40,7 +41,7 @@ func Write() {
 
 	var err error
 	//写文件，设置为只写、覆盖，权限设置为777
-	wFile, err = os.OpenFile(file, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
+	wFile, err = os.OpenFile(dataFile, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0777)
 
 	writer := gob.NewEncoder(wFile)
 
@@ -69,7 +70,7 @@ func Write() {
 func Read() {
 	var err error
 	//读文件，设置为只读，权限设置为777
-	rFile, err = os.OpenFile(file, os.O_RDONLY, 0777)
+	rFile, err = os.OpenFile(dataFile, os.O_RDONLY, 0777)
 	if err != nil {
 		server.Loger.Println(err)
 		return
