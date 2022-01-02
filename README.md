@@ -32,7 +32,9 @@
 
 ##### 生产者消息接收 `producer.go`
 
-* 生产者客户端通过HTTP请求发送消息到消息队列，消息被写入消息通道。
+* 生产者客户端通过WebSocket连接到消息队列，并发送消息到消息队列，消息被写入消息通道。
+
+* 额外提供生产者HTTP接口，可通过HTTP请求向消息队列发送消息。
 
 ```
 //把消息写入消息通道
@@ -104,6 +106,9 @@ http://localhost:port/#/Console
 #### 路由 `router.go`
 
 ```
+//生产者连接（WebSocket连接，用于发送消息到消息队列）
+GET("/Producers/Conn/:topic/:producerId", server.ProducersConn)
+
 //生产者接口（http post请求，用于接收生产者客户端发送的消息）
 r.POST("/Producer/Send",servers.ProducerSend)
 
@@ -114,6 +119,20 @@ r.GET("/Consumers/Conn/:topic/:consumerId", servers.ConsumersConn)
 #### 访问路径
 
 ##### 生产者客户端发送消息到消息队列
+
+* WebSocket `ws://localhost:port/Producers/Conn/{topic}/{consumersId}`
+
+```
+WebSocket链接中的参数：
+topic        //主题名称
+ProducerId   //生产者客户端Id
+```
+
+```
+发送给消息队列的消息格式
+[]byte类型
+例：[]byte(messageData)
+```
 
 * POST `http://localhost:port/Producer/Send`
 
@@ -147,8 +166,8 @@ topic         //所属主题  类型：string（不能包含符号“|”）
 
 ```
 WebSocket链接中的参数：
-topic        //主题名称（不能包含符号“|”）
-consumersId  //消费者客户端Id（不能重复，不能包含符号“|”）
+topic        //主题名称
+consumerId  //消费者客户端Id
 ```
 
 ```
@@ -163,10 +182,10 @@ consumersId  //消费者客户端Id（不能重复，不能包含符号“|”�
 }
 ```
 
-* WebSocket连接后，需输入密钥登录
+* 生产者、消费者客户端与消息队列进行WebSocket连接后，需输入密钥登录
 ```
 ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
-连接成功，现在你可以发送信息啦！！！
+消费者客户端与消息队列建立连接
 
 服务端回应 2022-01-02 15:14:53
 "Please enter the secret key"   //提示输入密钥
@@ -194,6 +213,35 @@ dpmq                            //输出正确的密钥
     "ConsumedTime":0,
     "Status":-1
 }
+...
+...
+...
+```
+
+```
+ws://127.0.0.1:8011/Producers/Conn/test_topic/1
+生产者客户端与消息队列建立连接
+
+服务端回应 2022-01-02 15:14:53
+"Please enter the secret key"   //提示输入密钥
+
+你发送的信息 2022-01-02 15:15:06
+qqq                             //输入错误的密钥
+
+服务端回应 2022-01-02 15:15:06
+"Secret key matching error"     //提示密钥出错
+
+服务端回应 2022-01-02 15:15:06
+"Please enter the secret key"   //再次提示输入密钥
+
+你发送的信息 2022-01-02 15:15:13
+dpmq                            //输出正确的密钥
+
+服务端回应 2022-01-02 15:15:13
+"Secret key matching succeeded" //密钥验证成功
+
+服务端回应 2022-01-02 15:15:13   //生产者客户端可以开始发送消息
+（[]byte消息）
 ...
 ...
 ...
