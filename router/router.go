@@ -26,6 +26,7 @@ func InitRouters() (r *gin.Engine) {
 	console := r.Group("/Console")
 	console.Use(middleware.Safe)
 	{
+		console.POST("/Ping", server.Ping)
 		console.POST("/GetConsumers", server.GetConsumers)
 		console.POST("/GetConfig", server.GetConfig)
 		console.POST("/GetMessageList", server.GetMessageList)
