@@ -25,6 +25,7 @@ var UpGrader = websocket.Upgrader{
 
 // InitConsumersConn 初始化消费者连接模块
 func InitConsumersConn() {
+	secretKey = viper.GetString("mq.secretKey")
 	sendCount = viper.GetInt("mq.sendCount")
 	sendRetryCount = viper.GetInt("mq.sendRetryCount")
 	pushMessagesSpeed = viper.GetInt("mq.pushMessagesSpeed")
@@ -33,6 +34,9 @@ func InitConsumersConn() {
 	//启动消息推送协程，推送消息到各个消费者客户端
 	go pushServer()
 }
+
+//安全密钥
+var secretKey string
 
 //每一批推送的消息数量
 var sendCount int
@@ -58,6 +62,39 @@ func ConsumersConn(c *gin.Context) {
 
 	//升级get请求为webSocket协议
 	ws, err := UpGrader.Upgrade(c.Writer, c.Request, nil)
+
+	//登录验证
+	for {
+		//连接成功，等待消费者客户端输入访问密钥
+		err = ws.WriteJSON("Please enter the secret key")
+		if err != nil {
+			Loger.Println(err)
+			return
+		}
+
+		//读取ws中的数据，获取访问密钥
+		_, sk, err := ws.ReadMessage()
+		if err != nil {
+			Loger.Println(err)
+			return
+		}
+		if string(sk) == secretKey {
+			//访问密钥匹配成功
+			err = ws.WriteJSON("Secret key matching succeeded")
+			if err != nil {
+				Loger.Println(err)
+				return
+			}
+			break
+		}
+
+		//访问密钥匹配失败
+		err = ws.WriteJSON("Secret key matching error")
+		if err != nil {
+			Loger.Println(err)
+			return
+		}
+	}
 
 	key := model.Consumer{}
 	key.ConsumerId = consumerId
