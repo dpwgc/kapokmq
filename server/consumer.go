@@ -111,10 +111,10 @@ func ConsumersConn(c *gin.Context) {
 
 	if err != nil {
 		Loger.Println(err)
-		delete(Consumers, key) //删除map中的消费者
 		return
 	}
 	defer func(ws *websocket.Conn) {
+		delete(Consumers, key) //删除map中的消费者
 		err = ws.Close()
 		if err != nil {
 			Loger.Println(err)
@@ -147,6 +147,8 @@ func pushMessagesToConsumers() {
 
 	//读取消息通道中的消息
 	message := <-MessageChan
+	//将消息记录到消息列表
+	MessageList.Store(message.MessageCode, message)
 
 	//控制通道
 	controlChan := make(chan int)
@@ -202,6 +204,6 @@ func pushMessagesToConsumers() {
 	if message.Status == -1 {
 		message.Status = 0
 	}
-	//将消息记录到消息列表
+	//将消息更新到消息列表
 	MessageList.Store(message.MessageCode, message)
 }
