@@ -1,8 +1,8 @@
 package server
 
 import (
-	"DPMQ/model"
 	"github.com/spf13/viper"
+	"kapokmq/model"
 	"sync"
 )
 
