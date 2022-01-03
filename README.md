@@ -1,12 +1,11 @@
-# DPMQ.消息队列
+# KapokMQ
 
-## 基于Golang整合Gorilla WebSocket实现的消息队列
+## 基于Golang整合WebSocket实现的消息队列
 
-### Golang客户端：
+### Golang客户端：kapokmq-go-client
 
-* https://github.com/dpwgc/dpmq-go-client 
-* 
-* https://gitee.com/dpwgc/dpmq-go-client
+* https://github.com/dpwgc/kapokmq-go-client
+* https://gitee.com/dpwgc/kapokmq-go-client
 
 `Golang` `Gin` `Gorilla` `WebSocket` `MQ`
 
@@ -14,7 +13,9 @@
 
 ### 实现功能
 
-* 订阅推送：将单条消息通过WebSocket结合go并发推送到多个与消息topic主题相同的消费者客户端。
+* 订阅/发布推送模式：将单条消息通过WebSocket结合go并发推送到多个与消息topic主题相同的消费者客户端。
+
+* 点对点推送模式：将消息随机推送给其中一个客户端。
 
 * 流量削峰：用Golang channel的缓冲区充当队列存储大量积压的消息，按指定时间间隔批量推送缓冲区中的消息。
 
@@ -24,13 +25,15 @@
 
 * 自定义过期时间，定期清除过期消息。
 
-* 网页端控制台：包含查看消息队列配置、生成近一周消息增长折线图、查看各状态消息数量、查看消费者客户端列表及搜索消息功能。
+* 网页端控制台：包含查看消息队列配置、生成近一周消息增长折线图、查看各状态消息数量、查看消费者与生产者客户端列表及搜索消息功能。
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/1.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/1.jpg)
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/2.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/2.jpg)
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/dpmq/3.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/3.jpg)
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/4.jpg)
 
 ***
 
@@ -126,7 +129,7 @@ r.GET("/Consumers/Conn/:topic/:consumerId", servers.ConsumersConn)
 
 ##### 生产者客户端发送消息到消息队列
 
-* WebSocket连接方式 `ws://localhost:port/Producers/Conn/{topic}/{producersId}`
+* WebSocket连接方式 `ws://localhost:port/Producers/Conn/{topic}/{producerId}`
 
 ```
 WebSocket链接中的参数：
@@ -168,7 +171,7 @@ topic         //所属主题  类型：string（不能包含符号“|”）
 
 ##### 消息队列通过WebSocket连接推送消息给消费者客户端
 
-* WebSocket `ws://localhost:port/Consumers/Conn/{topic}/{consumersId}`
+* WebSocket `ws://localhost:port/Consumers/Conn/{topic}/{consumerId}`
 
 ```
 WebSocket链接中的参数：
@@ -212,13 +215,6 @@ dpmq                            //输出正确的密钥
 "Secret key matching succeeded" //密钥验证成功
 
 服务端回应 2022-01-02 15:15:13   //消费者客户端开始接收消息
-{
-    "MessageCode":"050d2e29488c0a00e4640e29833d670761d14fbb",
-    "MessageData":"hello","Topic":"test_topic",
-    "CreateTime":1641107387,
-    "ConsumedTime":0,
-    "Status":-1
-}
 ...
 ...
 ...
@@ -247,7 +243,6 @@ dpmq                            //输出正确的密钥
 "Secret key matching succeeded" //密钥验证成功
 
 服务端回应 2022-01-02 15:15:13   //生产者客户端可以开始发送消息
-（[]byte消息）
 ...
 ...
 ...
@@ -311,6 +306,12 @@ dpmq                            //输出正确的密钥
 
 ##### view 前端Vue项目打包文件
 
+* css
+
+* js
+
+* index.html
+
 ##### main.go 主函数
 
 ***
@@ -326,7 +327,10 @@ server:
 
 mq:
   # 生产者、控制台访问密钥（放在请求头部）
-  secretKey: dpmq
+  secretKey: test
+
+  # 消息推送模式（1：点对点模式，一条消息只能随机被一个消费者客户端消费。2：订阅/发布推送模式：将消息推送给所有消费者客户端）
+  pushType: 1
 
   # 消息通道的缓冲空间大小（消息队列的容量）
   messageChanBuffer: 1000000
@@ -336,14 +340,14 @@ mq:
   # 单批次推送的消息数量
   sendCount: 100
   # 消息推送失败后的立即重试的次数
-  sendRetryCount: 1
+  sendRetryCount: 3
 
   # 持久化文件
   persistentFile: data
   # 是否进行持久化（1：是。0：否）
   isPersistent: 1
   # 数据恢复策略（0：清空本地数据，不进行数据恢复。1：将本地数据恢复到内存）
-  recoveryStrategy: 1
+  recoveryStrategy: 0
   # 两次持久化的间隔时间（单位：秒）
   persistentTime: 5
 
@@ -395,8 +399,8 @@ mq:
 ```
 在Windows上部署
 
-/dpmq                     # 文件根目录
-    DPMQ.exe              # 打包后的exe文件
+/kapokmq                  # 文件根目录
+    kapokmq.exe           # 打包后的exe文件
     /config               # 配置目录
         application.yaml  # 配置文件
     /log                  # 日志目录
@@ -407,8 +411,8 @@ mq:
 ```
 在Linux上部署
 
-/dpmq                     # 文件根目录
-    DPMQ                  # 打包后的二进制文件(程序后台执行:setsid ./DPMQ)
+/kapokmq                  # 文件根目录
+    kapokmq               # 打包后的二进制文件(程序后台执行:setsid ./KapokMQ)
     /config               # 配置目录
         application.yaml  # 配置文件
     /log                  # 日志目录
