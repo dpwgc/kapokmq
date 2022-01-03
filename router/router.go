@@ -1,9 +1,9 @@
 package router
 
 import (
-	"DPMQ/middleware"
-	"DPMQ/server"
 	"github.com/gin-gonic/gin"
+	"kapokmq/middleware"
+	"kapokmq/server"
 	"net/http"
 )
 
@@ -28,6 +28,7 @@ func InitRouters() (r *gin.Engine) {
 	{
 		console.POST("/Ping", server.Ping)
 		console.POST("/GetConsumers", server.GetConsumers)
+		console.POST("/GetProducers", server.GetProducers)
 		console.POST("/GetConfig", server.GetConfig)
 		console.POST("/GetMessageList", server.GetMessageList)
 		console.POST("/CountMessage", server.CountMessage)
