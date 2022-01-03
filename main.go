@@ -1,13 +1,13 @@
 package main
 
 import (
-	"DPMQ/config"
-	"DPMQ/persistent"
-	"DPMQ/router"
-	"DPMQ/server"
 	"fmt"
 	_ "github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"kapokmq/config"
+	"kapokmq/persistent"
+	"kapokmq/router"
+	"kapokmq/server"
 	_ "net/http"
 )
 
