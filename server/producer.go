@@ -1,10 +1,10 @@
 package server
 
 import (
-	"DPMQ/model"
-	"DPMQ/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"kapokmq/model"
+	"kapokmq/utils"
 	"sync"
 )
 
