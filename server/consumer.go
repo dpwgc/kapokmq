@@ -1,11 +1,11 @@
 package server
 
 import (
-	"DPMQ/model"
-	"DPMQ/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/spf13/viper"
+	"kapokmq/model"
+	"kapokmq/utils"
 	"net/http"
 	"sync"
 	"time"
@@ -129,6 +129,8 @@ func ConsumersConn(c *gin.Context) {
 
 //消息推送服务
 func pushServer() {
+	//获取推送模式
+	pushType := viper.GetInt("mq.pushType")
 	cnt := 0
 	for {
 		if cnt == sendCount {
@@ -136,13 +138,24 @@ func pushServer() {
 			time.Sleep(time.Second * time.Duration(pushMessagesSpeed))
 			cnt = 0
 		}
-		//推送消息
-		pushMessagesToConsumers()
+		//选择对应的推送模式
+		switch pushType {
+		case 1:
+			//使用点对点模式推送消息
+			pushMessagesToOneConsumer()
+			break
+		case 2:
+			//使用订阅/发布推送模式推送消息
+			pushMessagesToConsumers()
+			break
+		default:
+			return
+		}
 		cnt++
 	}
 }
 
-//并发推送消息到各个消费者客户端
+//订阅/发布推送模式：并发推送消息到各个消费者客户端
 func pushMessagesToConsumers() {
 
 	//读取消息通道中的消息
@@ -202,6 +215,55 @@ func pushMessagesToConsumers() {
 	if message.Status == -1 {
 		message.Status = 0
 	}
+	//将消息更新到消息列表
+	MessageList.Store(message.MessageCode, message)
+}
+
+//点对点模式：随机推送消息到某个消费者客户端
+func pushMessagesToOneConsumer() {
+
+	//读取消息通道中的消息
+	message := <-MessageChan
+
+	//遍历消费者客户端集合
+	for key, consumer := range Consumers {
+
+		//字符串分割获取该消息所属主题
+		topic := key.Topic
+
+		//找到与该消息主题对应的客户端(相同的topic)
+		if message.Topic == topic && len(message.Topic) > 0 && len(message.MessageCode) > 0 {
+
+			//重试机制
+			for i := 0; i < sendRetryCount; i++ {
+				//发送消息到消费者客户端
+				err := consumer.WriteJSON(message)
+				//如果发送成功
+				if err == nil {
+					//将消息标记为已消费状态
+					message.Status = 1
+					message.ConsumedTime = utils.GetLocalDateTimestamp()
+					//将消息更新到消息列表
+					MessageList.Store(message.MessageCode, message)
+					//发送成功一次后，直接结束推送
+					return
+				}
+				Loger.Println(err)
+				//如果到达重试次数，但仍未发送成功
+				if i == sendRetryCount-1 && err != nil {
+					//客户端关闭
+					err = consumer.Close()
+					if err != nil {
+						Loger.Println(err)
+					}
+					//删除map中的客户端
+					delete(Consumers, key)
+				}
+			}
+		}
+	}
+	//将未确认消费的消息标记为未消费状态
+	message.Status = 0
 	//将消息更新到消息列表
 	MessageList.Store(message.MessageCode, message)
 }
