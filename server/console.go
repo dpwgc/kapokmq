@@ -1,10 +1,10 @@
 package server
 
 import (
-	"DPMQ/model"
-	"DPMQ/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"kapokmq/model"
+	"kapokmq/utils"
 	"sort"
 	"strconv"
 )
@@ -26,7 +26,7 @@ func GetConsumers(c *gin.Context) {
 
 	var consumers []model.Consumer
 
-	//遍历消费者客户端列表
+	//遍历获取消费者客户端列表
 	for key := range Consumers {
 
 		consumers = append(consumers, key)
@@ -35,6 +35,23 @@ func GetConsumers(c *gin.Context) {
 	c.JSON(0, gin.H{
 		"code": 0,
 		"data": consumers,
+	})
+}
+
+// GetProducers 获取全部生产者客户端集合
+func GetProducers(c *gin.Context) {
+
+	var producers []model.Producer
+
+	//遍历获取生产者客户端列表
+	for key := range Producers {
+
+		producers = append(producers, key)
+	}
+
+	c.JSON(0, gin.H{
+		"code": 0,
+		"data": producers,
 	})
 }
 
