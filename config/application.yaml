@@ -4,7 +4,10 @@ server:
 
 mq:
   # 生产者、控制台访问密钥（放在请求头部）
-  secretKey: dpmq
+  secretKey: test
+
+  # 消息推送模式（1：点对点模式，一条消息只能随机被一个消费者客户端消费。2：订阅/发布推送模式：将消息推送给所有消费者客户端）
+  pushType: 1
 
   # 消息通道的缓冲空间大小（消息队列的容量）
   messageChanBuffer: 1000000
@@ -14,16 +17,16 @@ mq:
   # 单批次推送的消息数量
   sendCount: 100
   # 消息推送失败后的立即重试的次数
-  sendRetryCount: 1
+  sendRetryCount: 3
 
   # 持久化文件
   persistentFile: data
   # 是否进行持久化（1：是。0：否）
   isPersistent: 1
   # 数据恢复策略（0：清空本地数据，不进行数据恢复。1：将本地数据恢复到内存）
-  recoveryStrategy: 0
+  recoveryStrategy: 1
   # 两次持久化的间隔时间（单位：秒）
-  persistentTime: 5
+  persistentTime: 3
 
   # 是否开启自动重推未确认消费消息功能（1：是。0：否）
   isRePush: 1
