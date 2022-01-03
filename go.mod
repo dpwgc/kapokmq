@@ -1,4 +1,4 @@
-module DPMQ
+module kapokmq
 
 go 1.17
 
