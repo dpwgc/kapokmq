@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"kapokmq/model"
@@ -17,7 +18,14 @@ func ProducerSend(c *gin.Context) {
 	topic, _ := c.GetPostForm("topic")
 	delayTime, _ := c.GetPostForm("delayTime")
 
-	intDelayTime, _ := strconv.Atoi(delayTime)
+	intDelayTime, err := strconv.ParseInt(delayTime, 10, 64)
+	if err != nil {
+		c.JSON(-1, gin.H{
+			"code": -1,
+			"msg":  err,
+		})
+		return
+	}
 
 	if len(messageData) == 0 || len(topic) == 0 {
 		c.JSON(-1, gin.H{
@@ -123,20 +131,27 @@ func ProducersConn(c *gin.Context) {
 	}(ws)
 
 	for {
-		//读取websocket中的数据，获取生产者客户端发送的消息内容和延时推送时间
-		delayTime, data, err := ws.ReadMessage()
+		//读取websocket中的数据
+		_, data, err := ws.ReadMessage()
 		if err != nil {
 			Loger.Println(err)
 			return
 		}
-		messageData := string(data)
+		s := model.SendMessage{}
+		//解析json字符串，获取生产者客户端发送的消息内容和延时推送时间
+		err = json.Unmarshal(data, &s)
+		if err != nil {
+			Loger.Println(err)
+			return
+		}
+
 		message := model.Message{}
-		message.MessageCode = utils.CreateCode(messageData)
-		message.MessageData = messageData
+		message.MessageCode = utils.CreateCode(s.MessageData)
+		message.MessageData = s.MessageData
 		message.Topic = topic
 		message.Status = -1
 		message.CreateTime = utils.GetLocalDateTimestamp()
-		message.DelayTime = delayTime
+		message.DelayTime = s.DelayTime
 
 		//把消息写入消息通道
 		MessageChan <- message
