@@ -161,6 +161,18 @@ func pushMessagesToConsumers() {
 	//读取消息通道中的消息
 	message := <-MessageChan
 
+	//判断是否是延时消息
+	if message.DelayTime > 0 {
+		//获取当前时间戳
+		ts := utils.GetLocalDateTimestamp()
+		//如果还未到达投送时间
+		if message.CreateTime+int64(message.DelayTime) > ts {
+			//将消息送回消息队列
+			MessageChan <- message
+			return
+		}
+	}
+
 	//控制通道
 	controlChan := make(chan int)
 
@@ -176,7 +188,7 @@ func pushMessagesToConsumers() {
 			//找到与该消息主题对应的客户端(相同的topic)
 			if message.Topic == topic && len(message.Topic) > 0 && len(message.MessageCode) > 0 {
 
-				//重试机制
+				//立即重试机制
 				for i := 0; i < sendRetryCount; i++ {
 					//发送消息到消费者客户端
 					err := consumer.WriteJSON(message)
@@ -211,7 +223,7 @@ func pushMessagesToConsumers() {
 		//收到协程执行完毕的信息
 		<-controlChan
 	}
-	//将未确认消费的消息标记为未消费状态
+	//将未确认消费的消息标记为消费失败状态
 	if message.Status == -1 {
 		message.Status = 0
 	}
@@ -262,7 +274,7 @@ func pushMessagesToOneConsumer() {
 			}
 		}
 	}
-	//将未确认消费的消息标记为未消费状态
+	//将未确认消费的消息标记为消费失败状态
 	message.Status = 0
 	//将消息更新到消息列表
 	MessageList.Store(message.MessageCode, message)
