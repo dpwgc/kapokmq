@@ -28,6 +28,7 @@ func InitConsumersConn() {
 	secretKey = viper.GetString("mq.secretKey")
 	sendCount = viper.GetInt("mq.sendCount")
 	sendRetryCount = viper.GetInt("mq.sendRetryCount")
+	isCleanConsumed = viper.GetInt("mq.isCleanConsumed")
 	pushMessagesSpeed = viper.GetInt("mq.pushMessagesSpeed")
 
 	Loger.Println("Start pushServer")
@@ -46,6 +47,9 @@ var sendRetryCount int
 
 //推送消息的速度(单批次消息推送间隔时间，单位：秒)
 var pushMessagesSpeed int
+
+//是否立即清除已确认消费的消息
+var isCleanConsumed int
 
 // Consumers 连接的消费者客户端,把每个消费者都放进来。Key为{topic}|{consumerId}，topic与consumerId两者之间用字符”|“分隔。Value为websocket连接
 var Consumers = make(map[model.Consumer]*websocket.Conn)
@@ -229,6 +233,11 @@ func pushMessagesToConsumers() {
 	if message.Status == -1 {
 		message.Status = 0
 	}
+	//是否立即清除已被消费的消息
+	if isCleanConsumed == 1 {
+		MessageList.Delete(message.MessageCode)
+		return
+	}
 	//将消息更新到消息列表，等待重推
 	MessageList.Store(message.MessageCode, message)
 }
@@ -271,6 +280,11 @@ func pushMessagesToOneConsumer() {
 					//将消息标记为已消费状态
 					message.Status = 1
 					message.ConsumedTime = utils.GetLocalDateTimestamp()
+					//是否立即清除已被消费的消息
+					if isCleanConsumed == 1 {
+						MessageList.Delete(message.MessageCode)
+						return
+					}
 					//将消息更新到消息列表
 					MessageList.Store(message.MessageCode, message)
 					//发送成功一次后，直接结束推送
