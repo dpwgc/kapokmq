@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/websocket"
 	"kapokmq/model"
 	"kapokmq/utils"
+	"strconv"
 	"sync"
 )
 
@@ -14,6 +15,9 @@ func ProducerSend(c *gin.Context) {
 
 	messageData, _ := c.GetPostForm("messageData")
 	topic, _ := c.GetPostForm("topic")
+	delayTime, _ := c.GetPostForm("delayTime")
+
+	intDelayTime, _ := strconv.Atoi(delayTime)
 
 	if len(messageData) == 0 || len(topic) == 0 {
 		c.JSON(-1, gin.H{
@@ -29,6 +33,7 @@ func ProducerSend(c *gin.Context) {
 	message.Topic = topic
 	message.Status = -1
 	message.CreateTime = utils.GetLocalDateTimestamp()
+	message.DelayTime = intDelayTime
 
 	//把消息写入消息通道
 	MessageChan <- message
@@ -118,11 +123,11 @@ func ProducersConn(c *gin.Context) {
 	}(ws)
 
 	for {
-		//读取ws中的数据，获取访问密钥
-		_, data, err := ws.ReadMessage()
+		//读取websocket中的数据，获取生产者客户端发送的消息内容和延时推送时间
+		delayTime, data, err := ws.ReadMessage()
 		if err != nil {
 			Loger.Println(err)
-			continue
+			return
 		}
 		messageData := string(data)
 		message := model.Message{}
@@ -131,6 +136,7 @@ func ProducersConn(c *gin.Context) {
 		message.Topic = topic
 		message.Status = -1
 		message.CreateTime = utils.GetLocalDateTimestamp()
+		message.DelayTime = delayTime
 
 		//把消息写入消息通道
 		MessageChan <- message
