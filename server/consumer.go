@@ -166,9 +166,11 @@ func pushMessagesToConsumers() {
 		//获取当前时间戳
 		ts := utils.GetLocalDateTimestamp()
 		//如果还未到达投送时间
-		if message.CreateTime+int64(message.DelayTime) > ts {
+		if message.CreateTime+message.DelayTime > ts {
 			//将消息送回消息队列
-			MessageChan <- message
+			message.Status = 0
+			//将消息更新到消息列表，等待重推
+			MessageList.Store(message.MessageCode, message)
 			return
 		}
 	}
@@ -227,7 +229,7 @@ func pushMessagesToConsumers() {
 	if message.Status == -1 {
 		message.Status = 0
 	}
-	//将消息更新到消息列表
+	//将消息更新到消息列表，等待重推
 	MessageList.Store(message.MessageCode, message)
 }
 
@@ -236,6 +238,20 @@ func pushMessagesToOneConsumer() {
 
 	//读取消息通道中的消息
 	message := <-MessageChan
+
+	//判断是否是延时消息
+	if message.DelayTime > 0 {
+		//获取当前时间戳
+		ts := utils.GetLocalDateTimestamp()
+		//如果还未到达投送时间
+		if message.CreateTime+message.DelayTime > ts {
+			//将消息送回消息队列
+			message.Status = 0
+			//将消息更新到消息列表，等待重推
+			MessageList.Store(message.MessageCode, message)
+			return
+		}
+	}
 
 	//遍历消费者客户端集合
 	for key, consumer := range Consumers {
