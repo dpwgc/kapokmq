@@ -1,6 +1,6 @@
 # KapokMQ
 
-## 基于Golang整合WebSocket实现的轻量级消息队列
+## 基于Go整合Gossip+WebSocket的轻量级分布式消息队列
 
 ### Golang客户端：kapokmq-go-client
 
