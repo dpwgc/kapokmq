@@ -1,4 +1,6 @@
 server:
+  # ip地址
+  ip: 127.0.0.1
   # 运行端口号
   port: 8011
 
@@ -41,3 +43,10 @@ mq:
 
   # 消息过期阈值（当消息存在超过{cleanTime}秒后，删除该消息）
   cleanTime: 259200
+
+# 集群配置
+cluster:
+  # 是否以集群方式部署（1：是。0：否）
+  isCluster: 1
+  # 集群名称
+  clusterName: kapokmq-cluster-01
