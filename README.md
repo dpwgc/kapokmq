@@ -48,8 +48,10 @@
 
 * config/application.yaml
 
-```
+```yaml
 server:
+  # ip地址
+  ip: 127.0.0.1
   # 运行端口号
   port: 8011
 
@@ -66,7 +68,7 @@ mq:
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
-  sendCount: 100
+  sendCount: 1000
   # 消息推送失败后的立即重试的次数
   sendRetryCount: 3
 
@@ -75,20 +77,30 @@ mq:
   # 是否进行持久化（1：是。0：否）
   isPersistent: 1
   # 数据恢复策略（0：清空本地数据，不进行数据恢复。1：将本地数据恢复到内存）
-  recoveryStrategy: 0
+  recoveryStrategy: 1
   # 两次持久化的间隔时间（单位：秒）
-  persistentTime: 5
+  persistentTime: 3
+
+  #是否立即清除已确认消费的消息（1：是。0：否）
+  isCleanConsumed: 1
 
   # 是否开启自动重推未确认消费消息功能（1：是。0：否）
   isRePush: 1
   # 是否开启自动清理过期消息功能（1：是。0：否）
   isClean: 1
 
-  # 检查消息的速度（{rePushSpeed}秒/一批消息）
-  checkSpeed: 5
+  # 检查消息的速度（每隔{checkSpeed}秒检查一批消息，用于消息重推与过期消息清理）
+  checkSpeed: 3
 
-  # 消息清理时间阈值（当消息存在{clearTime}秒后，删除该消息）
+  # 消息过期阈值（当消息存在超过{cleanTime}秒后，删除该消息）
   cleanTime: 259200
+
+# 集群配置
+cluster:
+  # 是否以集群方式部署（1：是。0：否）
+  isCluster: 1
+  # 集群名称
+  clusterName: kapokmq-cluster-01
 ```
 
 ***

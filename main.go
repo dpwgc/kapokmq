@@ -4,6 +4,7 @@ import (
 	"fmt"
 	_ "github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"kapokmq/cluster"
 	"kapokmq/config"
 	"kapokmq/persistent"
 	"kapokmq/router"
@@ -21,6 +22,9 @@ func main() {
 
 	//初始化消息队列
 	server.InitMQ()
+
+	//初始化Gossip集群连接模块
+	cluster.InitCluster()
 
 	//加载文件读写模块
 	persistent.InitFileRW()

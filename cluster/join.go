@@ -1,43 +1,59 @@
 package cluster
 
 import (
-	"flag"
+	"fmt"
 	"github.com/hashicorp/memberlist"
 	"github.com/spf13/viper"
+	"time"
 )
 
 //集群节点列表
 var list *memberlist.Memberlist
 
-// InitCluster Gossip集群注册
+// InitCluster 向Gossip集群的注册中心注册
 func InitCluster() {
 
-	//获取集群名称
-	clusterName := viper.GetString("cluster.clusterName")
+	//如果是单机部署模式
+	if viper.GetInt("cluster.isCluster") != 1 {
+		return
+	}
 
-	//获取该节点的ip地址及端口号
-	ip := viper.GetString("server.ip")
+	//获取该节点的地址
+	addr := viper.GetString("server.addr")
+	//获取该节点的Gin服务端口号
 	port := viper.GetString("server.port")
 
-	node := flag.String("node", ip+":"+port, "mq node")
-	cluster := flag.String("cluster", clusterName, "add exist cluster")
+	//获取设置的Gossip服务端口号
+	nodePort := viper.GetInt("cluster.nodePort")
 
-	flag.Parse()
+	registryAddr := viper.GetString("cluster.registryAddr")
+	registryPort := viper.GetString("cluster.registryPort")
+
+	//配置节点信息
 	conf := memberlist.DefaultLANConfig()
-	conf.Name = *node
-	conf.BindAddr = *node
+	conf.Name = addr + ":" + port
+	conf.BindPort = nodePort
+	conf.AdvertisePort = nodePort
+
+	var err error
 
 	//创建一个节点
-	list, err := memberlist.Create(conf)
+	list, err = memberlist.Create(conf)
 	if err != nil {
 		panic("Failed to create memberlist: " + err.Error())
 	}
 
-	//将list加入到已存在的集群.
-	if *cluster == "" {
-		_, err := list.Join([]string{*cluster})
-		if err != nil {
-			panic("Failed to join cluster: " + err.Error())
-		}
+	//将list加入到已存在的集群（即注册中心所在集群）
+	n, err := list.Join([]string{registryAddr + ":" + registryPort})
+	fmt.Println(n)
+	if err != nil {
+		panic("Failed to join cluster: " + err.Error())
 	}
+
+	go func() {
+		for {
+			SyncPush()
+			time.Sleep(time.Second * 3)
+		}
+	}()
 }

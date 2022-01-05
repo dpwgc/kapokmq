@@ -1,7 +1,7 @@
 server:
-  # ip地址
-  ip: 127.0.0.1
-  # 运行端口号
+  # ip地址/域名
+  addr: 0.0.0.0
+  # Gin服务运行端口号
   port: 8011
 
 mq:
@@ -44,9 +44,13 @@ mq:
   # 消息过期阈值（当消息存在超过{cleanTime}秒后，删除该消息）
   cleanTime: 259200
 
-# 集群配置
+# Gossip集群配置
 cluster:
   # 是否以集群方式部署（1：是。0：否）
   isCluster: 1
-  # 集群名称
-  clusterName: kapokmq-cluster-01
+  # 该节点的Gossip服务端口号（使用Gossip协议，通过此端口连接注册中心，不能与上面的Gin http服务端口号{server.port}相同）
+  nodePort: 8013
+  # 注册中心的ip地址/域名
+  registryAddr: 0.0.0.0
+  # 注册中心的端口
+  registryPort: 8020
