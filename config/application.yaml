@@ -31,7 +31,7 @@ mq:
   persistentTime: 3
 
   #是否立即清除已确认消费的消息（1：是。0：否）
-  isCleanConsumed: 1
+  isCleanConsumed: 0
 
   # 是否开启自动重推未确认消费消息功能（1：是。0：否）
   isRePush: 1
@@ -52,5 +52,5 @@ cluster:
   gossipPort: 8013
   # 注册中心的ip地址/域名
   registryAddr: 0.0.0.0
-  # 注册中心的端口
-  registryPort: 8020
+  # 注册中心的Gossip服务端口号
+  registryGossipPort: 8020

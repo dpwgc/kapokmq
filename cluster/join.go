@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/memberlist"
 	"github.com/spf13/viper"
+	"kapokmq/server"
 )
 
 //集群节点列表
@@ -26,7 +27,7 @@ func InitCluster() {
 	gossipPort := viper.GetInt("cluster.gossipPort")
 
 	registryAddr := viper.GetString("cluster.registryAddr")
-	registryPort := viper.GetString("cluster.registryPort")
+	registryGossipPort := viper.GetString("cluster.registryGossipPort")
 
 	//配置本节点信息
 	conf := memberlist.DefaultLANConfig()
@@ -35,7 +36,7 @@ func InitCluster() {
 		conf.BindAddr = addr
 	}
 	//本节点名称
-	conf.Name = "[n]-" + addr + ":" + port
+	conf.Name = fmt.Sprintf("%s%s%s%s", "mq-", addr, ":", port) //前缀r-表明这是注册中心，前缀mq-表明这是消息队列节点
 	//本节点Gossip服务端口号
 	conf.BindPort = gossipPort
 	conf.AdvertisePort = gossipPort
@@ -45,13 +46,15 @@ func InitCluster() {
 	//申请创建一个Gossip服务节点
 	list, err = memberlist.Create(conf)
 	if err != nil {
-		panic("Failed to create memberlist: " + err.Error())
+		server.Loger.Println("Failed to create memberlist: " + err.Error())
+		return
 	}
 
 	//将节点加入到已存在的集群（即注册中心所在集群）
-	n, err := list.Join([]string{registryAddr + ":" + registryPort})
+	n, err := list.Join([]string{registryAddr + ":" + registryGossipPort})
 	fmt.Println(n)
 	if err != nil {
-		panic("Failed to join cluster: " + err.Error())
+		server.Loger.Println("Failed to join cluster: " + err.Error())
+		return
 	}
 }
