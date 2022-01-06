@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/hashicorp/memberlist"
 	"github.com/spf13/viper"
-	"time"
 )
 
 //集群节点列表
@@ -24,36 +23,35 @@ func InitCluster() {
 	port := viper.GetString("server.port")
 
 	//获取设置的Gossip服务端口号
-	nodePort := viper.GetInt("cluster.nodePort")
+	gossipPort := viper.GetInt("cluster.gossipPort")
 
 	registryAddr := viper.GetString("cluster.registryAddr")
 	registryPort := viper.GetString("cluster.registryPort")
 
-	//配置节点信息
+	//配置本节点信息
 	conf := memberlist.DefaultLANConfig()
-	conf.Name = addr + ":" + port
-	conf.BindPort = nodePort
-	conf.AdvertisePort = nodePort
+	//addr缺省，addr为空默认设为0.0.0.0
+	if addr == "" {
+		conf.BindAddr = addr
+	}
+	//本节点名称
+	conf.Name = "[n]-" + addr + ":" + port
+	//本节点Gossip服务端口号
+	conf.BindPort = gossipPort
+	conf.AdvertisePort = gossipPort
 
 	var err error
 
-	//创建一个节点
+	//申请创建一个Gossip服务节点
 	list, err = memberlist.Create(conf)
 	if err != nil {
 		panic("Failed to create memberlist: " + err.Error())
 	}
 
-	//将list加入到已存在的集群（即注册中心所在集群）
+	//将节点加入到已存在的集群（即注册中心所在集群）
 	n, err := list.Join([]string{registryAddr + ":" + registryPort})
 	fmt.Println(n)
 	if err != nil {
 		panic("Failed to join cluster: " + err.Error())
 	}
-
-	go func() {
-		for {
-			SyncPush()
-			time.Sleep(time.Second * 3)
-		}
-	}()
 }

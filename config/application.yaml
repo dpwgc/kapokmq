@@ -38,7 +38,7 @@ mq:
   # 是否开启自动清理过期消息功能（1：是。0：否）
   isClean: 1
 
-  # 检查消息的速度（每隔{checkSpeed}秒检查一批消息，用于消息重推与过期消息清理）
+  # 检查消息的速度（每隔{checkSpeed}秒检查一批消息，用于消费失败的消息重推、延时消息推送与过期消息清理）
   checkSpeed: 3
 
   # 消息过期阈值（当消息存在超过{cleanTime}秒后，删除该消息）
@@ -49,7 +49,7 @@ cluster:
   # 是否以集群方式部署（1：是。0：否）
   isCluster: 1
   # 该节点的Gossip服务端口号（使用Gossip协议，通过此端口连接注册中心，不能与上面的Gin http服务端口号{server.port}相同）
-  nodePort: 8013
+  gossipPort: 8013
   # 注册中心的ip地址/域名
   registryAddr: 0.0.0.0
   # 注册中心的端口
