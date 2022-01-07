@@ -12,6 +12,12 @@
 
 * https://gitee.com/dpwgc/kapokmq-console
 
+### Serena.注册中心
+
+* https://github.com/dpwgc/serena
+
+* https://gitee.com/dpwgc/serena
+
 `Golang` `Gin` `Gorilla` `WebSocket` `MQ`
 
 ***
@@ -22,7 +28,7 @@
 
 * 点对点推送模式：如果有多个消费者客户端连接到消息队列，将消息随机推送给其中一个与消息topic主题相同的客户端。
 
-* 支持延时消息发布：可对单条消息设定延时时间，延时推送消息。必须开启自动重推消息功能才可使用，投送时间精确度受mq.checkSpeed消息检查速度的影响。
+* 支持延时消息发布：可对单条消息设定延时时间，延时推送消息，投送时间精确度受mq.checkSpeed消息检查速度的影响。
 
 * 流量削峰：用Golang channel的缓冲区充当队列存储大量积压的消息，按指定时间间隔批量推送缓冲区中的消息。
 
@@ -50,9 +56,9 @@
 
 ```yaml
 server:
-  # ip地址
-  ip: 127.0.0.1
-  # 运行端口号
+  # ip地址/域名
+  addr: 0.0.0.0
+  # Gin服务运行端口号
   port: 8011
 
 mq:
@@ -63,14 +69,14 @@ mq:
   pushType: 1
 
   # 消息通道的缓冲空间大小（消息队列的容量）
-  messageChanBuffer: 1000000
+  messageChanBuffer: 10000000
 
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
-  sendCount: 1000
+  pushCount: 1000
   # 消息推送失败后的立即重试的次数
-  sendRetryCount: 3
+  pushRetryCount: 3
 
   # 持久化文件
   persistentFile: MQDATA
@@ -82,25 +88,29 @@ mq:
   persistentTime: 3
 
   #是否立即清除已确认消费的消息（1：是。0：否）
-  isCleanConsumed: 1
+  isCleanConsumed: 0
 
   # 是否开启自动重推未确认消费消息功能（1：是。0：否）
   isRePush: 1
   # 是否开启自动清理过期消息功能（1：是。0：否）
   isClean: 1
 
-  # 检查消息的速度（每隔{checkSpeed}秒检查一批消息，用于消息重推与过期消息清理）
+  # 检查消息的速度（每隔{checkSpeed}秒检查一批消息，用于消费失败的消息重推、延时消息推送与过期消息清理）
   checkSpeed: 3
 
   # 消息过期阈值（当消息存在超过{cleanTime}秒后，删除该消息）
   cleanTime: 259200
 
-# 集群配置
+# Gossip集群配置
 cluster:
   # 是否以集群方式部署（1：是。0：否）
   isCluster: 1
-  # 集群名称
-  clusterName: kapokmq-cluster-01
+  # 该节点的Gossip服务端口号（使用Gossip协议，通过此端口连接注册中心，不能与上面的Gin http服务端口号{server.port}相同）
+  gossipPort: 8021
+  # 注册中心的ip地址/域名
+  registryAddr: 0.0.0.0
+  # Serena注册中心的Gossip服务端口号
+  registryGossipPort: 8041
 ```
 
 ***
@@ -230,6 +240,9 @@ POST http://localhost:port/Console/GetConfig
 
 //获取指定状态的消息记录列表 GetMessageList
 POST http://localhost:port/Console/GetMessageList
+
+//获取指定状态的简易消息记录列表(不包含消息主体，用于绘制折线图) GetMessageEasy
+POST http://localhost:port/Console/GetMessageEasy
 
 //统计各状态消息的数量 CountMessage
 POST http://localhost:port/Console/CountMessage
@@ -394,6 +407,10 @@ dpmq                            //输出正确的密钥
 ***
 
 ### 项目结构
+
+##### cluster 集群相关
+
+* join.go `加入指定集群`
 
 ##### config 配置类
 
