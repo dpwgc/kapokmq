@@ -12,14 +12,14 @@ mq:
   pushType: 1
 
   # 消息通道的缓冲空间大小（消息队列的容量）
-  messageChanBuffer: 1000000
+  messageChanBuffer: 10000000
 
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
-  sendCount: 1000
+  pushCount: 1000
   # 消息推送失败后的立即重试的次数
-  sendRetryCount: 3
+  pushRetryCount: 3
 
   # 持久化文件
   persistentFile: MQDATA
@@ -49,8 +49,8 @@ cluster:
   # 是否以集群方式部署（1：是。0：否）
   isCluster: 1
   # 该节点的Gossip服务端口号（使用Gossip协议，通过此端口连接注册中心，不能与上面的Gin http服务端口号{server.port}相同）
-  gossipPort: 8013
+  gossipPort: 8021
   # 注册中心的ip地址/域名
   registryAddr: 0.0.0.0
-  # 注册中心的Gossip服务端口号
-  registryGossipPort: 8020
+  # Serena注册中心的Gossip服务端口号
+  registryGossipPort: 8041
