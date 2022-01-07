@@ -26,8 +26,8 @@ var UpGrader = websocket.Upgrader{
 // InitConsumersConn 初始化消费者连接模块
 func InitConsumersConn() {
 	secretKey = viper.GetString("mq.secretKey")
-	pushCount = viper.GetInt("mq.sendCount")
-	pushRetryCount = viper.GetInt("mq.sendRetryCount")
+	pushCount = viper.GetInt("mq.pushCount")
+	pushRetryCount = viper.GetInt("mq.pushRetryCount")
 	isCleanConsumed = viper.GetInt("mq.isCleanConsumed")
 	pushMessagesSpeed = viper.GetInt("mq.pushMessagesSpeed")
 
