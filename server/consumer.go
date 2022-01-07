@@ -26,8 +26,8 @@ var UpGrader = websocket.Upgrader{
 // InitConsumersConn 初始化消费者连接模块
 func InitConsumersConn() {
 	secretKey = viper.GetString("mq.secretKey")
-	sendCount = viper.GetInt("mq.sendCount")
-	sendRetryCount = viper.GetInt("mq.sendRetryCount")
+	pushCount = viper.GetInt("mq.sendCount")
+	pushRetryCount = viper.GetInt("mq.sendRetryCount")
 	isCleanConsumed = viper.GetInt("mq.isCleanConsumed")
 	pushMessagesSpeed = viper.GetInt("mq.pushMessagesSpeed")
 
@@ -40,10 +40,10 @@ func InitConsumersConn() {
 var secretKey string
 
 //每一批推送的消息数量
-var sendCount int
+var pushCount int
 
 //消息推送失败后的重试次数
-var sendRetryCount int
+var pushRetryCount int
 
 //推送消息的速度(单批次消息推送间隔时间，单位：秒)
 var pushMessagesSpeed int
@@ -137,7 +137,7 @@ func pushServer() {
 	pushType := viper.GetInt("mq.pushType")
 	cnt := 0
 	for {
-		if cnt == sendCount {
+		if cnt == pushCount {
 			//消息推送的时间间隔（每发送{sendCount}条消息，间隔一段时间）
 			time.Sleep(time.Second * time.Duration(pushMessagesSpeed))
 			cnt = 0
@@ -195,7 +195,7 @@ func pushMessagesToConsumers() {
 			if message.Topic == topic && len(message.Topic) > 0 && len(message.MessageCode) > 0 {
 
 				//立即重试机制
-				for i := 0; i < sendRetryCount; i++ {
+				for i := 0; i < pushRetryCount; i++ {
 					//发送消息到消费者客户端
 					err := consumer.WriteJSON(message)
 					//如果发送成功
@@ -208,7 +208,7 @@ func pushMessagesToConsumers() {
 					}
 					Loger.Println(err)
 					//如果到达重试次数，但仍未发送成功
-					if i == sendRetryCount-1 && err != nil {
+					if i == pushRetryCount-1 && err != nil {
 						//客户端关闭
 						err = consumer.Close()
 						if err != nil {
@@ -272,7 +272,7 @@ func pushMessagesToOneConsumer() {
 		if message.Topic == topic && len(message.Topic) > 0 && len(message.MessageCode) > 0 {
 
 			//重试机制
-			for i := 0; i < sendRetryCount; i++ {
+			for i := 0; i < pushRetryCount; i++ {
 				//发送消息到消费者客户端
 				err := consumer.WriteJSON(message)
 				//如果发送成功
@@ -292,7 +292,7 @@ func pushMessagesToOneConsumer() {
 				}
 				Loger.Println(err)
 				//如果到达重试次数，但仍未发送成功
-				if i == sendRetryCount-1 && err != nil {
+				if i == pushRetryCount-1 && err != nil {
 					//客户端关闭
 					err = consumer.Close()
 					if err != nil {
