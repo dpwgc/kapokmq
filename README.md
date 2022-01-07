@@ -12,13 +12,19 @@
 
 * https://gitee.com/dpwgc/kapokmq-console
 
-### Serena.注册中心
+### Serena：注册中心
 
 * https://github.com/dpwgc/serena
 
 * https://gitee.com/dpwgc/serena
 
-`Golang` `Gin` `Gorilla` `WebSocket` `MQ`
+`Golang` `Gin` `Gorilla` `WebSocket` `MQ` `Gossip`
+
+***
+
+### 软件架构
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/0.jpg)
 
 ***
 
