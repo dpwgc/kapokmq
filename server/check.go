@@ -15,11 +15,6 @@ func InitCheck() {
 	isClean = viper.GetInt("mq.isClean")
 	cleanTime = viper.GetInt64("mq.cleanTime")
 
-	//既不开启自动清理功能，也不开启重推功能
-	if isClean == 0 && isRePush == 0 {
-		return
-	}
-
 	go func() {
 		for {
 			time.Sleep(time.Second * time.Duration(checkSpeed))
@@ -35,7 +30,7 @@ var checkSpeed int
 var isClean int
 var cleanTime int64
 
-//检查消息
+//检查消息-用于：清理过期消息-重推消息-延时消息推送
 func checkMessage() {
 
 	//获取当前时间戳
