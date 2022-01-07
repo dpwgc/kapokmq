@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="Gossip集群节点消息同步">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cluster/join.go" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/join.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/consumer.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,14 +49,6 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
-      <module name="kapokmq" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
     <configuration name="go build kapokmq" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="kapokmq" />
       <working_directory value="$PROJECT_DIR$" />
@@ -65,15 +56,6 @@
       <package value="kapokmq" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$/main.go" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
-      <module name="kapokmq" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="DIRECTORY" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
       <method v="2" />
     </configuration>
     <recent_temporary>
@@ -103,17 +85,22 @@
     <MESSAGE value="添加延时消息" />
     <MESSAGE value="增加延时消息推送功能" />
     <MESSAGE value="增加延时消息投递功能" />
-    <MESSAGE value="文档更新" />
     <MESSAGE value="完善延时消息推送" />
     <MESSAGE value="完善消息模板" />
     <MESSAGE value="完善延时消息发送" />
     <MESSAGE value="更新" />
-    <MESSAGE value="配置更新" />
     <MESSAGE value="新增已消费消息自动清除功能" />
     <MESSAGE value="新增Gossip集群消息同步功能" />
     <MESSAGE value="日志记录" />
     <MESSAGE value="Gossip集群节点消息同步" />
-    <option name="LAST_COMMIT_MESSAGE" value="Gossip集群节点消息同步" />
+    <MESSAGE value="Gossip集群节点同步" />
+    <MESSAGE value="配置更新" />
+    <MESSAGE value="消息检查模块" />
+    <MESSAGE value="控制台更新" />
+    <MESSAGE value="消费者消息推送" />
+    <MESSAGE value="控制台接口更新" />
+    <MESSAGE value="文档更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
