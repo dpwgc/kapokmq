@@ -59,11 +59,14 @@ func GetProducers(c *gin.Context) {
 func GetConfig(c *gin.Context) {
 
 	configMap := make(map[string]interface{}, 3)
+
+	configMap["pushType"] = viper.GetInt("mq.pushType")
+
 	configMap["messageChanBuffer"] = viper.GetInt("mq.messageChanBuffer")
 
 	configMap["pushMessagesSpeed"] = viper.GetInt("mq.pushMessagesSpeed")
-	configMap["sendCount"] = viper.GetInt("mq.sendCount")
-	configMap["sendRetryCount"] = viper.GetInt("mq.sendRetryCount")
+	configMap["pushCount"] = viper.GetInt("mq.pushCount")
+	configMap["pushRetryCount"] = viper.GetInt("mq.pushRetryCount")
 
 	configMap["persistentFile"] = viper.GetString("mq.persistentFile")
 	configMap["isPersistent"] = viper.GetInt("mq.isPersistent")
@@ -74,9 +77,13 @@ func GetConfig(c *gin.Context) {
 	configMap["isClean"] = viper.GetInt("mq.isClean")
 
 	configMap["checkSpeed"] = viper.GetInt("mq.checkSpeed")
-	configMap["checkCount"] = viper.GetInt("mq.checkCount")
 
 	configMap["cleanTime"] = viper.GetInt("mq.cleanTime")
+
+	configMap["isCluster"] = viper.GetInt("cluster.isCluster")
+	configMap["gossipPort"] = viper.GetInt("cluster.gossipPort")
+	configMap["registryAddr"] = viper.GetString("cluster.registryAddr")
+	configMap["registryGossipPort"] = viper.GetString("cluster.registryGossipPort")
 
 	c.JSON(0, gin.H{
 		"code": 0,
