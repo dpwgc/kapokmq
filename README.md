@@ -2,6 +2,12 @@
 
 ## 基于Go整合Gossip+WebSocket的轻量级分布式消息队列
 
+### KapokMQ与Serena应用整合包下载
+
+* https://github.com/dpwgc/kapokmq-server
+
+* https://gitee.com/dpwgc/kapokmq-server
+
 ### Golang客户端：kapokmq-go-client
 
 * https://github.com/dpwgc/kapokmq-go-client
@@ -12,7 +18,7 @@
 
 * https://gitee.com/dpwgc/kapokmq-console
 
-### Serena：注册中心
+### 注册中心源码：Serena
 
 * https://github.com/dpwgc/serena
 
@@ -36,7 +42,7 @@
 
 * 支持延时消息发布：可对单条消息设定延时时间，延时推送消息，投送时间精确度受mq.checkSpeed消息检查速度的影响。
 
-* 采用Gossip部署集群，支持消息队列集群负载均衡。
+* 采用Gossip连接与同步集群节点，支持生产者客户端负载均衡。
 
 * 流量削峰：用Golang channel的缓冲区充当队列存储大量积压的消息，按指定时间间隔批量推送缓冲区中的消息。
 
