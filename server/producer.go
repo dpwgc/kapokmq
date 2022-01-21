@@ -113,7 +113,7 @@ func ProducersConn(c *gin.Context) {
 
 	lock := sync.RWMutex{}
 
-	//将当前连接的消费者放入map中
+	//将当前连接的生产者放入map中
 	lock.RLock()
 	Producers[key] = ws
 	lock.RUnlock()
