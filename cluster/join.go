@@ -33,10 +33,12 @@ func InitCluster() {
 	conf := memberlist.DefaultLANConfig()
 	//addr缺省，addr为空默认设为0.0.0.0
 	if addr == "" {
-		conf.BindAddr = addr
+		addr = "0.0.0.0"
 	}
 	//本节点名称
 	conf.Name = fmt.Sprintf("%s%s%s%s", "mq-", addr, ":", port) //前缀r-表明这是注册中心，前缀mq-表明这是消息队列节点
+	//本节点的地址
+	conf.BindAddr = addr
 	//本节点Gossip服务端口号
 	conf.BindPort = gossipPort
 	conf.AdvertisePort = gossipPort
@@ -51,8 +53,7 @@ func InitCluster() {
 	}
 
 	//将节点加入到已存在的集群（即注册中心所在集群）
-	n, err := list.Join([]string{registryAddr + ":" + registryGossipPort})
-	fmt.Println(n)
+	_, err = list.Join([]string{registryAddr + ":" + registryGossipPort})
 	if err != nil {
 		server.Loger.Println("Failed to join cluster: " + err.Error())
 		return
