@@ -171,10 +171,7 @@ func pushMessagesToConsumers() {
 		ts := utils.GetLocalDateTimestamp()
 		//如果还未到达投送时间
 		if message.CreateTime+message.DelayTime > ts {
-			//将消息送回消息队列
-			message.Status = 0
-			//将消息更新到消息列表，等待重推
-			MessageList.Store(message.MessageCode, message)
+			//等待重推
 			return
 		}
 	}
@@ -254,10 +251,7 @@ func pushMessagesToOneConsumer() {
 		ts := utils.GetLocalDateTimestamp()
 		//如果还未到达投送时间
 		if message.CreateTime+message.DelayTime > ts {
-			//将消息送回消息队列
-			message.Status = 0
-			//将消息更新到消息列表，等待重推
-			MessageList.Store(message.MessageCode, message)
+			//等待重推
 			return
 		}
 	}
