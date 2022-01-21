@@ -73,6 +73,8 @@ func GetConfig(c *gin.Context) {
 	configMap["recoveryStrategy"] = viper.GetInt("mq.recoveryStrategy")
 	configMap["persistentTime"] = viper.GetInt("mq.persistentTime")
 
+	configMap["isCleanConsumed"] = viper.GetInt("mq.isCleanConsumed")
+
 	configMap["isRePush"] = viper.GetInt("mq.isRePush")
 	configMap["isClean"] = viper.GetInt("mq.isClean")
 
@@ -91,7 +93,7 @@ func GetConfig(c *gin.Context) {
 	})
 }
 
-// GetMessageList 获取指定状态的消息记录列表（可用该接口进行消息记录持久化操作）
+// GetMessageList 获取指定状态的消息记录列表
 func GetMessageList(c *gin.Context) {
 
 	//搜索区间
@@ -254,17 +256,17 @@ func CountMessage(c *gin.Context) {
 
 	var all int64 = 0
 	var consumed int64 = 0
-	var notConsumed int64 = 0
-	var stateless int64 = 0
+	var failure int64 = 0
+	var unconsumed int64 = 0
 
 	//遍历消息列表
 	MessageList.Range(func(key, message interface{}) bool {
 
 		if message.(model.Message).Status == -1 {
-			stateless++
+			unconsumed++
 		}
 		if message.(model.Message).Status == 0 {
-			notConsumed++
+			failure++
 		}
 		if message.(model.Message).Status == 1 {
 			consumed++
@@ -276,8 +278,8 @@ func CountMessage(c *gin.Context) {
 
 	count["all"] = all
 	count["consumed"] = consumed
-	count["notConsumed"] = notConsumed
-	count["stateless"] = stateless
+	count["failure"] = failure
+	count["unconsumed"] = unconsumed
 
 	c.JSON(0, gin.H{
 		"code": 0,
