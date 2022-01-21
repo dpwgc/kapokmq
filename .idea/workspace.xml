@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="前端更新">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="1">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cluster/join.go" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/join.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/model.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/check.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/check.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/consumer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/producer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/producer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/console.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/console.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/createCode.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/createCode.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/view/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +43,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Atest" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -85,7 +83,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="更改日志记录时间间隔" />
     <MESSAGE value="添加延时消息" />
     <MESSAGE value="增加延时消息推送功能" />
     <MESSAGE value="增加延时消息投递功能" />
@@ -102,12 +99,16 @@
     <MESSAGE value="控制台更新" />
     <MESSAGE value="控制台接口更新" />
     <MESSAGE value="消费者消息推送" />
-    <MESSAGE value="1" />
     <MESSAGE value="前端控制台更新" />
     <MESSAGE value="配置更新" />
     <MESSAGE value="文档更新" />
     <MESSAGE value="前端更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="前端更新" />
+    <MESSAGE value="优化延时消息推送功能" />
+    <MESSAGE value="集群功能优化" />
+    <MESSAGE value="模板类" />
+    <MESSAGE value="生产者接口" />
+    <MESSAGE value="1" />
+    <option name="LAST_COMMIT_MESSAGE" value="1" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
