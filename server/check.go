@@ -47,14 +47,16 @@ func checkMessage() {
 		}
 
 		//如果是还未投送的延时消息
-		if msg.DelayTime > 0 && msg.Status == -1 {
+		if msg.DelayTime > 0 && msg.Status == 0 {
 			//如果还未到投送时间
 			if msg.CreateTime+msg.DelayTime > ts {
 				//等待推送
 				return true
 			} else {
 				//推送消息
+				msg.Status = -1
 				MessageChan <- msg
+				return true
 			}
 		}
 
