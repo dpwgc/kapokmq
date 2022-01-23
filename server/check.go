@@ -50,8 +50,11 @@ func checkMessage() {
 		if msg.DelayTime > 0 && msg.Status == -1 {
 			//如果还未到投送时间
 			if msg.CreateTime+msg.DelayTime > ts {
-				//等待重推
+				//等待推送
 				return true
+			} else {
+				//推送消息
+				MessageChan <- msg
 			}
 		}
 
