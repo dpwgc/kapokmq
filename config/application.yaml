@@ -17,7 +17,7 @@ mq:
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
-  pushCount: 10000
+  pushCount: 1000
   # 消息推送失败后的立即重试的次数
   pushRetryCount: 3
 
