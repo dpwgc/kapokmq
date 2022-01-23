@@ -36,7 +36,7 @@ func InitCluster() {
 		addr = "0.0.0.0"
 	}
 	//本节点名称
-	conf.Name = fmt.Sprintf("%s%s%s%s", "mq-", addr, ":", port) //前缀r-表明这是注册中心，前缀mq-表明这是消息队列节点
+	conf.Name = fmt.Sprintf("%s%s%s%s", "mq:", addr, ":", port) //前缀r:表明这是注册中心，前缀mq-表明这是消息队列节点
 	//本节点的地址
 	conf.BindAddr = addr
 	//本节点Gossip服务端口号
@@ -49,6 +49,7 @@ func InitCluster() {
 	list, err = memberlist.Create(conf)
 	if err != nil {
 		server.Loger.Println("Failed to create memberlist: " + err.Error())
+		panic(err)
 		return
 	}
 
@@ -56,6 +57,7 @@ func InitCluster() {
 	_, err = list.Join([]string{registryAddr + ":" + registryGossipPort})
 	if err != nil {
 		server.Loger.Println("Failed to join cluster: " + err.Error())
+		panic(err)
 		return
 	}
 }
