@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="Gossip集群优化">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="模板">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/model.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persistent/recovery.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/recovery.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +82,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="新增已消费消息自动清除功能" />
     <MESSAGE value="新增Gossip集群消息同步功能" />
     <MESSAGE value="日志记录" />
     <MESSAGE value="Gossip集群节点消息同步" />
@@ -106,7 +106,8 @@
     <MESSAGE value="消费者连接模块优化" />
     <MESSAGE value="~" />
     <MESSAGE value="Gossip集群优化" />
-    <option name="LAST_COMMIT_MESSAGE" value="Gossip集群优化" />
+    <MESSAGE value="模板" />
+    <option name="LAST_COMMIT_MESSAGE" value="模板" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
