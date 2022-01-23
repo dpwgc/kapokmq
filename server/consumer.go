@@ -172,6 +172,8 @@ func pushMessagesToConsumers() {
 		//如果还未到达投送时间
 		if message.CreateTime+message.DelayTime > ts {
 			//等待重推
+			message.Status = 0
+			MessageList.Store(message.MessageCode, message)
 			return
 		}
 	}
@@ -252,6 +254,8 @@ func pushMessagesToOneConsumer() {
 		//如果还未到达投送时间
 		if message.CreateTime+message.DelayTime > ts {
 			//等待重推
+			message.Status = 0
+			MessageList.Store(message.MessageCode, message)
 			return
 		}
 	}
@@ -300,6 +304,7 @@ func pushMessagesToOneConsumer() {
 	}
 	//将未确认消费的消息标记为消费失败状态
 	message.Status = 0
+
 	//将消息更新到消息列表
 	MessageList.Store(message.MessageCode, message)
 }
