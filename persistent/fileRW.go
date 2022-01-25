@@ -17,13 +17,9 @@ import (
 var wFile *os.File
 var rFile *os.File
 var dataFile string
-var copyMapSize int
 
 // InitFileRW 初始化文件读写模块
 func InitFileRW() {
-
-	//copyMap的初始大小
-	copyMapSize = viper.GetInt("mq.messageChanBuffer")
 
 	//持久化文件名
 	dataFile = viper.GetString("mq.persistentFile")
@@ -57,7 +53,7 @@ func Write() {
 	writer := gob.NewEncoder(wFile)
 
 	//复制消息列表
-	copyMap := make(map[string]interface{}, copyMapSize)
+	copyMap := make(map[string]interface{})
 	server.MessageList.Range(func(key, value interface{}) bool {
 		copyMap[key.(string)] = value
 		return true
@@ -118,7 +114,7 @@ func Read() {
 
 //json字符串转Data结构体
 func jsonToMessage(jsonStr string) (map[string]model.Message, error) {
-	m := make(map[string]model.Message, copyMapSize)
+	m := make(map[string]model.Message)
 	err := json.Unmarshal([]byte(jsonStr), &m)
 	if err != nil {
 		server.Loger.Println(err)
