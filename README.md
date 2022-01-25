@@ -289,15 +289,15 @@ ProducerId   //生产者客户端Id
 ```
 消息队列接收的消息格式
 
-接收Json字符串格式的消息，将其解析到model.SendMessage结构体。
+接收Json字符串格式的消息，将其解析成model.SendMessage结构体。
 
-推送给生产者客户端的Json字符串消息格式
+推送给生产者服务端的Json字符串消息格式
 {
     "MessageData":"hello",
-    "DelayTime":0
+    "DelayTime":"0"
 }
 
-再将消息封装成model.Message类型，插入消息通道。
+再将model.SendMessage消息模板封装成model.Message消息模板，插入消息通道。
 ```
 
 ##### 消费者客户端连接到消息队列
@@ -317,10 +317,10 @@ consumerId   //消费者客户端Id
     "MessageCode":"8c01b728ef82ba754a63e61daa43e83c61b744c7",
     "MessageData":"hello",
     "Topic":"test_topic",
-    "CreateTime":1640975470,
-    "ConsumedTime":1640975520,
-    "DelayTime":0,
-    "Status":-1
+    "CreateTime":"1640975470",
+    "ConsumedTime":"1640975520",
+    "DelayTime":"0",
+    "Status":"-1"
 }
 ```
 
