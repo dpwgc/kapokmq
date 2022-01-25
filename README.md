@@ -1,36 +1,36 @@
 # KapokMQ
 
-## 基于Go整合Gossip+WebSocket的轻量级分布式消息队列
+### 基于Go整合Gossip+WebSocket的轻量级分布式消息队列
 
-### KapokMQ与Serena应用整合包下载
+##### KapokMQ与Serena应用整合包下载
 
 * https://github.com/dpwgc/kapokmq-server
 
 * https://gitee.com/dpwgc/kapokmq-server
 
-### Golang客户端：kapokmq-go-client
+##### Golang客户端 ~ kapokmq-go-client
 
 * https://github.com/dpwgc/kapokmq-go-client
 
 * https://gitee.com/dpwgc/kapokmq-go-client
 
-### 控制台前端源码：kapokmq-console
-
-* https://gitee.com/dpwgc/kapokmq-console
-
-### 注册中心源码：Serena
+##### 注册中心源码 ~ Serena
 
 * https://github.com/dpwgc/serena
 
 * https://gitee.com/dpwgc/serena
+
+##### 控制台前端源码 ~ kapokmq-console
+
+* https://gitee.com/dpwgc/kapokmq-console
 
 `Golang` `Gin` `Gorilla` `WebSocket` `MQ` `Gossip`
 
 ***
 
 ### 软件架构
-
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/0.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/deploy.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/inner.jpg)
 
 ***
 
@@ -46,7 +46,7 @@
 * 可对单条消息设定延时时间，延时推送消息，投送时间精确度受mq.checkSpeed消息检查速度的影响。
 
 ##### 负载均衡集群部署：
-* 采用Gossip协议连接与同步集群节点，生产者客户端从注册中心获取所有消息队列节点地址并与它们连接，进行负载均衡投递。
+* 采用Gossip协议连接与同步集群节点，生产者客户端从注册中心获取所有消息队列节点地址并与它们连接，进行负载均衡投递（将消息随机投送到其中一个消息队列节点）。
 
 ##### 消息推送失败重试机制：
 * 推送失败后立即重推机制、定期重推未确认消费消息机制(受mq.checkSpeed消息检查速度的影响)。
@@ -60,13 +60,68 @@
 ##### 网页端控制台：
 * 包含查看消息队列配置、生成近一周消息增长折线图、查看各状态消息数量、查看消费者与生产者客户端列表及搜索消息功能。
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/1.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/config.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/monitor.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/message.jpg)
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/2.jpg)
+***
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/3.jpg)
+### 打包方式
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/4.jpg)
+* 填写application.yaml内的配置。
+
+* 运行项目：
+
+```
+（1）GoLand直接运行main.go(调试)
+```
+
+```
+（2）打包成exe运行(windows部署)
+
+  GoLand终端cd到项目根目录，执行go build命令，生成exe文件
+```
+
+```
+（3）打包成二进制文件运行(linux部署)
+
+  cmd终端cd到项目根目录，依次执行下列命令：
+  SET CGO_ENABLED=0
+  SET GOOS=linux
+  SET GOARCH=amd64
+  go build
+  生成二进制执行文件
+```
+
+***
+
+### 部署方法
+
+* 在服务器上部署
+
+```
+在Windows上部署
+
+/kapokmq                  # 文件根目录
+    kapokmq.exe           # 打包后的exe文件
+    /config               # 配置目录
+        application.yaml  # 配置文件
+    /log                  # 日志目录
+    /view                 # 前端-Vue项目打包文件
+    MQDATA                # 持久化文件
+```
+
+```
+在Linux上部署
+
+/kapokmq                  # 文件根目录
+    kapokmq               # 打包后的二进制文件(程序后台执行:setsid ./KapokMQ)
+    /config               # 配置目录
+        application.yaml  # 配置文件
+    /log                  # 日志目录
+    /view                 # 前端-Vue项目打包文件
+    MQDATA                # 持久化文件
+```
 
 ***
 
@@ -135,74 +190,20 @@ cluster:
 
 ***
 
-### 打包方式
+### 主要模块
 
-* 填写application.yaml内的配置。
+##### 消息通道与消息列表 `mq.go`
 
-* 运行项目：
+* 使用golang的通道chan充当队列，通道的缓冲空间大小决定了消息队列的容量。
 
-```
-（1）GoLand直接运行main.go(调试)
-```
-
-```
-（2）打包成exe运行(windows部署)
-
-  GoLand终端cd到项目根目录，执行go build命令，生成exe文件
-```
-
-```
-（3）打包成二进制文件运行(linux部署)
-
-  cmd终端cd到项目根目录，依次执行下列命令：
-  SET CGO_ENABLED=0
-  SET GOOS=linux
-  SET GOARCH=amd64
-  go build
-  生成二进制执行文件
-```
-
-***
-
-### 部署方法
-
-* 在服务器上部署
-
-```
-在Windows上部署
-
-/kapokmq                  # 文件根目录
-    kapokmq.exe           # 打包后的exe文件
-    /config               # 配置目录
-        application.yaml  # 配置文件
-    /log                  # 日志目录
-    /view                 # 前端-Vue项目打包文件
-    MQDATA                # 持久化文件
-```
-
-```
-在Linux上部署
-
-/kapokmq                  # 文件根目录
-    kapokmq               # 打包后的二进制文件(程序后台执行:setsid ./KapokMQ)
-    /config               # 配置目录
-        application.yaml  # 配置文件
-    /log                  # 日志目录
-    /view                 # 前端-Vue项目打包文件
-    MQDATA                # 持久化文件
-```
-
-***
-
-### 主要部分
-
-##### 消息通道 `mq.go`
-
-* 使用golang的通道充当队列，通道的缓冲空间大小决定了消息队列的容量。
+* 使用sync.Map存储所有消息，用于数据持久化、消息检查、控制台数据获取。
 
 ```
 //消息通道，用于存放待消费的消息(有缓冲区)
 var messageChan = make(chan models.Message, messageChanBuffer)
+
+// MessageList 消息列表，存放所有消息记录
+var MessageList sync.Map
 ```
 
 ##### 生产者消息接收 `producer.go`
@@ -211,39 +212,25 @@ var messageChan = make(chan models.Message, messageChanBuffer)
 
 * 额外提供生产者HTTP接口，可通过HTTP请求向消息队列发送消息。
 
-```
-//把消息写入消息通道
-messageChan <- message
-```
-
 ##### 消费者消息推送 `consumer.go`
 
 * 消费者客户端通过WebSocket连接到消息队列。
 
-* 消息队列从消息通道中读取出消息后，通过for循环结合go协程并发遍历消费者客户端集合，判断该消费者是否与消息同属于一个主题，如果是，则将消息通过WebSocket推送给该客户端。
+* 包含订阅/发布、点对点两种推送模式。
 
-```
-//读取消息通道中的消息
-message := <-messageChan
+##### 数据持久化
 
-...
+* 数据写入：通过"encoding/gob"将MessageList消息列表中的所有消息转换为[]byte类型数据，并将其写入二进制文件。
 
-//遍历消费者客户端集合
-for key, consumer := range consumers {
+* 数据恢复：从持久化文件中读取数据，并将数据恢复至MessageList消息列表中，重新投送未消费的消息。
 
-	//多协程并发推送消息
-	go func(key string,consumer *websocket.Conn) {
-	    ...
-	    //发送消息到消费者客户端
-	    err := consumer.WriteJSON(message)
-	    ...
-	}
-}
-```
+##### 消息检查
+
+* 每隔一段时间遍历一次MessageList消息列表，检查其中是否有消费失败、延时消费、已过期的消息。可重新投递消费失败及延时消费的消息，或清除过期的消息。
 
 ##### 控制台 `console.go`
 
-* 控制台接口：用于获取消费者客户端列表及消息队列配置信息。
+* 控制台接口：用于获取生产者/消费者客户端列表及消息队列配置信息。
 
 ```
 //检查消息队列服务是否在运行 Ping
@@ -279,22 +266,17 @@ http://localhost:port/#/Console
 
 ### 客户端连接
 
-#### 路由 `router.go`
+##### 路由 `router.go`
 
 ```
 //生产者连接（WebSocket连接方式，用于接收生产者客户端发送的消息）
 GET("/Producers/Conn/:topic/:producerId", server.ProducersConn)
 
-//生产者接口（http post请求方式，用于接收生产者客户端发送的消息）
-r.POST("/Producer/Send",servers.ProducerSend)
-
 //消费者连接（WebSocket连接方式，用于推送消息到消费者客户端）
 r.GET("/Consumers/Conn/:topic/:consumerId", servers.ConsumersConn)
 ```
 
-#### 访问路径
-
-##### 生产者客户端发送消息到消息队列
+##### 生产者客户端连接到消息队列
 
 * WebSocket连接方式 `ws://localhost:port/Producers/Conn/{topic}/{producerId}`
 
@@ -307,62 +289,37 @@ ProducerId   //生产者客户端Id
 ```
 消息队列接收的消息格式
 
-接收[]byte类型的消息内容(messageData)，转为string类型。
-接收int类型的delayTime延时投送时间，为0时表明该消息不是延时消息
+接收Json字符串格式的消息，将其解析到model.SendMessage结构体。
 
-//读取websocket中的数据，获取生产者客户端发送的消息内容和延时推送时间
-delayTime, data, err := ws.ReadMessage()
-messageData := string(data)
+推送给生产者客户端的Json字符串消息格式
+{
+    "MessageData":"hello",
+    "DelayTime":0
+}
 
 再将消息封装成model.Message类型，插入消息通道。
 ```
 
-* POST请求方式 `http://localhost:port/Producer/Send`
-
-```
-POST请求参数：
-Header:
-secretKey     //访问密钥
-
-Body:
-messageData   //消息内容  类型：json string
-topic         //所属主题  类型：string
-delayTime     //延迟推送时间（单位：秒）
-```
-
-```
-消息发送成功，返回数据（msg为messageCode）：
-{
-    "code": 0,
-    "msg": "d9a624ffa17a6c51fcb2381686dd335161b7252d"
-}
-
-消息发送失败，返回数据（msg为报错信息）：
-{
-    "code": -1,
-    "msg": "Required data cannot be empty"
-}
-```
-
-##### 消息队列通过WebSocket连接推送消息给消费者客户端
+##### 消费者客户端连接到消息队列
 
 * WebSocket `ws://localhost:port/Consumers/Conn/{topic}/{consumerId}`
 
 ```
 WebSocket链接中的参数：
 topic        //主题名称
-consumerId  //消费者客户端Id
+consumerId   //消费者客户端Id
 ```
 
 ```
 //通过WriteJSON()函数将model.Message类型的消息转为Json字符串发送
-推送给消费者客户端的消息格式
+推送给消费者客户端的Json字符串消息格式
 {
     "MessageCode":"8c01b728ef82ba754a63e61daa43e83c61b744c7",
     "MessageData":"hello",
     "Topic":"test_topic",
-    "CreateTime":"1640975470",
-    "ConsumedTime":"1640975520",
+    "CreateTime":1640975470,
+    "ConsumedTime":1640975520,
+    "DelayTime":0,
     "Status":-1
 }
 ```
@@ -385,10 +342,10 @@ qqq                             //输入错误的密钥
 "Please enter the secret key"   //再次提示输入密钥
 
 你发送的信息 2022-01-02 15:15:13
-dpmq                            //输出正确的密钥
+test                            //输出正确的密钥
 
 服务端回应 2022-01-02 15:15:13
-"Secret key matching succeeded" //密钥验证成功
+"Secret key matching succeeded" //提示密钥验证成功
 
 服务端回应 2022-01-02 15:15:13   //消费者客户端可以开始接收消息
 ...
@@ -413,10 +370,10 @@ qqq                             //输入错误的密钥
 "Please enter the secret key"   //再次提示输入密钥
 
 你发送的信息 2022-01-02 15:15:13
-dpmq                            //输出正确的密钥
+test                            //输出正确的密钥
 
 服务端回应 2022-01-02 15:15:13
-"Secret key matching succeeded" //密钥验证成功
+"Secret key matching succeeded" //提示密钥验证成功
 
 服务端回应 2022-01-02 15:15:13   //生产者客户端可以开始发送消息
 ...
