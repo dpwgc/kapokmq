@@ -10,52 +10,14 @@ import (
 	"sync"
 )
 
-// ProducerSend 以HTTP请求方式接收消息
-// ProducerSend 接收消息生产者发送过来的消息
-func ProducerSend(c *gin.Context) {
+/**
+ * 生产者连接模块
+ */
 
-	messageData, _ := c.GetPostForm("messageData")
-	topic, _ := c.GetPostForm("topic")
-	delayTime, _ := c.GetPostForm("delayTime")
+//生产者客户端map锁
+var pLock = sync.RWMutex{}
 
-	intDelayTime, err := strconv.ParseInt(delayTime, 10, 64)
-	if err != nil {
-		c.JSON(-1, gin.H{
-			"code": -1,
-			"msg":  err,
-		})
-		return
-	}
-
-	if len(messageData) == 0 || len(topic) == 0 {
-		c.JSON(-1, gin.H{
-			"code": -1,
-			"msg":  "Required data cannot be empty",
-		})
-		return
-	}
-
-	message := model.Message{}
-	message.MessageCode = utils.CreateCode(messageData)
-	message.MessageData = messageData
-	message.Topic = topic
-	message.Status = -1
-	message.CreateTime = utils.GetLocalDateTimestamp()
-	message.DelayTime = intDelayTime
-
-	//将消息记录到消息列表
-	MessageList.Store(message.MessageCode, message)
-	//把消息写入消息通道
-	MessageChan <- message
-
-	//发送成功，返回消息标识码
-	c.JSON(0, gin.H{
-		"code": 0,
-		"msg":  message.MessageCode,
-	})
-}
-
-// Producers 连接的消费者客户端,把每个消费者都放进来。Key为{topic}|{consumerId}，topic与consumerId两者之间用字符”|“分隔。Value为websocket连接
+// Producers 连接的生产者客户端，把每个消费者都放进来。Key为Producer结构体，Value为websocket连接
 var Producers = make(map[model.Producer]*websocket.Conn)
 
 // ProducersConn 以WebSocket连接方式接收消息
@@ -105,18 +67,17 @@ func ProducersConn(c *gin.Context) {
 		}
 	}
 
+	//生成生产者客户端模板
 	key := model.Producer{}
 	key.ProducerId = producerId
 	key.Topic = topic
 	key.ProducerIp = producerIp
 	key.JoinTime = utils.GetLocalDateTimestamp()
 
-	lock := sync.RWMutex{}
-
 	//将当前连接的生产者放入map中
-	lock.RLock()
+	pLock.RLock()
 	Producers[key] = ws
-	lock.RUnlock()
+	pLock.RUnlock()
 
 	if err != nil {
 		Loger.Println(err)
@@ -145,6 +106,7 @@ func ProducersConn(c *gin.Context) {
 			return
 		}
 
+		//生成消息模板
 		message := model.Message{}
 		message.MessageCode = utils.CreateCode(s.MessageData)
 		message.MessageData = s.MessageData
@@ -158,4 +120,50 @@ func ProducersConn(c *gin.Context) {
 		//把消息写入消息通道
 		MessageChan <- message
 	}
+}
+
+// ProducerSend 以HTTP请求方式接收消息
+// ProducerSend 接收消息生产者发送过来的消息
+func ProducerSend(c *gin.Context) {
+
+	messageData, _ := c.GetPostForm("messageData")
+	topic, _ := c.GetPostForm("topic")
+	delayTime, _ := c.GetPostForm("delayTime")
+
+	intDelayTime, err := strconv.ParseInt(delayTime, 10, 64)
+	if err != nil {
+		c.JSON(-1, gin.H{
+			"code": -1,
+			"msg":  err,
+		})
+		return
+	}
+
+	if len(messageData) == 0 || len(topic) == 0 {
+		c.JSON(-1, gin.H{
+			"code": -1,
+			"msg":  "Required data cannot be empty",
+		})
+		return
+	}
+
+	//生成消息模板
+	message := model.Message{}
+	message.MessageCode = utils.CreateCode(messageData)
+	message.MessageData = messageData
+	message.Topic = topic
+	message.Status = -1
+	message.CreateTime = utils.GetLocalDateTimestamp()
+	message.DelayTime = intDelayTime
+
+	//将消息记录到消息列表
+	MessageList.Store(message.MessageCode, message)
+	//把消息写入消息通道
+	MessageChan <- message
+
+	//发送成功，返回消息标识码
+	c.JSON(0, gin.H{
+		"code": 0,
+		"msg":  message.MessageCode,
+	})
 }
