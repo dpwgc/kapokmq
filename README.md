@@ -206,29 +206,29 @@ var messageChan = make(chan models.Message, messageChanBuffer)
 var MessageList sync.Map
 ```
 
-##### 生产者消息接收 `producer.go`
+##### 生产者消息接收 `server/producer.go`
 
 * 生产者客户端通过WebSocket连接到消息队列，并发送消息到消息队列，消息被写入消息通道。
 
 * 额外提供生产者HTTP接口，可通过HTTP请求向消息队列发送消息。
 
-##### 消费者消息推送 `consumer.go`
+##### 消费者消息推送 `server/consumer.go`
 
 * 消费者客户端通过WebSocket连接到消息队列。
 
 * 包含订阅/发布、点对点两种推送模式。
 
-##### 数据持久化
+##### 数据持久化 `persistent`
 
-* 数据写入：通过"encoding/gob"将MessageList消息列表中的所有消息转换为[]byte类型数据，并将其写入二进制文件。
+* 数据写入：将MessageList消息列表中的所有消息转换为[]byte类型数据，并将其写入二进制文件。
 
 * 数据恢复：从持久化文件中读取数据，并将数据恢复至MessageList消息列表中，重新投送未消费的消息。
 
-##### 消息检查
+##### 消息检查 `server/check.go`
 
-* 每隔一段时间遍历一次MessageList消息列表，检查其中是否有消费失败、延时消费、已过期的消息。可重新投递消费失败及延时消费的消息，或清除过期的消息。
+* 每隔一段时间遍历一次MessageList消息列表，检查其中是否有消费失败、延时消费、已过期的消息。可重新投送消费失败及延时消费的消息，或清除过期的消息。
 
-##### 控制台 `console.go`
+##### 控制台 `server/console.go`
 
 * 控制台接口：用于获取生产者/消费者客户端列表及消息队列配置信息。
 

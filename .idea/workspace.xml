@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="前端更新">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/consumer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/producer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/producer.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,9 +80,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Gossip集群节点同步" />
-    <MESSAGE value="消息检查模块" />
-    <MESSAGE value="控制台更新" />
     <MESSAGE value="消费者消息推送" />
     <MESSAGE value="前端控制台更新" />
     <MESSAGE value="配置更新" />
@@ -105,11 +98,14 @@
     <MESSAGE value="模板" />
     <MESSAGE value="数据恢复模块优化" />
     <MESSAGE value="生产者连接-遗漏消息bug修复" />
-    <MESSAGE value="文档更新" />
     <MESSAGE value="消息队列配置" />
     <MESSAGE value="~" />
     <MESSAGE value="前端更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="前端更新" />
+    <MESSAGE value="消费者推送模块-并发异常修复" />
+    <MESSAGE value="数据持久化优化" />
+    <MESSAGE value="生产者接收模块-并发异常修复" />
+    <MESSAGE value="文档更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
