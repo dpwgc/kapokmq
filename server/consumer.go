@@ -12,8 +12,29 @@ import (
 )
 
 /**
- * 使用websocket将消息推送给各个消费者客户端
+ * 消费者连接模块
  */
+
+//消费者客户端map锁
+var cLock = sync.RWMutex{}
+
+//安全密钥
+var secretKey string
+
+//每一批推送的消息数量
+var pushCount int
+
+//消息推送失败后的重试次数
+var pushRetryCount int
+
+//推送消息的速度(单批次消息推送间隔时间，单位：秒)
+var pushMessagesSpeed int
+
+//是否立即清除已确认消费的消息
+var isCleanConsumed int
+
+// Consumers 连接的消费者客户端，把每个消费者都放进来。Key为Consumer结构体，Value为websocket连接
+var Consumers = make(map[model.Consumer]*websocket.Conn)
 
 // UpGrader websocket跨域配置
 var UpGrader = websocket.Upgrader{
@@ -35,24 +56,6 @@ func InitConsumersConn() {
 	//启动消息推送协程，推送消息到各个消费者客户端
 	go pushServer()
 }
-
-//安全密钥
-var secretKey string
-
-//每一批推送的消息数量
-var pushCount int
-
-//消息推送失败后的重试次数
-var pushRetryCount int
-
-//推送消息的速度(单批次消息推送间隔时间，单位：秒)
-var pushMessagesSpeed int
-
-//是否立即清除已确认消费的消息
-var isCleanConsumed int
-
-// Consumers 连接的消费者客户端,把每个消费者都放进来。Key为{topic}|{consumerId}，topic与consumerId两者之间用字符”|“分隔。Value为websocket连接
-var Consumers = make(map[model.Consumer]*websocket.Conn)
 
 // ConsumersConn 消费者连接，监听消息队列内部各个主题消息的更新
 func ConsumersConn(c *gin.Context) {
@@ -100,18 +103,17 @@ func ConsumersConn(c *gin.Context) {
 		}
 	}
 
+	//生成消费者客户端模板
 	key := model.Consumer{}
 	key.ConsumerId = consumerId
 	key.Topic = topic
 	key.ConsumerIp = consumerIp
 	key.JoinTime = utils.GetLocalDateTimestamp()
 
-	lock := sync.RWMutex{}
-
 	//将当前连接的消费者放入map中
-	lock.RLock()
+	cLock.RLock()
 	Consumers[key] = ws
-	lock.RUnlock()
+	cLock.RUnlock()
 
 	if err != nil {
 		Loger.Println(err)
