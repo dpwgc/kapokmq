@@ -4,27 +4,25 @@
 
 ##### KapokMQ与Serena应用整合包下载
 
-* https://github.com/dpwgc/kapokmq-server
+* https://github.com/dpwgc/kapokmq-server `github`
 
-* https://gitee.com/dpwgc/kapokmq-server
+* https://gitee.com/dpwgc/kapokmq-server `gitee`
 
 ##### Golang客户端 ~ kapokmq-go-client
 
-* https://github.com/dpwgc/kapokmq-go-client
+* https://github.com/dpwgc/kapokmq-go-client `github`
 
-* https://gitee.com/dpwgc/kapokmq-go-client
+* https://gitee.com/dpwgc/kapokmq-go-client `gitee`
 
 ##### 注册中心源码 ~ Serena
 
-* https://github.com/dpwgc/serena
+* https://github.com/dpwgc/serena `github`
 
-* https://gitee.com/dpwgc/serena
+* https://gitee.com/dpwgc/serena `gitee`
 
 ##### 控制台前端源码 ~ kapokmq-console
 
-* https://gitee.com/dpwgc/kapokmq-console
-
-`Golang` `Gin` `Gorilla` `WebSocket` `MQ` `Gossip`
+* https://gitee.com/dpwgc/kapokmq-console `gitee`
 
 ***
 
@@ -72,6 +70,10 @@
 
 * 运行项目：
 
+````
+安装并配置go环境
+````
+
 ```
 （1）GoLand直接运行main.go(调试)
 ```
@@ -115,7 +117,7 @@
 在Linux上部署
 
 /kapokmq                  # 文件根目录
-    kapokmq               # 打包后的二进制文件(程序后台执行:setsid ./KapokMQ)
+    kapokmq               # 打包后的二进制文件(程序后台执行:setsid ./kapokmq)
     /config               # 配置目录
         application.yaml  # 配置文件
     /log                  # 日志目录
@@ -131,7 +133,7 @@
 
 ```yaml
 server:
-  # ip地址/域名
+  # ip地址/域名（公网环境下部署需要配置成公网ip）
   addr: 0.0.0.0
   # Gin服务运行端口号
   port: 8011
@@ -228,6 +230,12 @@ var MessageList sync.Map
 
 * 每隔一段时间遍历一次MessageList消息列表，检查其中是否有消费失败、延时消费、已过期的消息。可重新投送消费失败及延时消费的消息，或清除过期的消息。
 
+##### 加入Gossip集群 `cluster/join.go`
+
+* 使用 github.com/hashicorp/memberlist 构建并链接Gossip集群服务。
+
+* 借助Gossip协议扩散同步的特性，可以随时向集群中添加新的消息队列节点。
+
 ##### 控制台 `server/console.go`
 
 * 控制台接口：用于获取生产者/消费者客户端列表及消息队列配置信息。
@@ -278,7 +286,7 @@ r.GET("/Consumers/Conn/:topic/:consumerId", servers.ConsumersConn)
 
 ##### 生产者客户端连接到消息队列
 
-* WebSocket连接方式 `ws://localhost:port/Producers/Conn/{topic}/{producerId}`
+* WebSocket `ws://localhost:port/Producers/Conn/{topic}/{producerId}`
 
 ```
 WebSocket链接中的参数：
