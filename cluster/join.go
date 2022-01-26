@@ -35,12 +35,15 @@ func InitCluster() {
 	if addr == "" {
 		addr = "0.0.0.0"
 	}
-	//本节点名称
-	conf.Name = fmt.Sprintf("%s%s%s%s", "mq:", addr, ":", port) //前缀r:表明这是注册中心，前缀mq-表明这是消息队列节点
-	//本节点的地址
-	conf.BindAddr = addr
-	//本节点Gossip服务端口号
+
+	//本节点的名称（例：mq:0.0.0.0:8011）
+	conf.Name = fmt.Sprintf("%s%s%s%s", "mq:", addr, ":", port) //前缀r:表明这是注册中心，前缀mq:表明这是消息队列节点
+
+	//Bind：Gossip服务内部注册地址（0.0.0.0:gossipPort）
 	conf.BindPort = gossipPort
+
+	//本节点对外暴露的地址（公网IP，用于在公网环境下连接注册中心）
+	conf.AdvertiseAddr = addr
 	conf.AdvertisePort = gossipPort
 
 	var err error
