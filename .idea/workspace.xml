@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="持久化模块优化">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更新">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cluster/join.go" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/join.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/console.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/console.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +43,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Atest" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -52,14 +51,6 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
-      <module name="kapokmq" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
     <configuration name="go build kapokmq" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="kapokmq" />
       <working_directory value="$PROJECT_DIR$" />
@@ -67,15 +58,6 @@
       <package value="kapokmq" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$/main.go" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
-      <module name="kapokmq" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="DIRECTORY" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
       <method v="2" />
     </configuration>
     <recent_temporary>
@@ -101,10 +83,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="前端控制台更新" />
-    <MESSAGE value="配置更新" />
-    <MESSAGE value="优化延时消息推送功能" />
-    <MESSAGE value="集群功能优化" />
     <MESSAGE value="模板类" />
     <MESSAGE value="生产者接口" />
     <MESSAGE value="1" />
@@ -124,9 +102,13 @@
     <MESSAGE value="消费者推送模块-并发异常修复" />
     <MESSAGE value="数据持久化优化" />
     <MESSAGE value="生产者接收模块-并发异常修复" />
-    <MESSAGE value="文档更新" />
     <MESSAGE value="持久化模块优化" />
-    <option name="LAST_COMMIT_MESSAGE" value="持久化模块优化" />
+    <MESSAGE value="应用配置文件" />
+    <MESSAGE value="集群连接模块-公网ip访问异常修复" />
+    <MESSAGE value="文档更新" />
+    <MESSAGE value="http服务路由" />
+    <MESSAGE value="更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
