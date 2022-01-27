@@ -58,7 +58,7 @@ func GetProducers(c *gin.Context) {
 // GetConfig 获取消息队列详细配置
 func GetConfig(c *gin.Context) {
 
-	configMap := make(map[string]interface{}, 3)
+	configMap := make(map[string]interface{}, 18)
 
 	configMap["pushType"] = viper.GetInt("mq.pushType")
 
