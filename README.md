@@ -1,27 +1,27 @@
-# KapokMQ
+## KapokMQ
 
 ### 基于Go整合Gossip+WebSocket的轻量级分布式消息队列
 
-##### KapokMQ与Serena应用整合包下载
+[![star](https://gitee.com/dpwgc/kapokmq/badge/star.svg?theme=dark)](https://gitee.com/dpwgc/kapokmq/stargazers)
+[![fork](https://gitee.com/dpwgc/kapokmq/badge/fork.svg?theme=dark)](https://gitee.com/dpwgc/kapokmq/members)
 
+#### KapokMQ与Serena应用整合包下载与安装
 * https://github.com/dpwgc/kapokmq-server `github`
-
 * https://gitee.com/dpwgc/kapokmq-server `gitee`
 
-##### Golang客户端 ~ kapokmq-go-client
-
+#### Golang客户端 ~ kapokmq-go-client
 * https://github.com/dpwgc/kapokmq-go-client `github`
-
 * https://gitee.com/dpwgc/kapokmq-go-client `gitee`
 
-##### 注册中心源码 ~ Serena
+#### Java客户端 ~ kapokmq-java-client（仅有Demo，未完成）
+* https://github.com/dpwgc/kapokmq-java-client `github`
+* https://gitee.com/dpwgc/kapokmq-java-client `gitee`
 
+#### 注册中心源码 ~ Serena
 * https://github.com/dpwgc/serena `github`
-
 * https://gitee.com/dpwgc/serena `gitee`
 
 ##### 控制台前端源码 ~ kapokmq-console
-
 * https://gitee.com/dpwgc/kapokmq-console `gitee`
 
 ***
@@ -145,7 +145,7 @@ mq:
   # 消息推送模式（1：点对点模式，一条消息只能随机被一个消费者客户端消费。2：订阅/发布推送模式：将消息推送给所有消费者客户端）
   pushType: 1
 
-  # 消息通道的缓冲空间大小（消息队列的容量）
+  # 消息通道的缓冲空间大小（消息队列可容纳的未消费消息数量，超过该数值，生产者消息接收协程将被阻塞）
   messageChanBuffer: 10000000
 
   # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
