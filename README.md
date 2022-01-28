@@ -1,7 +1,10 @@
-## KapokMQ
+# KapokMQ
 
-### 基于Go整合Gossip+WebSocket的轻量级分布式消息队列
+## 基于Go整合Gossip+WebSocket的轻量级分布式消息队列
 
+![Go](https://img.shields.io/static/v1?label=LICENSE&message=Apache-2.0&color=orange)
+![Go](https://img.shields.io/static/v1?label=Go&message=v1.17&color=blue)
+[![github](https://img.shields.io/static/v1?label=Github&message=kapokmq&color=blue)](https://github.com/dpwgc/kapokmq)
 [![star](https://gitee.com/dpwgc/kapokmq/badge/star.svg?theme=dark)](https://gitee.com/dpwgc/kapokmq/stargazers)
 [![fork](https://gitee.com/dpwgc/kapokmq/badge/fork.svg?theme=dark)](https://gitee.com/dpwgc/kapokmq/members)
 
@@ -13,15 +16,11 @@
 * https://github.com/dpwgc/kapokmq-go-client `github`
 * https://gitee.com/dpwgc/kapokmq-go-client `gitee`
 
-#### Java客户端 ~ kapokmq-java-client（仅有Demo，未完成）
-* https://github.com/dpwgc/kapokmq-java-client `github`
-* https://gitee.com/dpwgc/kapokmq-java-client `gitee`
-
 #### 注册中心源码 ~ Serena
 * https://github.com/dpwgc/serena `github`
 * https://gitee.com/dpwgc/serena `gitee`
 
-##### 控制台前端源码 ~ kapokmq-console
+#### 控制台前端源码 ~ kapokmq-console
 * https://gitee.com/dpwgc/kapokmq-console `gitee`
 
 ***
@@ -75,29 +74,25 @@
 
 ***
 
-### 打包方式
+### 运行与打包
 
-* 填写application.yaml内的配置。
+##### 安装并配置go环境
 
-* 运行项目：
+##### 填写application.yaml内的配置。
 
-````
-安装并配置go环境
-````
+##### 运行项目：
 
-```
-（1）GoLand直接运行main.go(调试)
-```
+* GoLand直接运行main.go(调试)
+
+* 打包成windows exe
 
 ```
-（2）打包成exe运行(windows部署)
-
   GoLand终端cd到项目根目录，执行go build命令，生成exe文件
 ```
 
-```
-（3）打包成二进制文件运行(linux部署)
+* 打包成linux二进制文件
 
+```
   cmd终端cd到项目根目录，依次执行下列命令：
   SET CGO_ENABLED=0
   SET GOOS=linux
@@ -156,17 +151,17 @@ var MessageList sync.Map
 
 ##### 生产者消息接收 `server/producer.go`
 
-* 生产者客户端通过WebSocket连接到消息队列，并发送消息到消息队列，消息被写入消息通道。
+* 生产者客户端通过WebSocket连接到消息队列（github.com/gorilla/websocket），并发送消息到消息队列，消息被写入消息通道。
 
 * 额外提供生产者HTTP接口，可通过HTTP请求向消息队列发送消息。
 
 ##### 消费者消息推送 `server/consumer.go`
 
-* 消费者客户端通过WebSocket连接到消息队列。
-
-* 消息推送给消费者客户端后，将向消息队列发送一条ACK确认字符（内容为消息标识码messageCode），确保消息不在消费环节丢失。
+* 消费者客户端通过WebSocket连接到消息队列（github.com/gorilla/websocket）。
 
 * 包含订阅/发布、点对点两种推送模式。
+
+* 消息推送给消费者客户端后，将向消息队列发送一条ACK确认字符（内容为消息标识码messageCode），消息队列再根据此ACK将指定messageCode的消息更改为已消费状态。
 
 ##### 数据持久化 `persistent`
 
@@ -192,11 +187,8 @@ var MessageList sync.Map
 //检查消息队列服务是否在运行 Ping
 POST http://localhost:port/Console/Ping
 
-//获取全部生产者客户端集合 GetProducers
-POST http://localhost:port/Console/GetProducers
-		
-//获取全部消费者客户端集合 GetConsumers
-POST http://localhost:port/Console/GetConsumers
+//获取全部客户端集合 GetClients
+POST http://localhost:port/Console/GetClients
 
 //获取消息队列详细配置 GetConfig
 POST http://localhost:port/Console/GetConfig
@@ -204,11 +196,14 @@ POST http://localhost:port/Console/GetConfig
 //获取指定状态的消息记录列表 GetMessageList
 POST http://localhost:port/Console/GetMessageList
 
-//获取指定状态的简易消息记录列表(不包含消息主体，用于绘制折线图) GetMessageEasy
+//获取指定状态的简易消息记录列表(不包含消息主体) GetMessageEasy
 POST http://localhost:port/Console/GetMessageEasy
 
 //统计各状态消息的数量 CountMessage
 POST http://localhost:port/Console/CountMessage
+
+//获取集群内的消息队列节点列表 GetNodes
+POST http://localhost:port/Console/GetNodes
 ```
 
 * 控制台网页端
@@ -406,3 +401,16 @@ test                            //输出正确的密钥
 * index.html
 
 ##### main.go 主函数
+
+***
+
+### 后期计划
+
+|实现功能|功能说明|当前进度|
+|---|---|---|
+|Java客户端|Maven包，websocket连接，Demo：https://gitee.com/dpwgc/kapokmq-java-client|未完成|
+|拉模式消费|消费者主动拉取消息队列的消息|计划中|
+|生产者同步发送消息|生产者发送一条消息后，必须收到mq的ACK才能发送下一条消息|计划中|
+|WAL持久化与回放数据|最大程度上避免丢失数据|计划中|
+|注册中心集群化|多个注册中心，保证高可靠|计划中|
+|主备消息队列|为每个mq主节点绑定一个备用节点，宕机时立即切换到备用节点|计划中|
