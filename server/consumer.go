@@ -124,6 +124,7 @@ func ConsumersConn(c *gin.Context) {
 		}
 	}(ws)
 
+	//ACK消息消费确认
 	for {
 		//读取ws中的数据，获取消费者客户端发来的确认消费信息，ack为messageCode
 		_, ack, err := ws.ReadMessage()
@@ -138,7 +139,6 @@ func ConsumersConn(c *gin.Context) {
 			continue
 		}
 
-		//确认消费
 		message := msg.(model.Message)
 
 		//是否立即清除已被消费的消息
@@ -147,6 +147,7 @@ func ConsumersConn(c *gin.Context) {
 			continue
 		}
 
+		//确认消费
 		message.Status = 1
 		message.ConsumedTime = utils.GetLocalDateTimestamp()
 		MessageList.Store(string(ack), message)
@@ -194,7 +195,7 @@ func pushMessagesToConsumers() {
 	}
 
 	//控制通道
-	controlChan := make(chan int)
+	controlChan := make(chan int, len(Consumers))
 
 	//遍历消费者客户端集合
 	for key, consumer := range Consumers {
@@ -265,6 +266,8 @@ func pushMessagesToOneConsumer() {
 				}
 				//删除map中的客户端
 				delete(Consumers, key)
+				//尝试投送给下一个消费者客户端
+				continue
 			}
 
 			//点对点，发送给一个客户端后，直接返回
