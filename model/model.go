@@ -14,7 +14,7 @@ type Message struct {
 	CreateTime   int64  //消息创建时间
 	ConsumedTime int64  //消息被消费时间
 	DelayTime    int64  //延迟推送时间（单位：秒）
-	Status       int    //消息状态（-1：待消费。0：消费失败/延时消息待消费。1：已被消费）
+	Status       int    //消息状态（-1：待消费。0：消费失败。1：已被消费）
 }
 
 // Consumer 消费者客户端模板
