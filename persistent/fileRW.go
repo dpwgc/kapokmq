@@ -116,7 +116,7 @@ func Read() {
 		return
 	}
 
-	//将本地持久化文件数据（localMap）循环写入从节点map（DataMap）
+	//将本地持久化文件数据（copyMap）循环写入消息列表（MessageList）
 	for key, value := range copyMap {
 		server.MessageList.Store(key, value)
 	}
