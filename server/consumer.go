@@ -187,15 +187,10 @@ func pushMessagesToConsumers() {
 	//读取消息通道中的消息
 	message := <-MessageChan
 
-	//判断是否是延时消息
-	if message.DelayTime > 0 {
-		//获取当前时间戳
-		ts := utils.GetLocalDateTimestamp()
-		//如果还未到达投送时间
-		if message.CreateTime+message.DelayTime > ts {
-			//等待重推
-			return
-		}
+	//如果是延时消息
+	if message.Status == 0 {
+		//等待重推
+		return
 	}
 
 	//控制通道
@@ -244,15 +239,10 @@ func pushMessagesToOneConsumer() {
 	//读取消息通道中的消息
 	message := <-MessageChan
 
-	//判断是否是延时消息
-	if message.DelayTime > 0 {
-		//获取当前时间戳
-		ts := utils.GetLocalDateTimestamp()
-		//如果还未到达投送时间
-		if message.CreateTime+message.DelayTime > ts {
-			//等待重推
-			return
-		}
+	//如果是延时消息
+	if message.Status == 0 {
+		//等待重推
+		return
 	}
 
 	//遍历消费者客户端集合
@@ -281,10 +271,4 @@ func pushMessagesToOneConsumer() {
 			return
 		}
 	}
-
-	//如果找不到该消息对应的客户端，将消息标记为消费失败状态
-	message.Status = 0
-
-	//将消息更新到消息列表
-	MessageList.Store(message.MessageCode, message)
 }
