@@ -24,9 +24,6 @@ var secretKey string
 //每一批推送的消息数量
 var pushCount int
 
-//消息推送失败后的重试次数
-var pushRetryCount int
-
 //推送消息的速度(单批次消息推送间隔时间，单位：秒)
 var pushMessagesSpeed int
 
@@ -48,7 +45,6 @@ var UpGrader = websocket.Upgrader{
 func InitConsumersConn() {
 	secretKey = viper.GetString("mq.secretKey")
 	pushCount = viper.GetInt("mq.pushCount")
-	pushRetryCount = viper.GetInt("mq.pushRetryCount")
 	isCleanConsumed = viper.GetInt("mq.isCleanConsumed")
 	pushMessagesSpeed = viper.GetInt("mq.pushMessagesSpeed")
 
@@ -119,6 +115,7 @@ func ConsumersConn(c *gin.Context) {
 		Loger.Println(err)
 		return
 	}
+
 	defer func(ws *websocket.Conn) {
 		delete(Consumers, key) //删除map中的消费者
 		err = ws.Close()
@@ -128,8 +125,31 @@ func ConsumersConn(c *gin.Context) {
 	}(ws)
 
 	for {
-		//开个死循环，将连接挂起，保证连接不被断开
-		time.Sleep(time.Second * 10)
+		//读取ws中的数据，获取消费者客户端发来的确认消费信息，ack为messageCode
+		_, ack, err := ws.ReadMessage()
+		if err != nil {
+			Loger.Println(err)
+			return
+		}
+
+		//从Map中加载出消息
+		msg, isOk := MessageList.Load(string(ack))
+		if !isOk {
+			continue
+		}
+
+		//确认消费
+		message := msg.(model.Message)
+
+		//是否立即清除已被消费的消息
+		if isCleanConsumed == 1 {
+			MessageList.Delete(message.MessageCode)
+			continue
+		}
+
+		message.Status = 1
+		message.ConsumedTime = utils.GetLocalDateTimestamp()
+		MessageList.Store(string(ack), message)
 	}
 }
 
@@ -174,8 +194,6 @@ func pushMessagesToConsumers() {
 		//如果还未到达投送时间
 		if message.CreateTime+message.DelayTime > ts {
 			//等待重推
-			message.Status = 0
-			MessageList.Store(message.MessageCode, message)
 			return
 		}
 	}
@@ -195,29 +213,17 @@ func pushMessagesToConsumers() {
 			//找到与该消息主题对应的客户端(相同的topic)
 			if message.Topic == topic && len(message.Topic) > 0 && len(message.MessageCode) > 0 {
 
-				//立即重试机制
-				for i := 0; i < pushRetryCount; i++ {
-					//发送消息到消费者客户端
-					err := consumer.WriteJSON(message)
-					//如果发送成功
-					if err == nil {
-						//将消息标记为已消费状态
-						message.Status = 1
-						message.ConsumedTime = utils.GetLocalDateTimestamp()
-						//结束循环
-						break
+				//发送消息到消费者客户端
+				err := consumer.WriteJSON(message)
+				//如果连接异常
+				if err != nil {
+					//客户端关闭
+					err = consumer.Close()
+					if err != nil {
+						Loger.Println(err)
 					}
-					Loger.Println(err)
-					//如果到达重试次数，但仍未发送成功
-					if i == pushRetryCount-1 && err != nil {
-						//客户端关闭
-						err = consumer.Close()
-						if err != nil {
-							Loger.Println(err)
-						}
-						//删除map中的客户端
-						delete(Consumers, key)
-					}
+					//删除map中的客户端
+					delete(Consumers, key)
 				}
 			}
 			//向控制通道发送信息，表示该协程处理完毕
@@ -230,17 +236,6 @@ func pushMessagesToConsumers() {
 		//收到协程执行完毕的信息
 		<-controlChan
 	}
-	//将未确认消费的消息标记为消费失败状态
-	if message.Status == -1 {
-		message.Status = 0
-	}
-	//是否立即清除已被消费的消息
-	if isCleanConsumed == 1 {
-		MessageList.Delete(message.MessageCode)
-		return
-	}
-	//将消息更新到消息列表，等待重推
-	MessageList.Store(message.MessageCode, message)
 }
 
 //点对点模式：随机推送消息到某个消费者客户端
@@ -256,8 +251,6 @@ func pushMessagesToOneConsumer() {
 		//如果还未到达投送时间
 		if message.CreateTime+message.DelayTime > ts {
 			//等待重推
-			message.Status = 0
-			MessageList.Store(message.MessageCode, message)
 			return
 		}
 	}
@@ -271,40 +264,25 @@ func pushMessagesToOneConsumer() {
 		//找到与该消息主题对应的客户端(相同的topic)
 		if message.Topic == topic && len(message.Topic) > 0 && len(message.MessageCode) > 0 {
 
-			//重试机制
-			for i := 0; i < pushRetryCount; i++ {
-				//发送消息到消费者客户端
-				err := consumer.WriteJSON(message)
-				//如果发送成功
-				if err == nil {
-					//将消息标记为已消费状态
-					message.Status = 1
-					message.ConsumedTime = utils.GetLocalDateTimestamp()
-					//是否立即清除已被消费的消息
-					if isCleanConsumed == 1 {
-						MessageList.Delete(message.MessageCode)
-						return
-					}
-					//将消息更新到消息列表
-					MessageList.Store(message.MessageCode, message)
-					//发送成功一次后，直接结束推送
-					return
+			//发送消息到消费者客户端
+			err := consumer.WriteJSON(message)
+			//如果连接异常
+			if err != nil {
+				//客户端关闭
+				err = consumer.Close()
+				if err != nil {
+					Loger.Println(err)
 				}
-				Loger.Println(err)
-				//如果到达重试次数，但仍未发送成功
-				if i == pushRetryCount-1 && err != nil {
-					//客户端关闭
-					err = consumer.Close()
-					if err != nil {
-						Loger.Println(err)
-					}
-					//删除map中的客户端
-					delete(Consumers, key)
-				}
+				//删除map中的客户端
+				delete(Consumers, key)
 			}
+
+			//点对点，发送给一个客户端后，直接返回
+			return
 		}
 	}
-	//将未确认消费的消息标记为消费失败状态
+
+	//如果找不到该消息对应的客户端，将消息标记为消费失败状态
 	message.Status = 0
 
 	//将消息更新到消息列表
