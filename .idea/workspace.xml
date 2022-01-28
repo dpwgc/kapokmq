@@ -7,7 +7,6 @@
     <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更新">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +98,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="持久化模块优化" />
     <MESSAGE value="应用配置文件" />
     <MESSAGE value="集群连接模块-公网ip访问异常修复" />
     <MESSAGE value="http服务路由" />
@@ -121,8 +119,9 @@
     <MESSAGE value="集群加入模块-添加获取mq节点列表接口" />
     <MESSAGE value="模板更新-添加集群节点结构体" />
     <MESSAGE value="路由更新" />
-    <MESSAGE value="文档更新" />
     <MESSAGE value="数据恢复模块-优化" />
+    <MESSAGE value="数据持久化-优化" />
+    <MESSAGE value="文档更新" />
     <MESSAGE value="更新" />
     <option name="LAST_COMMIT_MESSAGE" value="更新" />
   </component>
