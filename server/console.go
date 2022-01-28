@@ -158,7 +158,7 @@ func GetMessageList(c *gin.Context) {
 	})
 }
 
-// GetMessageEasy 获取指定状态的简易消息记录列表（不包含消息主体，用于绘制折线图）
+// GetMessageEasy 获取指定状态的简易消息记录列表（不包含消息主体）
 func GetMessageEasy(c *gin.Context) {
 
 	//搜索区间
