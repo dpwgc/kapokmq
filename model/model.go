@@ -32,3 +32,10 @@ type Producer struct {
 	ProducerIp string //生产者ip地址
 	JoinTime   int64  //生产者加入时间
 }
+
+// Node 消息队列节点结构体
+type Node struct {
+	Name string
+	Addr string
+	Port string
+}
