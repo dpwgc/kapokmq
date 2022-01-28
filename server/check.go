@@ -51,12 +51,16 @@ func checkMessage() {
 		}
 
 		//如果检查到延时消息
-		if message.DelayTime > 0 {
+		if message.Status == 0 {
 			//如果还未到投送时间
 			if message.CreateTime+message.DelayTime > ts {
 				//等待推送
 				return true
 			} else {
+				//将消息状态改为未消费
+				message.Status = -1
+				//更新该消息
+				MessageList.Store(message.MessageCode, message)
 				//推送消息
 				MessageChan <- message
 				return true
@@ -66,25 +70,15 @@ func checkMessage() {
 		//如果该消息到达重推时间，但仍未被确认消费，且mq开启了重推功能
 		if message.Status == -1 && message.DelayTime+pushRetryTime < ts-message.CreateTime && isRePush == 1 {
 
-			//延长消费时间
-			message.DelayTime = message.DelayTime + pushRetryTime
-			//更新该消息
-			MessageList.Store(message.MessageCode, message)
-			//重新推送
-			MessageChan <- message
-		}
-
-		//如果是推送失败的消息，且mq开启了重推功能
-		if message.Status == 0 && isRePush == 1 {
-
-			//将消息标记为待消费状态，重新推送该消息
-			message.Status = -1
+			//将消息的推送时间设为当前时间，即将消息超时消费时间阈值移到当前时间的后{pushRetryTime}秒
+			message.DelayTime = ts - message.CreateTime
 			//更新该消息
 			MessageList.Store(message.MessageCode, message)
 			//重新推送
 			MessageChan <- message
 			return true
 		}
+
 		return true
 	})
 }
