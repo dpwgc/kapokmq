@@ -66,7 +66,7 @@ func GetConfig(c *gin.Context) {
 
 	configMap["pushMessagesSpeed"] = viper.GetInt("mq.pushMessagesSpeed")
 	configMap["pushCount"] = viper.GetInt("mq.pushCount")
-	configMap["pushRetryCount"] = viper.GetInt("mq.pushRetryCount")
+	configMap["pushRetryTime"] = viper.GetInt("mq.pushRetryTime")
 
 	configMap["persistentFile"] = viper.GetString("mq.persistentFile")
 	configMap["isPersistent"] = viper.GetInt("mq.isPersistent")
