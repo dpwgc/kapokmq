@@ -4,11 +4,14 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更新">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/model.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/check.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/check.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/console.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/console.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/consumer.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +46,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../kapokmq-go-client" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -83,8 +86,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="模板类" />
-    <MESSAGE value="生产者接口" />
     <MESSAGE value="1" />
     <MESSAGE value="控制台接口更新" />
     <MESSAGE value="优化消息标识码生成工具" />
@@ -105,10 +106,12 @@
     <MESSAGE value="持久化模块优化" />
     <MESSAGE value="应用配置文件" />
     <MESSAGE value="集群连接模块-公网ip访问异常修复" />
-    <MESSAGE value="文档更新" />
     <MESSAGE value="http服务路由" />
     <MESSAGE value="更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新" />
+    <MESSAGE value="配置更新" />
+    <MESSAGE value="控制台接口优化" />
+    <MESSAGE value="文档更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
