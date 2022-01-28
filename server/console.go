@@ -21,27 +21,17 @@ func Ping(c *gin.Context) {
 	})
 }
 
-// GetConsumers 获取全部消费者客户端集合
-func GetConsumers(c *gin.Context) {
+// GetClients 获取全部客户端集合
+func GetClients(c *gin.Context) {
 
 	var consumers []model.Consumer
+	var producers []model.Producer
 
 	//遍历获取消费者客户端列表
 	for key := range Consumers {
 
 		consumers = append(consumers, key)
 	}
-
-	c.JSON(0, gin.H{
-		"code": 0,
-		"data": consumers,
-	})
-}
-
-// GetProducers 获取全部生产者客户端集合
-func GetProducers(c *gin.Context) {
-
-	var producers []model.Producer
 
 	//遍历获取生产者客户端列表
 	for key := range Producers {
@@ -50,8 +40,9 @@ func GetProducers(c *gin.Context) {
 	}
 
 	c.JSON(0, gin.H{
-		"code": 0,
-		"data": producers,
+		"code":      0,
+		"consumers": consumers,
+		"producers": producers,
 	})
 }
 
@@ -256,7 +247,7 @@ func CountMessage(c *gin.Context) {
 
 	var all int64 = 0
 	var consumed int64 = 0
-	var failure int64 = 0
+	var delay int64 = 0
 	var unconsumed int64 = 0
 
 	//遍历消息列表
@@ -266,7 +257,7 @@ func CountMessage(c *gin.Context) {
 			unconsumed++
 		}
 		if message.(model.Message).Status == 0 {
-			failure++
+			delay++
 		}
 		if message.(model.Message).Status == 1 {
 			consumed++
@@ -278,7 +269,7 @@ func CountMessage(c *gin.Context) {
 
 	count["all"] = all
 	count["consumed"] = consumed
-	count["failure"] = failure
+	count["delay"] = delay
 	count["unconsumed"] = unconsumed
 
 	c.JSON(0, gin.H{
