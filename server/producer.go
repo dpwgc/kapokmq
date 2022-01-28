@@ -111,7 +111,14 @@ func ProducersConn(c *gin.Context) {
 		message.MessageCode = utils.CreateCode(s.MessageData)
 		message.MessageData = s.MessageData
 		message.Topic = topic
-		message.Status = -1
+
+		//如果是延时消息
+		if s.DelayTime > 0 {
+			message.Status = 0
+		} else {
+			message.Status = -1
+		}
+
 		message.CreateTime = utils.GetLocalDateTimestamp()
 		message.DelayTime = s.DelayTime
 
@@ -152,7 +159,14 @@ func ProducerSend(c *gin.Context) {
 	message.MessageCode = utils.CreateCode(messageData)
 	message.MessageData = messageData
 	message.Topic = topic
-	message.Status = -1
+
+	//如果是延时消息
+	if intDelayTime > 0 {
+		message.Status = 0
+	} else {
+		message.Status = -1
+	}
+
 	message.CreateTime = utils.GetLocalDateTimestamp()
 	message.DelayTime = intDelayTime
 
