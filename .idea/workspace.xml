@@ -4,16 +4,16 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更新">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster/join.go" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/join.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/application.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/model.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/check.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/check.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/console.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/console.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/consumer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/producer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/producer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/view/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +48,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../kapokmq-go-client" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Atest" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -105,12 +105,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="控制台前端更新" />
-    <MESSAGE value="延时消息推送修复" />
-    <MESSAGE value="消息检查模块修复" />
-    <MESSAGE value="消费者连接模块优化" />
-    <MESSAGE value="Gossip集群优化" />
-    <MESSAGE value="模板" />
     <MESSAGE value="数据恢复模块优化" />
     <MESSAGE value="生产者连接-遗漏消息bug修复" />
     <MESSAGE value="消息队列配置" />
@@ -122,15 +116,21 @@
     <MESSAGE value="应用配置文件" />
     <MESSAGE value="集群连接模块-公网ip访问异常修复" />
     <MESSAGE value="http服务路由" />
-    <MESSAGE value="更新" />
     <MESSAGE value="配置更新" />
     <MESSAGE value="消息检查模块-消息重推功能优化" />
     <MESSAGE value="控制台接口优化" />
     <MESSAGE value="消费者推送模块-添加ack确认消费机制" />
-    <MESSAGE value="模板更新" />
     <MESSAGE value="~" />
+    <MESSAGE value="配置文件更新" />
+    <MESSAGE value="消息检查模块-调整" />
+    <MESSAGE value="控制台模块-调整" />
+    <MESSAGE value="消费者消息推送模块-添加ACK确认消费机制" />
+    <MESSAGE value="模板更新" />
+    <MESSAGE value="生产者消息接收模块-调整延时消息接收" />
     <MESSAGE value="文档更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
+    <MESSAGE value="路由更新-合并消费者与生产者客户端获取接口" />
+    <MESSAGE value="更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
