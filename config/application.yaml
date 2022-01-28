@@ -1,6 +1,6 @@
 server:
   # ip地址/域名（公网环境下部署需要配置成公网ip）
-  addr: 0.0.0.0
+  addr: 127.0.0.1
   # Gin服务运行端口号
   port: 8011
 
@@ -51,6 +51,6 @@ cluster:
   # 该节点的Gossip服务端口号（使用Gossip协议，通过此端口连接注册中心，不能与上面的Gin http服务端口号{server.port}相同）
   gossipPort: 8021
   # 注册中心的ip地址/域名
-  registryAddr: 0.0.0.0
+  registryAddr: 127.0.0.1
   # Serena注册中心的Gossip服务端口号
   registryGossipPort: 8041
