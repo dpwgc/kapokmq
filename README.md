@@ -152,8 +152,8 @@ mq:
   pushMessagesSpeed: 1
   # 单批次推送的消息数量
   pushCount: 1000
-  # 消息推送失败后的立即重试的次数
-  pushRetryCount: 3
+  # 消息重推时间（如果在消息插入队列的{message.delayTime + pushRetryTime}秒后，仍未被消费，就重新推送消息）
+  pushRetryTime: 60
 
   # 持久化文件
   persistentFile: MQDATA
