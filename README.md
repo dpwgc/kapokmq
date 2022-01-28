@@ -69,6 +69,12 @@
 
 ***
 
+### 应用配置
+
+* config/application.yaml
+
+***
+
 ### 打包方式
 
 * 填写application.yaml内的配置。
@@ -128,71 +134,6 @@
     /log                  # 日志目录
     /view                 # 前端-Vue项目打包文件
     MQDATA                # 持久化文件
-```
-
-***
-
-### 配置说明
-
-* config/application.yaml
-
-```yaml
-server:
-  # ip地址/域名（公网环境下部署需要配置成公网ip）
-  addr: 0.0.0.0
-  # Gin服务运行端口号
-  port: 8011
-
-mq:
-  # 生产者、控制台访问密钥（放在请求头部）
-  secretKey: test
-
-  # 消息推送模式（1：点对点模式，一条消息只能随机被一个消费者客户端消费。2：订阅/发布推送模式：将消息推送给所有消费者客户端）
-  pushType: 1
-
-  # 消息通道的缓冲空间大小（消息队列可容纳的未消费消息数量，超过该数值，生产者消息接收协程将被阻塞）
-  messageChanBuffer: 10000000
-
-  # 推送消息的速度（{pushMessagesSpeed}秒/一批消息）
-  pushMessagesSpeed: 1
-  # 单批次推送的消息数量
-  pushCount: 1000
-  # 消息重推时间（如果在消息插入队列的{message.delayTime + pushRetryTime}秒后，仍未被消费，就重新推送消息）
-  pushRetryTime: 60
-
-  # 持久化文件
-  persistentFile: MQDATA
-  # 是否进行持久化（1：是。0：否）
-  isPersistent: 1
-  # 数据恢复策略（0：清空本地数据，不进行数据恢复。1：将本地数据恢复到内存）
-  recoveryStrategy: 1
-  # 两次持久化的间隔时间（单位：秒）
-  persistentTime: 3
-
-  #是否立即清除已确认消费的消息（1：是。0：否）
-  isCleanConsumed: 0
-
-  # 是否开启自动重推未确认消费消息功能（1：是。0：否）
-  isRePush: 1
-  # 是否开启自动清理过期消息功能（1：是。0：否）
-  isClean: 1
-
-  # 检查消息的速度（每隔{checkSpeed}秒检查一批消息，用于消费失败的消息重推、延时消息推送与过期消息清理）
-  checkSpeed: 3
-
-  # 消息过期阈值（当消息存在超过{cleanTime}秒后，删除该消息）
-  cleanTime: 259200
-
-# Gossip集群配置
-cluster:
-  # 是否以集群方式部署（1：是。0：否）
-  isCluster: 1
-  # 该节点的Gossip服务端口号（使用Gossip协议，通过此端口连接注册中心，不能与上面的Gin http服务端口号{server.port}相同）
-  gossipPort: 8021
-  # 注册中心的ip地址/域名
-  registryAddr: 0.0.0.0
-  # Serena注册中心的Gossip服务端口号
-  registryGossipPort: 8041
 ```
 
 ***
