@@ -1,10 +1,14 @@
 package cluster
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/hashicorp/memberlist"
 	"github.com/spf13/viper"
+	"kapokmq/model"
 	"kapokmq/server"
+	"strings"
 )
 
 //集群节点列表
@@ -31,9 +35,9 @@ func InitCluster() {
 
 	//配置本节点信息
 	conf := memberlist.DefaultLANConfig()
-	//addr缺省，addr为空默认设为0.0.0.0
+	//addr缺省，addr为空默认设为127.0.0.1
 	if addr == "" {
-		addr = "0.0.0.0"
+		addr = "127.0.0.1"
 	}
 
 	//本节点的名称（例：mq:0.0.0.0:8011）
@@ -63,4 +67,29 @@ func InitCluster() {
 		panic(err)
 		return
 	}
+}
+
+// GetNodes 获取除了注册中心之外的集群所有节点
+func GetNodes(c *gin.Context) {
+
+	var nodes []model.Node
+
+	// 获取当前集群的消息队列节点信息（除去注册中心）
+	for _, member := range list.Members() {
+		m := strings.Split(member.Name, ":")
+		//如果该节点是注册中心，跳过
+		if m[0] == "r" {
+			continue
+		}
+
+		node := model.Node{
+			Name: member.Name,
+			Addr: m[1],
+			Port: m[2],
+		}
+		nodes = append(nodes, node)
+	}
+
+	data, _ := json.Marshal(nodes)
+	c.String(0, string(data))
 }
