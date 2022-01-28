@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更新">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persistent/recovery.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/recovery.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +99,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="生产者接收模块-并发异常修复" />
     <MESSAGE value="持久化模块优化" />
     <MESSAGE value="应用配置文件" />
     <MESSAGE value="集群连接模块-公网ip访问异常修复" />
@@ -112,7 +112,6 @@
     <MESSAGE value="消费者消息推送模块-添加ACK确认消费机制" />
     <MESSAGE value="模板更新" />
     <MESSAGE value="生产者消息接收模块-调整延时消息接收" />
-    <MESSAGE value="文档更新" />
     <MESSAGE value="路由更新-合并消费者与生产者客户端获取接口" />
     <MESSAGE value="前端更新-添加查看集群节点列表页面" />
     <MESSAGE value="配置更新" />
@@ -122,6 +121,8 @@
     <MESSAGE value="集群加入模块-添加获取mq节点列表接口" />
     <MESSAGE value="模板更新-添加集群节点结构体" />
     <MESSAGE value="路由更新" />
+    <MESSAGE value="文档更新" />
+    <MESSAGE value="数据恢复模块-优化" />
     <MESSAGE value="更新" />
     <option name="LAST_COMMIT_MESSAGE" value="更新" />
   </component>
