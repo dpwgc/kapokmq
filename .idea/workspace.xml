@@ -4,14 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="~">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/model.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/check.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/check.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/console.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/console.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/consumer.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,9 +81,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1" />
-    <MESSAGE value="控制台接口更新" />
-    <MESSAGE value="优化消息标识码生成工具" />
     <MESSAGE value="控制台前端更新" />
     <MESSAGE value="延时消息推送修复" />
     <MESSAGE value="消息检查模块修复" />
@@ -98,7 +90,6 @@
     <MESSAGE value="数据恢复模块优化" />
     <MESSAGE value="生产者连接-遗漏消息bug修复" />
     <MESSAGE value="消息队列配置" />
-    <MESSAGE value="~" />
     <MESSAGE value="前端更新" />
     <MESSAGE value="消费者推送模块-并发异常修复" />
     <MESSAGE value="数据持久化优化" />
@@ -109,9 +100,13 @@
     <MESSAGE value="http服务路由" />
     <MESSAGE value="更新" />
     <MESSAGE value="配置更新" />
+    <MESSAGE value="消息检查模块-消息重推功能优化" />
     <MESSAGE value="控制台接口优化" />
+    <MESSAGE value="消费者推送模块-添加ack确认消费机制" />
+    <MESSAGE value="模板更新" />
     <MESSAGE value="文档更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
+    <MESSAGE value="~" />
+    <option name="LAST_COMMIT_MESSAGE" value="~" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
