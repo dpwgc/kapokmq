@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"kapokmq/cluster"
 	"kapokmq/middleware"
 	"kapokmq/server"
 	"net/http"
@@ -29,6 +30,7 @@ func InitRouters() (r *gin.Engine) {
 		console.POST("/GetMessageList", server.GetMessageList)
 		console.POST("/GetMessageEasy", server.GetMessageEasy)
 		console.POST("/CountMessage", server.CountMessage)
+		console.POST("/GetNodes", cluster.GetNodes)
 	}
 
 	//生产者接口（http post请求，用于接收生产者客户端发送的消息）
