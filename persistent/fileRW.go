@@ -18,11 +18,25 @@ var wFile *os.File
 var rFile *os.File
 var dataFile string
 
+//消息复制map的初始大小
+var copyMapSize int
+
 // InitFileRW 初始化文件读写模块
 func InitFileRW() {
 
 	//持久化文件名
 	dataFile = viper.GetString("mq.persistentFile")
+
+	//获取消息通道的缓冲区大小
+	messageChanBuffer := viper.GetInt("mq.messageChanBuffer")
+	//如果消息通道缓冲区大小小于等于1000
+	if messageChanBuffer <= 1000 {
+		//消息复制map初始大小设为1000
+		copyMapSize = 1000
+	} else {
+		//消息复制map初始大小设为消息通道缓冲区大小的千分之一
+		copyMapSize = messageChanBuffer / 1000
+	}
 
 	//判断持久化文件是否存在
 	f, err := os.Open(dataFile)
@@ -53,7 +67,7 @@ func Write() {
 	writer := gob.NewEncoder(wFile)
 
 	//复制消息列表
-	copyMap := make(map[string]interface{})
+	copyMap := make(map[string]interface{}, copyMapSize)
 	server.MessageList.Range(func(key, value interface{}) bool {
 		copyMap[key.(string)] = value
 		return true
