@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"kapokmq/model"
-	"kapokmq/persistent"
 	"kapokmq/utils"
 	"strconv"
 	"sync"
@@ -124,7 +123,7 @@ func ProducersConn(c *gin.Context) {
 		message.DelayTime = s.DelayTime
 
 		//持久化：追加写日志方式
-		persistent.SetWAL(message)
+		SetWAL(message)
 		//将消息记录到消息列表
 		MessageList.Store(message.MessageCode, message)
 		//把消息写入消息通道
@@ -174,7 +173,7 @@ func ProducerSend(c *gin.Context) {
 	message.DelayTime = intDelayTime
 
 	//持久化：追加写日志方式
-	persistent.SetWAL(message)
+	SetWAL(message)
 	//将消息记录到消息列表
 	MessageList.Store(message.MessageCode, message)
 	//把消息写入消息通道
