@@ -21,7 +21,7 @@ func main() {
 	server.InitLog()
 
 	//加载WAL持久化模块
-	persistent.InitWAL()
+	server.InitWAL()
 
 	//初始化消息队列
 	server.InitMQ()
