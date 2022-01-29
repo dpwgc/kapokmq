@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/spf13/viper"
 	"kapokmq/model"
 	"log"
@@ -32,6 +31,7 @@ func InitLog() {
 
 var isPersistent int
 var WAL *log.Logger
+var WALFile *os.File
 
 // InitWAL WAL持久化日志
 func InitWAL() {
@@ -43,8 +43,8 @@ func InitWAL() {
 	}
 
 	file := "./WAL.log"
-	logFile, _ := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
-	WAL = log.New(logFile, "", log.LstdFlags|log.Lshortfile|log.LUTC) // 将文件设置为loger作为输出
+	WALFile, _ = os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
+	WAL = log.New(WALFile, "", 0) // 将文件设置为loger作为输出
 }
 
 // SetWAL 消息追加写入日志
@@ -57,5 +57,5 @@ func SetWAL(message model.Message) {
 
 	//追加写入
 	jsonStr, _ := json.Marshal(message)
-	WAL.Println(fmt.Sprintf("%s%s", "\t\\|SET|\\\t", string(jsonStr)))
+	WAL.Println(string(jsonStr))
 }
