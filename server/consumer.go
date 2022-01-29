@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/spf13/viper"
 	"kapokmq/model"
-	"kapokmq/persistent"
 	"kapokmq/utils"
 	"net/http"
 	"sync"
@@ -143,7 +142,7 @@ func ConsumersConn(c *gin.Context) {
 		message := msg.(model.Message)
 
 		//持久化：追加写日志方式
-		persistent.SetWAL(message)
+		SetWAL(message)
 
 		//是否立即清除已被消费的消息
 		if isCleanConsumed == 1 {
