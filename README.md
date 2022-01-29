@@ -42,10 +42,11 @@
 ##### 延时消息发布：
 * 可对单条消息设定延时时间，秒级延时推送消息，投送时间精确度受mq.checkSpeed消息检查速度的影响。
 
-##### 消费者ACK确认机制
-* 消费者接收到消息后，将向消息队列发送确认消费ACK，确保消息不在消息推送环节丢失。
+##### ACK消息确认机制：
+* 消息队列接收到消息后，将向生产者发送确认接收ACK，可确保消息不在消息被持久化之前丢失。
+* 消费者接收到消息后，将向消息队列发送确认消费ACK，可确保消息不在消息消费环节丢失。
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/ack.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/ack2.jpg)
 
 ##### 负载均衡集群部署：
 * 采用Gossip协议连接与同步集群节点，生产者客户端从注册中心获取所有消息队列节点地址并与它们连接，进行负载均衡投递（将消息随机投送到其中一个消息队列节点）。可做到不停机水平扩展。
@@ -132,7 +133,7 @@
 在Linux上部署
 
 /kapokmq                  # 文件根目录
-    kapokmq               # 打包后的二进制文件(程序后台执行:setsid ./kapokmq)
+    kapokmq               # 打包后的二进制文件(后台运行指令:setsid ./kapokmq)
     /config               # 配置目录
         application.yaml  # 配置文件
     /log                  # 日志目录
@@ -179,7 +180,7 @@ var MessageList sync.Map
 
 * 全量数据写入结合WAL日志：采用类似于Redis AOF与RDB混合持久化方案，定期将内存中的消息全量持久化到二进制文件，在两次全量数据持久化之间，每次接收或更新消息操作都将写入WAL日志，最大程度避免消息丢失。
 
-* 数据恢复：从持久化文件中读取数据，并将数据恢复至MessageList消息列表中，重新投送未消费的消息。
+* 数据恢复：从持久化文件中读取数据，并将数据恢复至MessageList消息列表中，重新推送未消费的消息。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/recovery.jpg)
 
@@ -252,7 +253,7 @@ ProducerId   //生产者客户端Id
 }
 ```
 
-* 消息队列接收到该消息后（WAL后），通过该websocket连接向生产者客户端发送ACK，ACK内容为字符串"ok"
+* 消息队列接收到该消息后（写入日志后），通过该websocket连接向生产者客户端发送ACK，ACK内容为字符串"ok"
 
 * 如果生产者客户端选择异步发送消息方式，则可忽略该ACK。
 
@@ -290,7 +291,7 @@ consumerId   //消费者客户端Id
 }
 ```
 
-* 消费者客户端接收到该消息后（WAL后），通过该websocket连接向消息队列发送ACK，ACK内容为消息的唯一标识码MessageCode
+* 消费者客户端接收到该消息后（写入日志后），通过该websocket连接向消息队列发送ACK，ACK内容为消息的唯一标识码MessageCode
 
 * 消费者客户端发送给消息队列的ACK字符串样式
 
@@ -442,8 +443,6 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 
 |实现功能|功能说明|当前进度|
 |---|---|---|
-|WAL持久化与回放数据|最大程度上避免丢失数据|已完成|
-|生产者同步发送消息|生产者发送一条消息后，必须收到mq的ACK才能发送下一条消息|服务端完成|
 |Java客户端|Maven包，websocket连接，Demo：https://gitee.com/dpwgc/kapokmq-java-client|未完成|
 |拉模式消费|消费者主动拉取消息队列的消息|计划中|
 |注册中心集群化|多个注册中心，保证高可靠|计划中|
