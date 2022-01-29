@@ -59,7 +59,8 @@
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/kv.jpg)
 
 ##### 数据持久化：
-* 拥有两种数据持久化方式：（1）周期性全量数据持久化、（2）周期性全量数据持久化结合WAL追加写入日志。
+* 方式一：周期性全量数据持久化。
+* 方式二：周期性全量数据持久化结合WAL追加写入日志。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/pers.jpg)
 
@@ -230,17 +231,7 @@ http://localhost:port/#/Console
 
 ### 客户端连接
 
-##### 路由 `router.go`
-
-```
-//生产者连接（WebSocket连接方式，用于接收生产者客户端发送的消息）
-GET("/Producers/Conn/:topic/:producerId", server.ProducersConn)
-
-//消费者连接（WebSocket连接方式，用于推送消息到消费者客户端）
-r.GET("/Consumers/Conn/:topic/:consumerId", servers.ConsumersConn)
-```
-
-##### 生产者客户端连接到消息队列
+#### 生产者客户端连接到消息队列
 
 * WebSocket `ws://localhost:port/Producers/Conn/{topic}/{producerId}`
 
@@ -261,7 +252,19 @@ ProducerId   //生产者客户端Id
 }
 ```
 
-##### 消费者客户端连接到消息队列
+* 消息队列接收到该消息后（WAL后），通过该websocket连接向生产者客户端发送ACK，ACK内容为字符串"ok"
+
+* 如果生产者客户端选择异步发送消息方式，则可忽略该ACK。
+
+* 如果要追求消息的可靠性，可以利用该ACK机制发送同步消息，即生产者在发送完一条消息后，必须收到消息队列发来的ACK才能继续发送下一条消息。
+
+* 消费者客户端发送给消息队列的ACK字符串样式
+
+```json
+"ok"
+```
+
+#### 消费者客户端连接到消息队列
 
 * WebSocket `ws://localhost:port/Consumers/Conn/{topic}/{consumerId}`
 
@@ -287,7 +290,7 @@ consumerId   //消费者客户端Id
 }
 ```
 
-* 消费者客户端接收到该消息后，通过该websocket连接向消息队列发送ACK，ACK内容为消息的MessageCode
+* 消费者客户端接收到该消息后（WAL后），通过该websocket连接向消息队列发送ACK，ACK内容为消息的唯一标识码MessageCode
 
 * 消费者客户端发送给消息队列的ACK字符串样式
 
@@ -295,17 +298,20 @@ consumerId   //消费者客户端Id
 "8c01b728ef82ba754a63e61daa43e83c61b744c7"
 ```
 
-* 生产者、消费者客户端与消息队列进行WebSocket连接后，需输入密钥登录
+#### 客户端连接流程演示
+
+生产者、消费者客户端与消息队列进行WebSocket连接后，需输入密钥登录
+
+* 生产者客户端与消息队列建立连接
 
 ```
 ws://127.0.0.1:8011/Producers/Conn/test_topic/1
-生产者客户端与消息队列建立连接
 
 服务端回应 2022-01-02 15:14:53
 "Please enter the secret key"   //提示输入密钥
 
 客户端发送 2022-01-02 15:15:06
-"qqq"                             //输入错误的密钥
+"qqq"                           //输入错误的密钥
 
 服务端回应 2022-01-02 15:15:06
 "Secret key matching error"     //提示密钥出错
@@ -314,26 +320,30 @@ ws://127.0.0.1:8011/Producers/Conn/test_topic/1
 "Please enter the secret key"   //再次提示输入密钥
 
 客户端发送 2022-01-02 15:15:13
-"test"                            //输出正确的密钥
+"test"                          //输出正确的密钥
 
 服务端回应 2022-01-02 15:15:13
 "Secret key matching succeeded" //提示密钥验证成功
 
 客户端发送 2022-01-02 15:15:15   //生产者客户端可以向消息队列发送消息
-"{.. Json Message ..}"
-"{.. Json Message ..}"
-"{.. Json Message ..}"
+"{.. Json SendMessage ..}"
+"{.. Json SendMessage ..}"
+
+服务端回应 2022-01-02 15:15:15
+"ok"                           //消息队列接收到消息后，向生产者发送ACK
+"ok" 
 ```
+
+* 消费者客户端与消息队列建立连接
 
 ```
 ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
-消费者客户端与消息队列建立连接
 
 服务端回应 2022-01-02 15:14:53
 "Please enter the secret key"   //提示输入密钥
 
 客户端发送 2022-01-02 15:15:06
-"qqq"                             //输入错误的密钥
+"qqq"                           //输入错误的密钥
 
 服务端回应 2022-01-02 15:15:06
 "Secret key matching error"     //提示密钥出错
@@ -342,7 +352,7 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 "Please enter the secret key"   //再次提示输入密钥
 
 客户端发送 2022-01-02 15:15:13
-"test"                            //输出正确的密钥
+"test"                          //输出正确的密钥
 
 服务端回应 2022-01-02 15:15:13
 "Secret key matching succeeded" //提示密钥验证成功
@@ -351,7 +361,7 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 "{.. Json Message ..}"
 "{.. Json Message ..}"
 
-客户端发送 2022-01-02 15:15:14   //消费者客户端接收到消息后，向消息队列发送ACK
+客户端发送 2022-01-02 15:15:14   //消费者接收到消息后，向消息队列发送ACK
 "8c01b728ef82ba754a63e61daa43e83c61b744c7"
 "sdiw2b7quh82basdsa17sdqdqw81d83c61bqdhhu"
 ```
@@ -433,8 +443,8 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 |实现功能|功能说明|当前进度|
 |---|---|---|
 |WAL持久化与回放数据|最大程度上避免丢失数据|已完成|
+|生产者同步发送消息|生产者发送一条消息后，必须收到mq的ACK才能发送下一条消息|服务端完成|
 |Java客户端|Maven包，websocket连接，Demo：https://gitee.com/dpwgc/kapokmq-java-client|未完成|
 |拉模式消费|消费者主动拉取消息队列的消息|计划中|
-|生产者同步发送消息|生产者发送一条消息后，必须收到mq的ACK才能发送下一条消息|计划中|
 |注册中心集群化|多个注册中心，保证高可靠|计划中|
 |主备消息队列|为每个mq主节点绑定一个备用节点，宕机时立即切换到备用节点|计划中|
