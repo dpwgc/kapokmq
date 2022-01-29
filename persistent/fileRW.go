@@ -1,13 +1,14 @@
 package persistent
 
 import (
+	"bufio"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
+	"io"
 	"kapokmq/model"
 	"kapokmq/server"
-	"log"
 	"os"
 )
 
@@ -111,11 +112,7 @@ func Read() {
 		return
 	}
 
-	copyMap, err := jsonToMessage(string(info))
-	if err != nil {
-		server.Loger.Println(err)
-		return
-	}
+	copyMap := jsonToMessageMap(string(info))
 
 	//将本地持久化文件数据（copyMap）循环写入消息列表（MessageList）
 	for key, value := range copyMap {
@@ -127,29 +124,72 @@ func Read() {
 	}
 }
 
+// ReadWAL 读取WAL日志文件
+func ReadWAL() {
+	f, _ := os.Open("./WAL.log")
+	r := bufio.NewReader(f)
+	for {
+		// 读取文件(行读取)
+		slice, err := r.ReadString('\n')
+
+		//将行字符串解析为Message结构体
+		message := jsonToMessage(slice)
+		//将读取到的消息更新到消息列表
+		server.MessageList.Store(message.MessageCode, message)
+
+		fmt.Println(message)
+
+		//如果读取到文件末尾
+		if err == io.EOF {
+			break
+		}
+	}
+	err := f.Close()
+	if err != nil {
+		server.Loger.Println(err)
+		return
+	}
+}
+
 // CleanWAL 清空WAL日志文件
 func CleanWAL() {
 
+	//关闭WAL日志文件
+	err := server.WALFile.Close()
+	if err != nil {
+		server.Loger.Println(err)
+		return
+	}
+
 	//删除WAL日志文件
-	err := os.Remove("WAL.log")
+	err = os.Remove("WAL.log")
 	if err != nil {
 		server.Loger.Println(err)
 		return
 	}
 
 	//重新创建WAL日志文件
-	file := "./WAL.log"
-	logFile, _ := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
-	server.WAL = log.New(logFile, "", log.LstdFlags|log.Lshortfile|log.LUTC) // 将文件设置为loger作为输出
+	server.InitWAL()
 }
 
-//json字符串转Data结构体
-func jsonToMessage(jsonStr string) (map[string]model.Message, error) {
-	m := make(map[string]model.Message)
+//json字符串转Message Map
+func jsonToMessageMap(jsonStr string) map[string]model.Message {
+	m := make(map[string]model.Message, copyMapSize)
 	err := json.Unmarshal([]byte(jsonStr), &m)
 	if err != nil {
 		server.Loger.Println(err)
-		return nil, err
+		return nil
 	}
-	return m, nil
+	return m
+}
+
+//json字符串转Message
+func jsonToMessage(jsonStr string) model.Message {
+	m := model.Message{}
+	err := json.Unmarshal([]byte(jsonStr), &m)
+	if err != nil {
+		server.Loger.Println(err)
+		return m
+	}
+	return m
 }
