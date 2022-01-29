@@ -31,6 +31,7 @@ func InitFileRW() {
 
 	//获取消息通道的缓冲区大小
 	messageChanBuffer := viper.GetInt("mq.messageChanBuffer")
+
 	//如果消息通道缓冲区大小小于等于1000
 	if messageChanBuffer <= 1000 {
 		//消息复制map初始大小设为1000
