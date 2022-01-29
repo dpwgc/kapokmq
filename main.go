@@ -17,8 +17,11 @@ func main() {
 	//加载配置
 	config.InitConfig()
 
-	//加载日志模块
+	//加载常规日志模块
 	server.InitLog()
+
+	//加载WAL持久化模块
+	persistent.InitWAL()
 
 	//初始化消息队列
 	server.InitMQ()
