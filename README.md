@@ -43,7 +43,7 @@
 * 可对单条消息设定延时时间，秒级延时推送消息，投送时间精确度受mq.checkSpeed消息检查速度的影响。
 
 ##### 消费者ACK确认机制
-* 如果消费者成功接收到消息，将向消息队列发送确认消费ACK，确保消息不在消费环节丢失。
+* 消费者接收到消息后，将向消息队列发送确认消费ACK，确保消息不在消息推送环节丢失。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/ack.jpg)
 
@@ -166,7 +166,7 @@ var MessageList sync.Map
 
 * 包含订阅/发布、点对点两种推送模式。
 
-* 消息推送给消费者客户端后，将向消息队列发送一条ACK确认字符（内容为消息标识码messageCode），消息队列再根据此ACK将指定messageCode的消息更改为已消费状态。
+* 消费者客户端接收消息后，将向消息队列发送一条ACK确认字符（内容为消息标识码messageCode），消息队列再根据此ACK将指定messageCode的消息更改为已消费状态。
 
 ##### 数据持久化 `persistent`
 
@@ -242,18 +242,15 @@ topic        //主题名称
 ProducerId   //生产者客户端Id
 ```
 
-```
-消息队列接收的消息格式
+* 消息队列接收的消息格式 
 
-接收Json字符串格式的消息，将其解析成model.SendMessage结构体。
+* 生产者客户端推送给消息队列的Json字符串消息格式
 
-推送给生产者服务端的Json字符串消息格式
+```json
 {
     "MessageData":"hello",
     "DelayTime":"0"
 }
-
-再将model.SendMessage消息模板封装成model.Message消息模板，插入消息通道。
 ```
 
 ##### 消费者客户端连接到消息队列
@@ -266,9 +263,11 @@ topic        //主题名称
 consumerId   //消费者客户端Id
 ```
 
-```
-//通过WriteJSON()函数将model.Message类型的消息转为Json字符串发送
-推送给消费者客户端的Json字符串消息格式
+* 通过WriteJSON()函数将model.Message类型的消息转为Json字符串发送
+
+* 消息队列推送给消费者客户端的Json字符串消息格式
+
+```json
 {
     "MessageCode":"8c01b728ef82ba754a63e61daa43e83c61b744c7",
     "MessageData":"hello",
@@ -280,34 +279,15 @@ consumerId   //消费者客户端Id
 }
 ```
 
+* 消费者客户端接收到该消息后，通过该websocket连接向消息队列发送ACK，ACK内容为消息的MessageCode
+
+* 消费者客户端发送给消息队列的ACK字符串样式
+
+```json
+"8c01b728ef82ba754a63e61daa43e83c61b744c7"
+```
+
 * 生产者、消费者客户端与消息队列进行WebSocket连接后，需输入密钥登录
-```
-ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
-消费者客户端与消息队列建立连接
-
-服务端回应 2022-01-02 15:14:53
-"Please enter the secret key"   //提示输入密钥
-
-你发送的信息 2022-01-02 15:15:06
-qqq                             //输入错误的密钥
-
-服务端回应 2022-01-02 15:15:06
-"Secret key matching error"     //提示密钥出错
-
-服务端回应 2022-01-02 15:15:06
-"Please enter the secret key"   //再次提示输入密钥
-
-你发送的信息 2022-01-02 15:15:13
-test                            //输出正确的密钥
-
-服务端回应 2022-01-02 15:15:13
-"Secret key matching succeeded" //提示密钥验证成功
-
-服务端回应 2022-01-02 15:15:13   //消费者客户端可以开始接收消息
-...
-...
-...
-```
 
 ```
 ws://127.0.0.1:8011/Producers/Conn/test_topic/1
@@ -316,7 +296,7 @@ ws://127.0.0.1:8011/Producers/Conn/test_topic/1
 服务端回应 2022-01-02 15:14:53
 "Please enter the secret key"   //提示输入密钥
 
-你发送的信息 2022-01-02 15:15:06
+客户端发送 2022-01-02 15:15:06
 qqq                             //输入错误的密钥
 
 服务端回应 2022-01-02 15:15:06
@@ -325,16 +305,47 @@ qqq                             //输入错误的密钥
 服务端回应 2022-01-02 15:15:06
 "Please enter the secret key"   //再次提示输入密钥
 
-你发送的信息 2022-01-02 15:15:13
+客户端发送 2022-01-02 15:15:13
 test                            //输出正确的密钥
 
 服务端回应 2022-01-02 15:15:13
 "Secret key matching succeeded" //提示密钥验证成功
 
-服务端回应 2022-01-02 15:15:13   //生产者客户端可以开始发送消息
-...
-...
-...
+客户端发送 2022-01-02 15:15:15   //生产者客户端可以向消息队列发送消息
+"{.. Json Message ..}"
+"{.. Json Message ..}"
+"{.. Json Message ..}"
+```
+
+```
+ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
+消费者客户端与消息队列建立连接
+
+服务端回应 2022-01-02 15:14:53
+"Please enter the secret key"   //提示输入密钥
+
+客户端发送 2022-01-02 15:15:06
+qqq                             //输入错误的密钥
+
+服务端回应 2022-01-02 15:15:06
+"Secret key matching error"     //提示密钥出错
+
+服务端回应 2022-01-02 15:15:06
+"Please enter the secret key"   //再次提示输入密钥
+
+客户端发送 2022-01-02 15:15:13
+test                            //输出正确的密钥
+
+服务端回应 2022-01-02 15:15:13
+"Secret key matching succeeded" //提示密钥验证成功
+
+服务端回应 2022-01-02 15:15:13   //消息队列可以向消费者客户端发送消息
+"{.. Json Message ..}"
+"{.. Json Message ..}"
+
+客户端发送 2022-01-02 15:15:14   //消费者客户端接收到消息后，向消息队列发送ACK
+"8c01b728ef82ba754a63e61daa43e83c61b744c7"
+"sdiw2b7quh82basdsa17sdqdqw81d83c61bqdhhu"
 ```
 
 ***
