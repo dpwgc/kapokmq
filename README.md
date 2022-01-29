@@ -54,12 +54,14 @@
 * 定期重推未确认消费且超时的消息(受mq.checkSpeed消息检查速度的影响)。
 
 ##### KV型内存数据存储：
-* 采用sync.Map存储所有消息，控制台访问、消息检查、ACK确认消费、数据持久化等一系列读写操作都在sync.Map上进行。
+* 采用sync.Map存储所有消息，控制台访问、消息检查、ACK确认消费、全量数据持久化等一系列读写操作都在sync.Map上进行。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/kv.jpg)
 
 ##### 数据持久化：
-* 采用类似于Redis AOF与RDB混合持久化方案，定期将内存中的消息全量持久化到二进制文件，在两次全量数据持久化间使用WAL追加写入日志存储消息，最大程度避免消息丢失。
+* 拥有两种数据持久化方式：（1）周期性全量数据持久化、（2）周期性全量数据持久化结合WAL追加写入日志。
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/pers.jpg)
 
 ##### 过期消息清除：
 * 自定义过期时间，定期清除过期消息，默认清除两天前的消息。
@@ -172,9 +174,13 @@ var MessageList sync.Map
 
 ##### 数据持久化 `persistent`
 
-* 数据写入：将MessageList消息列表中的所有消息转换为[]byte类型数据，并将其写入二进制文件。
+* 全量数据写入：定期将MessageList消息列表中的所有消息转换为[]byte类型数据，并将其写入二进制文件，类似于Redis RDB持久化方式。
+
+* 全量数据写入结合WAL日志：采用类似于Redis AOF与RDB混合持久化方案，定期将内存中的消息全量持久化到二进制文件，在两次全量数据持久化之间，每次接收或更新消息操作都将写入WAL日志，最大程度避免消息丢失。
 
 * 数据恢复：从持久化文件中读取数据，并将数据恢复至MessageList消息列表中，重新投送未消费的消息。
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/recovery.jpg)
 
 ##### 消息检查 `server/check.go`
 
@@ -299,7 +305,7 @@ ws://127.0.0.1:8011/Producers/Conn/test_topic/1
 "Please enter the secret key"   //提示输入密钥
 
 客户端发送 2022-01-02 15:15:06
-qqq                             //输入错误的密钥
+"qqq"                             //输入错误的密钥
 
 服务端回应 2022-01-02 15:15:06
 "Secret key matching error"     //提示密钥出错
@@ -308,7 +314,7 @@ qqq                             //输入错误的密钥
 "Please enter the secret key"   //再次提示输入密钥
 
 客户端发送 2022-01-02 15:15:13
-test                            //输出正确的密钥
+"test"                            //输出正确的密钥
 
 服务端回应 2022-01-02 15:15:13
 "Secret key matching succeeded" //提示密钥验证成功
@@ -327,7 +333,7 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 "Please enter the secret key"   //提示输入密钥
 
 客户端发送 2022-01-02 15:15:06
-qqq                             //输入错误的密钥
+"qqq"                             //输入错误的密钥
 
 服务端回应 2022-01-02 15:15:06
 "Secret key matching error"     //提示密钥出错
@@ -336,7 +342,7 @@ qqq                             //输入错误的密钥
 "Please enter the secret key"   //再次提示输入密钥
 
 客户端发送 2022-01-02 15:15:13
-test                            //输出正确的密钥
+"test"                            //输出正确的密钥
 
 服务端回应 2022-01-02 15:15:13
 "Secret key matching succeeded" //提示密钥验证成功
@@ -426,9 +432,9 @@ test                            //输出正确的密钥
 
 |实现功能|功能说明|当前进度|
 |---|---|---|
+|WAL持久化与回放数据|最大程度上避免丢失数据|已完成|
 |Java客户端|Maven包，websocket连接，Demo：https://gitee.com/dpwgc/kapokmq-java-client|未完成|
 |拉模式消费|消费者主动拉取消息队列的消息|计划中|
 |生产者同步发送消息|生产者发送一条消息后，必须收到mq的ACK才能发送下一条消息|计划中|
-|WAL持久化与回放数据|最大程度上避免丢失数据|计划中|
 |注册中心集群化|多个注册中心，保证高可靠|计划中|
 |主备消息队列|为每个mq主节点绑定一个备用节点，宕机时立即切换到备用节点|计划中|
