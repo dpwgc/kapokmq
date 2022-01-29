@@ -20,9 +20,6 @@ func main() {
 	//加载常规日志模块
 	server.InitLog()
 
-	//加载WAL持久化模块
-	server.InitWAL()
-
 	//初始化消息队列
 	server.InitMQ()
 
@@ -34,6 +31,9 @@ func main() {
 
 	//加载数据恢复模块
 	persistent.InitRecovery()
+
+	//加载WAL持久化模块
+	server.InitWAL()
 
 	//加载持久化模块
 	persistent.InitPers()
