@@ -126,7 +126,12 @@ func Read() {
 
 // ReadWAL 读取WAL日志文件
 func ReadWAL() {
-	f, _ := os.Open("./WAL.log")
+	f, err := os.Open("./WAL.log")
+	//如果文件不存在，则直接返回
+	if err != nil {
+		server.Loger.Println("WAL.log does not exist")
+		return
+	}
 	r := bufio.NewReader(f)
 	for {
 		// 读取文件(行读取)
@@ -137,14 +142,12 @@ func ReadWAL() {
 		//将读取到的消息更新到消息列表
 		server.MessageList.Store(message.MessageCode, message)
 
-		fmt.Println(message)
-
 		//如果读取到文件末尾
 		if err == io.EOF {
 			break
 		}
 	}
-	err := f.Close()
+	err = f.Close()
 	if err != nil {
 		server.Loger.Println(err)
 		return
