@@ -140,7 +140,7 @@ func CleanWAL() {
 	//重新创建WAL日志文件
 	file := "./WAL.log"
 	logFile, _ := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
-	WAL = log.New(logFile, "", log.LstdFlags|log.Lshortfile|log.LUTC) // 将文件设置为loger作为输出
+	server.WAL = log.New(logFile, "", log.LstdFlags|log.Lshortfile|log.LUTC) // 将文件设置为loger作为输出
 }
 
 //json字符串转Data结构体
