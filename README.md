@@ -77,6 +77,14 @@
 
 ***
 
+### 性能测试
+
+##### 测试程序和消息队列都运行在本机。配置：轻薄本，低压8代i5、8g内存
+
+* 单机部署消息队列，未开启WAL预写日志的情况下，模拟三十万并发请求，最高QPS可达十万。
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/test.jpg)
+
 ### 配置文件
 
 * config/application.yaml

@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="配置更新">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更新">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +41,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../kapokmq-server" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -81,8 +81,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="消费者消息推送模块-添加ACK消费确认机制" />
-    <MESSAGE value="文件持久化优化" />
     <MESSAGE value="集群加入模块-添加获取mq节点列表接口" />
     <MESSAGE value="模板更新-添加集群节点结构体" />
     <MESSAGE value="路由更新" />
@@ -103,10 +101,12 @@
     <MESSAGE value="主函数-数据恢复功能优化" />
     <MESSAGE value="数据恢复-可从WAL日志文件中恢复数据" />
     <MESSAGE value="生产者消息接收模块-新增消息接收ACK确认机制" />
-    <MESSAGE value="更新" />
     <MESSAGE value="文档更新" />
     <MESSAGE value="配置更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="配置更新" />
+    <MESSAGE value="WAL数据回复-文件不存在bug修复" />
+    <MESSAGE value="WAL日志数据回放-文件不存在bug修复" />
+    <MESSAGE value="更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
