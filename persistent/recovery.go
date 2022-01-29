@@ -17,8 +17,10 @@ func InitRecovery() {
 
 	//从本地持久化文件中获取数据
 	if recoveryStrategy == 1 {
-		//本地恢复数据
+		//先获取二进制文件中的周期性全量备份数据
 		Read()
+		//再读取WAL日志文件中的消息
+		ReadWAL()
 		server.Loger.Println("Recovery from local")
 	}
 	//recoveryStrategy为其他数值时不进行数据恢复操作
