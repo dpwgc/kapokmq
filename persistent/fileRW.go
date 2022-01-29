@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"kapokmq/model"
 	"kapokmq/server"
+	"log"
 	"os"
 )
 
@@ -124,6 +125,22 @@ func Read() {
 	if err != nil {
 		server.Loger.Println(err)
 	}
+}
+
+// CleanWAL 清空WAL日志文件
+func CleanWAL() {
+
+	//删除WAL日志文件
+	err := os.Remove("WAL.log")
+	if err != nil {
+		server.Loger.Println(err)
+		return
+	}
+
+	//重新创建WAL日志文件
+	file := "./WAL.log"
+	logFile, _ := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
+	WAL = log.New(logFile, "", log.LstdFlags|log.Lshortfile|log.LUTC) // 将文件设置为loger作为输出
 }
 
 //json字符串转Data结构体
