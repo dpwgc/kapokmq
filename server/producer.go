@@ -124,6 +124,14 @@ func ProducersConn(c *gin.Context) {
 
 		//持久化：追加写日志方式
 		SetWAL(message)
+
+		//消息写入WAL文件后，向生产者客户端发送确认接收ACK
+		err = ws.WriteMessage(1, []byte("ok"))
+		if err != nil {
+			Loger.Println(err)
+			return
+		}
+
 		//将消息记录到消息列表
 		MessageList.Store(message.MessageCode, message)
 		//把消息写入消息通道
