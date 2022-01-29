@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更新">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="配置更新">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +41,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../kapokmq-server" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -98,15 +98,15 @@
     <MESSAGE value="主函数-添加WAL持久化方案" />
     <MESSAGE value="数据持久化-添加追加写入log持久化" />
     <MESSAGE value="生产者消息接收模板，添加WAL持久化" />
-    <MESSAGE value="配置更新" />
     <MESSAGE value="文件读写，添加WAL日志恢复功能" />
     <MESSAGE value="日志记录-添加WAL日志" />
     <MESSAGE value="主函数-数据恢复功能优化" />
     <MESSAGE value="数据恢复-可从WAL日志文件中恢复数据" />
     <MESSAGE value="生产者消息接收模块-新增消息接收ACK确认机制" />
-    <MESSAGE value="文档更新" />
     <MESSAGE value="更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新" />
+    <MESSAGE value="文档更新" />
+    <MESSAGE value="配置更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="配置更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
