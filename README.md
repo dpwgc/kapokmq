@@ -33,42 +33,42 @@
 
 ### 实现功能
 
-##### 订阅/发布推送模式：
+#### 订阅/发布推送模式：
 * 将单条消息通过WebSocket结合协程并发推送到多个与消息topic主题相同的消费者客户端。
 
-##### 点对点推送模式：
+#### 点对点推送模式：
 * 如果有多个消费者客户端连接到消息队列，将消息随机推送给其中一个与消息topic主题相同的客户端。
 
-##### 延时消息发布：
+#### 延时消息发布：
 * 可对单条消息设定延时时间，秒级延时推送消息，投送时间精确度受mq.checkSpeed消息检查速度的影响。
 
-##### ACK消息确认机制：
+#### ACK消息确认机制：
 * 消息队列接收到消息后，将向生产者发送确认接收ACK，可确保消息不在消息被持久化之前丢失。
 * 消费者接收到消息后，将向消息队列发送确认消费ACK，可确保消息不在消息消费环节丢失。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/ack2.jpg)
 
-##### 负载均衡集群部署：
+#### 负载均衡集群部署：
 * 采用Gossip协议连接与同步集群节点，生产者客户端从注册中心获取所有消息队列节点地址并与它们连接，进行负载均衡投递（将消息随机投送到其中一个消息队列节点）。可做到不停机水平扩展。
 
-##### 消息推送失败重试机制：
+#### 消息推送失败自动重试机制：
 * 定期重推未确认消费且超时的消息(受mq.checkSpeed消息检查速度的影响)。
 
-##### KV型内存数据存储：
-* 采用sync.Map存储所有消息，控制台访问、消息检查、ACK确认消费、全量数据持久化等一系列读写操作都在sync.Map上进行。
+#### KV型内存数据存储：
+* 采用sync.Map存储所有消息，控制台访问、消息检查、ACK确认接收/消费、全量数据持久化等一系列读写操作都在sync.Map上进行。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/kv.jpg)
 
-##### 数据持久化：
+#### 数据持久化：
 * 方式一：周期性全量数据持久化。
-* 方式二：周期性全量数据持久化结合WAL追加写入日志。
+* 方式二：周期性全量数据持久化结合WAL预写日志（影响性能）。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/pers.jpg)
 
-##### 过期消息清除：
+#### 过期消息清除：
 * 自定义过期时间，定期清除过期消息，默认清除两天前的消息。
 
-##### 网页端控制台：
+#### 网页端控制台：
 * 包含查看消息队列配置、生成近一周消息增长折线图、查看各状态消息数量、查看消费者与生产者客户端列表及搜索消息功能。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/config.jpg)
@@ -77,13 +77,33 @@
 
 ***
 
-### 性能测试
+### 单机性能测试
 
-##### 测试程序和消息队列都运行在本机。配置：轻薄本，低压8代i5、8g内存
+#### 测试程序和消息队列都运行在本机。
 
-* 单机部署消息队列，未开启WAL预写日志的情况下，模拟三十万并发请求，最高QPS可达十万。
+#### 配置：
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/test.jpg)
+* 2019年的轻薄本，充电状态，性能模式
+
+* 4核8线程处理器：Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz 1.80 GHz
+
+* LPDDR3内存：8.00 GB (7.85 GB 可用)
+
+* 固态硬盘：WDC PC SN720 SDAPNTW-512G
+
+#### 测试程序（部分）
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/test_code.jpg)
+
+#### 选择数据持久化方式一，未开启WAL预写日志的情况下，模拟三十万并发消息插入，最高TPS可达十万。
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/nowal_test.jpg)
+
+#### 选择数据持久化方式二，开启WAL预写日志，同样模拟三十万并发消息插入，受磁盘IO影响，消息插入速度存在大幅波动与衰减。
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/wal_test.jpg)
+
+***
 
 ### 配置文件
 
@@ -134,7 +154,7 @@
     /log                  # 日志目录
     /view                 # 前端-Vue项目打包文件
     MQDATA                # 持久化文件
-    WAL.log               # 追加写入日志  
+    WAL.log               # 预写日志  
 ```
 
 ```
@@ -147,7 +167,7 @@
     /log                  # 日志目录
     /view                 # 前端-Vue项目打包文件
     MQDATA                # 持久化文件
-    WAL.log               # 追加写入日志  
+    WAL.log               # 预写日志  
 ```
 
 ***
@@ -206,33 +226,9 @@ var MessageList sync.Map
 
 * 控制台接口：用于获取生产者/消费者客户端列表、消息队列配置信息及集群内消息队列节点列表。
 
-```
-//检查消息队列服务是否在运行 Ping
-POST http://localhost:port/Console/Ping
-
-//获取全部客户端集合 GetClients
-POST http://localhost:port/Console/GetClients
-
-//获取消息队列详细配置 GetConfig
-POST http://localhost:port/Console/GetConfig
-
-//获取指定状态的消息记录列表 GetMessageList
-POST http://localhost:port/Console/GetMessageList
-
-//获取指定状态的简易消息记录列表(不包含消息主体) GetMessageEasy
-POST http://localhost:port/Console/GetMessageEasy
-
-//统计各状态消息的数量 CountMessage
-POST http://localhost:port/Console/CountMessage
-
-//获取集群内的消息队列节点列表 GetNodes
-POST http://localhost:port/Console/GetNodes
-```
-
-* 控制台网页端
+* 控制台网页端，启动消息队列后访问：
 
 ```
-//启动消息队列后访问：
 http://localhost:port/#/Console
 ```
 
@@ -267,7 +263,7 @@ ProducerId   //生产者客户端Id
 
 * 如果要追求消息的可靠性，可以利用该ACK机制发送同步消息，即生产者在发送完一条消息后，必须收到消息队列发来的ACK才能继续发送下一条消息。
 
-* 消费者客户端发送给消息队列的ACK字符串样式
+* 消息队列发送给生产者的ACK字符串样式
 
 ```json
 "ok"
@@ -338,8 +334,8 @@ ws://127.0.0.1:8011/Producers/Conn/test_topic/1
 "{.. Json SendMessage ..}"
 "{.. Json SendMessage ..}"
 
-服务端回应 2022-01-02 15:15:15
-"ok"                           //消息队列接收到消息后，向生产者发送ACK
+服务端回应 2022-01-02 15:15:15   //消息队列接收到消息后，向生产者发送ACK
+"ok"                           //ACK内容为字符串"ok"
 "ok" 
 ```
 
@@ -371,7 +367,7 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 "{.. Json Message ..}"
 
 客户端发送 2022-01-02 15:15:14   //消费者接收到消息后，向消息队列发送ACK
-"8c01b728ef82ba754a63e61daa43e83c61b744c7"
+"8c01b728ef82ba754a63e61daa43e83c61b744c7"  //ACK内容为MessageCode
 "sdiw2b7quh82basdsa17sdqdqw81d83c61bqdhhu"
 ```
 
