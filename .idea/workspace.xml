@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="~">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/createCode.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/createCode.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +44,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../serena" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Atest" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -84,7 +87,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="生产者消息接收模板，添加WAL持久化" />
     <MESSAGE value="文件读写，添加WAL日志恢复功能" />
     <MESSAGE value="日志记录-添加WAL日志" />
     <MESSAGE value="主函数-数据恢复功能优化" />
@@ -94,7 +96,6 @@
     <MESSAGE value="WAL数据回复-文件不存在bug修复" />
     <MESSAGE value="WAL日志数据回放-文件不存在bug修复" />
     <MESSAGE value="更新" />
-    <MESSAGE value="配置模块更新-移除viper依赖" />
     <MESSAGE value="消息检查模块" />
     <MESSAGE value="控制台模块" />
     <MESSAGE value="消费者连接模块" />
@@ -108,8 +109,10 @@
     <MESSAGE value="数据持久化模块" />
     <MESSAGE value="数据恢复模块" />
     <MESSAGE value="安全验证" />
+    <MESSAGE value="配置模块更新-移除viper依赖" />
     <MESSAGE value="文档更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
+    <MESSAGE value="~" />
+    <option name="LAST_COMMIT_MESSAGE" value="~" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

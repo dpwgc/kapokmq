@@ -4,10 +4,9 @@ go 1.17
 
 require (
 	github.com/gin-gonic/gin v1.7.4
+	github.com/go-basic/uuid v1.0.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/hashicorp/memberlist v0.2.2
-	github.com/satori/go.uuid v1.2.0
-	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -36,4 +35,5 @@ require (
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420 // indirect
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0
 )
