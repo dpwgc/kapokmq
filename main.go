@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	_ "github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"kapokmq/cluster"
 	"kapokmq/config"
 	"kapokmq/persistent"
@@ -48,7 +47,7 @@ func main() {
 	r := router.InitRouters()
 
 	//获取端口号
-	port := viper.GetString("server.port")
+	port := config.Get.Server.Port
 	err := r.Run(fmt.Sprintf("%s%s", ":", port))
 	if err != nil {
 		panic(err)
