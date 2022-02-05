@@ -40,6 +40,7 @@ type Cluster struct {
 
 var Get Conf
 
+// InitConfig 初始化项目配置
 func InitConfig() {
 	yamlFile, err := ioutil.ReadFile("application.yaml")
 	if err != nil {
