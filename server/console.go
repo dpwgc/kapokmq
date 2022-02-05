@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
+	"kapokmq/config"
 	"kapokmq/model"
 	"kapokmq/utils"
 	"sort"
@@ -51,32 +51,32 @@ func GetConfig(c *gin.Context) {
 
 	configMap := make(map[string]interface{}, 18)
 
-	configMap["pushType"] = viper.GetInt("mq.pushType")
+	configMap["pushType"] = config.Get.Mq.PushType
 
-	configMap["messageChanBuffer"] = viper.GetInt("mq.messageChanBuffer")
+	configMap["messageChanBuffer"] = config.Get.Mq.MessageChanBuffer
 
-	configMap["pushMessagesSpeed"] = viper.GetInt("mq.pushMessagesSpeed")
-	configMap["pushCount"] = viper.GetInt("mq.pushCount")
-	configMap["pushRetryTime"] = viper.GetInt("mq.pushRetryTime")
+	configMap["pushMessagesSpeed"] = config.Get.Mq.PushMessagesSpeed
+	configMap["pushCount"] = config.Get.Mq.PushCount
+	configMap["pushRetryTime"] = config.Get.Mq.PushRetryTime
 
-	configMap["persistentFile"] = viper.GetString("mq.persistentFile")
-	configMap["isPersistent"] = viper.GetInt("mq.isPersistent")
-	configMap["recoveryStrategy"] = viper.GetInt("mq.recoveryStrategy")
-	configMap["persistentTime"] = viper.GetInt("mq.persistentTime")
+	configMap["persistentFile"] = config.Get.Mq.PersistentFile
+	configMap["isPersistent"] = config.Get.Mq.IsPersistent
+	configMap["recoveryStrategy"] = config.Get.Mq.RecoveryStrategy
+	configMap["persistentTime"] = config.Get.Mq.PersistentTime
 
-	configMap["isCleanConsumed"] = viper.GetInt("mq.isCleanConsumed")
+	configMap["isCleanConsumed"] = config.Get.Mq.IsCleanConsumed
 
-	configMap["isRePush"] = viper.GetInt("mq.isRePush")
-	configMap["isClean"] = viper.GetInt("mq.isClean")
+	configMap["isRePush"] = config.Get.Mq.IsRePush
+	configMap["isClean"] = config.Get.Mq.IsClean
 
-	configMap["checkSpeed"] = viper.GetInt("mq.checkSpeed")
+	configMap["checkSpeed"] = config.Get.Mq.CheckSpeed
 
-	configMap["cleanTime"] = viper.GetInt("mq.cleanTime")
+	configMap["cleanTime"] = config.Get.Mq.CleanTime
 
-	configMap["isCluster"] = viper.GetInt("cluster.isCluster")
-	configMap["gossipPort"] = viper.GetInt("cluster.gossipPort")
-	configMap["registryAddr"] = viper.GetString("cluster.registryAddr")
-	configMap["registryGossipPort"] = viper.GetString("cluster.registryGossipPort")
+	configMap["isCluster"] = config.Get.Cluster.IsCluster
+	configMap["gossipPort"] = config.Get.Cluster.GossipPort
+	configMap["registryAddr"] = config.Get.Cluster.RegistryAddr
+	configMap["registryGossipPort"] = config.Get.Cluster.RegistryGossipPort
 
 	c.JSON(0, gin.H{
 		"code": 0,
