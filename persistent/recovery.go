@@ -1,7 +1,7 @@
 package persistent
 
 import (
-	"github.com/spf13/viper"
+	"kapokmq/config"
 	"kapokmq/server"
 )
 
@@ -13,7 +13,7 @@ import (
 func InitRecovery() {
 
 	// 数据恢复策略
-	recoveryStrategy := viper.GetInt("mq.recoveryStrategy")
+	recoveryStrategy := config.Get.Mq.RecoveryStrategy
 
 	//从本地持久化文件中获取数据
 	if recoveryStrategy == 1 {
