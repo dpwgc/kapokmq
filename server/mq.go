@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/spf13/viper"
+	"kapokmq/config"
 	"kapokmq/model"
 	"sync"
 )
@@ -9,7 +9,7 @@ import (
 // InitMQ 初始化消息队列
 func InitMQ() {
 	//消息通道缓冲区大小
-	messageChanBuffer := viper.GetInt("mq.messageChanBuffer")
+	messageChanBuffer := config.Get.Mq.MessageChanBuffer
 	//消息通道初始化
 	MessageChan = make(chan model.Message, messageChanBuffer)
 }
