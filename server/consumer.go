@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/spf13/viper"
+	"kapokmq/config"
 	"kapokmq/model"
 	"kapokmq/utils"
 	"net/http"
@@ -43,10 +43,11 @@ var UpGrader = websocket.Upgrader{
 
 // InitConsumersConn 初始化消费者连接模块
 func InitConsumersConn() {
-	secretKey = viper.GetString("mq.secretKey")
-	pushCount = viper.GetInt("mq.pushCount")
-	isCleanConsumed = viper.GetInt("mq.isCleanConsumed")
-	pushMessagesSpeed = viper.GetInt("mq.pushMessagesSpeed")
+
+	secretKey = config.Get.Mq.SecretKey
+	pushCount = config.Get.Mq.PushCount
+	isCleanConsumed = config.Get.Mq.IsCleanConsumed
+	pushMessagesSpeed = config.Get.Mq.PushMessagesSpeed
 
 	Loger.Println("Start pushServer")
 	//启动消息推送协程，推送消息到各个消费者客户端
@@ -160,7 +161,7 @@ func ConsumersConn(c *gin.Context) {
 //消息推送服务
 func pushServer() {
 	//获取推送模式
-	pushType := viper.GetInt("mq.pushType")
+	pushType := config.Get.Mq.PushType
 	cnt := 0
 	for {
 		if cnt == pushCount {
