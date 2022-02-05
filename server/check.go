@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/spf13/viper"
+	"kapokmq/config"
 	"kapokmq/model"
 	"time"
 )
@@ -9,13 +9,13 @@ import (
 // InitCheck 消息检查
 func InitCheck() {
 
-	isRePush = viper.GetInt("mq.isRePush")
-	checkSpeed = viper.GetInt("mq.checkSpeed")
+	isRePush = config.Get.Mq.IsRePush
+	checkSpeed = config.Get.Mq.CheckSpeed
 
-	isClean = viper.GetInt("mq.isClean")
-	cleanTime = viper.GetInt64("mq.cleanTime")
+	isClean = config.Get.Mq.IsClean
+	cleanTime = config.Get.Mq.CleanTime
 
-	pushRetryTime = viper.GetInt64("mq.pushRetryTime")
+	pushRetryTime = config.Get.Mq.PushRetryTime
 
 	go func() {
 		for {
