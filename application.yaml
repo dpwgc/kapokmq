@@ -24,11 +24,11 @@ mq:
   # 持久化文件
   persistentFile: MQDATA
   # 是否进行持久化（0：不开启持久化，1：周期性全量数据持久化，2：在两次周期性全量数据持久化之间增加WAL追加写入日志,影响性能）
-  isPersistent: 2
+  isPersistent: 1
   # 数据恢复策略（0：清空本地数据，不进行数据恢复。1：将本地数据恢复到内存）
   recoveryStrategy: 1
   # 两次全量数据持久化的间隔时间（单位：秒）
-  persistentTime: 10
+  persistentTime: 3
 
   #是否立即清除已确认消费的消息（1：是。0：否）
   isCleanConsumed: 0
