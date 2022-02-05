@@ -129,7 +129,7 @@
 
 ### 配置文件
 
-* config/application.yaml
+* ./application.yaml
 
 ***
 
@@ -403,8 +403,6 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 
 ##### config 配置类
 
-* application.yaml `项目配置文件`
-
 * config.go `项目配置文件加载`
 
 ##### middleware 中间件
@@ -460,6 +458,8 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 * js
 
 * index.html
+
+##### application.yaml 配置文件
 
 ##### main.go 主函数
 

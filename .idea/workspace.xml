@@ -4,26 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cluster/join.go" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/join.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware/safe.go" beforeDir="false" afterPath="$PROJECT_DIR$/middleware/safe.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persistent/persData.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/persData.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persistent/recovery.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/recovery.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/check.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/check.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/console.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/console.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/consumer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/log.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/log.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/mq.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/mq.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/createCode.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/createCode.go" afterDir="false" />
-    </list>
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="安全验证" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,7 +38,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../serena" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -100,20 +81,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="集群加入模块-添加获取mq节点列表接口" />
-    <MESSAGE value="模板更新-添加集群节点结构体" />
-    <MESSAGE value="路由更新" />
-    <MESSAGE value="数据恢复模块-优化" />
-    <MESSAGE value="数据持久化-优化" />
-    <MESSAGE value="消费者消息推送-添加消费ACK-添加WAL持久化方案" />
-    <MESSAGE value="主函数-添加WAL追加写入日志" />
-    <MESSAGE value="数据持久化-添加WAL追加写入日志" />
-    <MESSAGE value="生产者消息接收-添加WAL追加写入日志" />
-    <MESSAGE value="消费者消息推送-添加WAL持久化方案" />
-    <MESSAGE value="文件读写" />
-    <MESSAGE value="日志记录-添加WAL持久化方案" />
-    <MESSAGE value="主函数-添加WAL持久化方案" />
-    <MESSAGE value="数据持久化-添加追加写入log持久化" />
     <MESSAGE value="生产者消息接收模板，添加WAL持久化" />
     <MESSAGE value="文件读写，添加WAL日志恢复功能" />
     <MESSAGE value="日志记录-添加WAL日志" />
@@ -124,8 +91,22 @@
     <MESSAGE value="WAL数据回复-文件不存在bug修复" />
     <MESSAGE value="WAL日志数据回放-文件不存在bug修复" />
     <MESSAGE value="更新" />
+    <MESSAGE value="配置模块更新-移除viper依赖" />
+    <MESSAGE value="消息检查模块" />
+    <MESSAGE value="控制台模块" />
+    <MESSAGE value="消费者连接模块" />
+    <MESSAGE value="消息标识码生成-更换uuid库" />
+    <MESSAGE value="文件读写操作" />
+    <MESSAGE value="移除viper依赖，更换uuid库" />
+    <MESSAGE value="集群连接模块" />
+    <MESSAGE value="日志记录" />
+    <MESSAGE value="主函数" />
+    <MESSAGE value="消息队列相关结构体" />
+    <MESSAGE value="数据持久化模块" />
     <MESSAGE value="文档更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
+    <MESSAGE value="数据恢复模块" />
+    <MESSAGE value="安全验证" />
+    <option name="LAST_COMMIT_MESSAGE" value="安全验证" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
