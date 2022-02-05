@@ -1,7 +1,7 @@
 package persistent
 
 import (
-	"github.com/spf13/viper"
+	"kapokmq/config"
 	"kapokmq/server"
 	"time"
 )
@@ -14,13 +14,13 @@ import (
 func InitPers() {
 
 	//是否开启持久化
-	isPersistent := viper.GetInt("mq.isPersistent")
+	isPersistent := config.Get.Mq.IsPersistent
 	if isPersistent == 0 {
 		return
 	}
 
 	//两次持久化操作的间隔时间
-	persistentTime := viper.GetInt("mq.persistentTime")
+	persistentTime := config.Get.Mq.PersistentTime
 
 	//周期性全量持久化方式
 	if isPersistent == 1 {
