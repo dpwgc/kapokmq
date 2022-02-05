@@ -5,8 +5,8 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/viper"
 	"io"
+	"kapokmq/config"
 	"kapokmq/model"
 	"kapokmq/server"
 	"os"
@@ -27,10 +27,10 @@ var copyMapSize int
 func InitFileRW() {
 
 	//持久化文件名
-	dataFile = viper.GetString("mq.persistentFile")
+	dataFile = config.Get.Mq.PersistentFile
 
 	//获取消息通道的缓冲区大小
-	messageChanBuffer := viper.GetInt("mq.messageChanBuffer")
+	messageChanBuffer := config.Get.Mq.MessageChanBuffer
 
 	//如果消息通道缓冲区大小小于等于1000
 	if messageChanBuffer <= 1000 {
