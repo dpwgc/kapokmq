@@ -171,8 +171,7 @@
 
 /kapokmq                  # 文件根目录
     kapokmq.exe           # 打包后的exe文件
-    /config               # 配置目录
-        application.yaml  # 配置文件
+    application.yaml      # 配置文件
     /log                  # 日志目录
     /view                 # 前端-Vue项目打包文件
     MQDATA                # 持久化文件
@@ -184,8 +183,7 @@
 
 /kapokmq                  # 文件根目录
     kapokmq               # 打包后的二进制文件(后台运行指令:setsid ./kapokmq)
-    /config               # 配置目录
-        application.yaml  # 配置文件
+    application.yaml      # 配置文件
     /log                  # 日志目录
     /view                 # 前端-Vue项目打包文件
     MQDATA                # 持久化文件
