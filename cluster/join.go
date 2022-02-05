@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/hashicorp/memberlist"
-	"github.com/spf13/viper"
+	"kapokmq/config"
 	"kapokmq/model"
 	"kapokmq/server"
 	"strings"
@@ -18,20 +18,20 @@ var list *memberlist.Memberlist
 func InitCluster() {
 
 	//如果是单机部署模式
-	if viper.GetInt("cluster.isCluster") != 1 {
+	if config.Get.Cluster.IsCluster != 1 {
 		return
 	}
 
 	//获取该节点的地址
-	addr := viper.GetString("server.addr")
+	addr := config.Get.Server.Addr
 	//获取该节点的Gin服务端口号
-	port := viper.GetString("server.port")
+	port := config.Get.Server.Port
 
 	//获取设置的Gossip服务端口号
-	gossipPort := viper.GetInt("cluster.gossipPort")
+	gossipPort := config.Get.Cluster.GossipPort
 
-	registryAddr := viper.GetString("cluster.registryAddr")
-	registryGossipPort := viper.GetString("cluster.registryGossipPort")
+	registryAddr := config.Get.Cluster.RegistryAddr
+	registryGossipPort := config.Get.Cluster.RegistryGossipPort
 
 	//配置本节点信息
 	conf := memberlist.DefaultLANConfig()
