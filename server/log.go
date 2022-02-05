@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/spf13/viper"
+	"kapokmq/config"
 	"kapokmq/model"
 	"log"
 	"os"
@@ -37,7 +37,7 @@ var WALFile *os.File
 func InitWAL() {
 
 	//是否开启WAL持久化
-	isPersistent = viper.GetInt("mq.isPersistent")
+	isPersistent = config.Get.Mq.IsPersistent
 	if isPersistent != 2 {
 		return
 	}
