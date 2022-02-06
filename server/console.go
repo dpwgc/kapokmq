@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"kapokmq/config"
 	"kapokmq/model"
@@ -84,7 +85,7 @@ func GetConfig(c *gin.Context) {
 	})
 }
 
-// GetMessageList 获取指定状态的消息记录列表
+// GetMessageList 获取指定时间指定状态的消息记录列表（不包含消息主体）
 func GetMessageList(c *gin.Context) {
 
 	//搜索区间
@@ -111,15 +112,19 @@ func GetMessageList(c *gin.Context) {
 
 			ts := message.(model.Message).CreateTime
 
+			//删除消息主体内容
+			msg := message.(model.Message)
+			msg.MessageData = ""
+
 			//搜索全部状态的消息-搜索全部主题的消息-消息符合搜索条件
 			if intStatus == 3 && ts >= start && ts <= end {
-				messageList = append(messageList, message.(model.Message))
+				messageList = append(messageList, msg)
 				return true
 			}
 
 			//搜索指定状态的消息-搜索全部主题的消息-消息符合搜索条件
 			if message.(model.Message).Status == intStatus && ts >= start && ts <= end {
-				messageList = append(messageList, message.(model.Message))
+				messageList = append(messageList, msg)
 				return true
 			}
 			return true
@@ -132,15 +137,19 @@ func GetMessageList(c *gin.Context) {
 
 			ts := message.(model.Message).CreateTime
 
+			//删除消息主体内容
+			msg := message.(model.Message)
+			msg.MessageData = ""
+
 			//搜索全部状态的消息-搜索指定主题的消息-消息符合搜索条件
 			if intStatus == 3 && ts >= start && ts <= end && message.(model.Message).Topic == topic {
-				messageList = append(messageList, message.(model.Message))
+				messageList = append(messageList, msg)
 				return true
 			}
 
 			//搜索指定状态的消息-搜索指定主题的消息-消息符合搜索条件
 			if message.(model.Message).Status == intStatus && ts >= start && ts <= end && message.(model.Message).Topic == topic {
-				messageList = append(messageList, message.(model.Message))
+				messageList = append(messageList, msg)
 				return true
 			}
 			return true
@@ -158,85 +167,17 @@ func GetMessageList(c *gin.Context) {
 	})
 }
 
-// GetMessageEasy 获取指定状态的简易消息记录列表（不包含消息主体）
-func GetMessageEasy(c *gin.Context) {
+// GetMessage 根据消息标识码获取消息
+func GetMessage(c *gin.Context) {
+	messageCode, _ := c.GetPostForm("messageCode")
 
-	//搜索区间
-	startTime, _ := c.GetPostForm("startTime")
-	endTime, _ := c.GetPostForm("endTime")
+	message, _ := MessageList.Load(messageCode)
 
-	//转成时间戳
-	start := utils.ToTimestamp(startTime)
-	end := utils.ToTimestamp(endTime)
-
-	//状态（-1：无状态消息，1：已消费消息，0：未消费消息，3：全部消息）
-	status, _ := c.GetPostForm("status")
-	intStatus, _ := strconv.Atoi(status)
-
-	//主题
-	topic, _ := c.GetPostForm("topic")
-
-	var messageList []model.Message
-
-	//如果主题为空-返回全部主题的消息
-	if len(topic) == 0 {
-		//遍历消息列表
-		MessageList.Range(func(key, message interface{}) bool {
-
-			ts := message.(model.Message).CreateTime
-
-			//删除消息主体内容
-			msg := message.(model.Message)
-			msg.MessageData = ""
-
-			//搜索全部状态的消息-搜索全部主题的消息-消息符合搜索条件
-			if intStatus == 3 && ts >= start && ts <= end {
-				messageList = append(messageList, msg)
-				return true
-			}
-
-			//搜索指定状态的消息-搜索全部主题的消息-消息符合搜索条件
-			if message.(model.Message).Status == intStatus && ts >= start && ts <= end {
-				messageList = append(messageList, msg)
-				return true
-			}
-			return true
-		})
-
-	} else {
-
-		//遍历消息列表
-		MessageList.Range(func(key, message interface{}) bool {
-
-			ts := message.(model.Message).CreateTime
-
-			//删除消息主体内容
-			msg := message.(model.Message)
-			msg.MessageData = ""
-
-			//搜索全部状态的消息-搜索指定主题的消息-消息符合搜索条件
-			if intStatus == 3 && ts >= start && ts <= end && message.(model.Message).Topic == topic {
-				messageList = append(messageList, msg)
-				return true
-			}
-
-			//搜索指定状态的消息-搜索指定主题的消息-消息符合搜索条件
-			if message.(model.Message).Status == intStatus && ts >= start && ts <= end && message.(model.Message).Topic == topic {
-				messageList = append(messageList, msg)
-				return true
-			}
-			return true
-		})
-	}
-
-	//消息列表排序 按创建时间降序 由大到小
-	sort.SliceStable(messageList, func(i int, j int) bool {
-		return messageList[i].CreateTime > messageList[j].CreateTime
-	})
+	fmt.Println(message)
 
 	c.JSON(0, gin.H{
 		"code": 0,
-		"data": messageList,
+		"data": message.(model.Message),
 	})
 }
 
