@@ -84,6 +84,7 @@
 #### 数据持久化：
 * 方式一：周期性全量数据持久化。
 * 方式二：周期性全量数据持久化结合WAL预写日志（影响性能）。
+（注：周期性全量数据持久化不会写入已经被消费的消息。）
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/pers.jpg)
 
@@ -91,11 +92,15 @@
 * 自定义过期时间，定期清除过期消息，默认清除两天前的消息。
 
 #### 网页端控制台：
-* 包含查看消息队列配置、生成近一周消息增长折线图、查看各状态消息数量、查看消费者与生产者客户端列表及搜索消息功能。
+* 包含查看消息队列配置、生成近一周消息增长折线图、查看各状态消息数量、查看消费者与生产者客户端列表、搜索消息及查看集群节点列表功能。
 
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/config.jpg)
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/monitor.jpg)
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/message.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/page1.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/page2.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/page2-5.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/page3.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/page4.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/page4-5.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/page4.jpg)
 
 ***
 
