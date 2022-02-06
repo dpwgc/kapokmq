@@ -72,6 +72,10 @@ func Write() {
 	//复制消息列表
 	copyMap := make(map[string]interface{}, copyMapSize)
 	server.MessageList.Range(func(key, value interface{}) bool {
+		//如果是已经消费的消息
+		if value.(model.Message).Status == 1 {
+			return true
+		}
 		copyMap[key.(string)] = value
 		return true
 	})
