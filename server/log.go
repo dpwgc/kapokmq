@@ -47,7 +47,7 @@ func InitWAL() {
 	WAL = log.New(WALFile, "", 0) // 将文件设置为loger作为输出
 }
 
-// SetWAL 消息追加写入日志
+// SetWAL 写前日志
 func SetWAL(message model.Message) {
 
 	//追加写入
