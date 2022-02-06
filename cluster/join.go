@@ -72,6 +72,11 @@ func InitCluster() {
 // GetNodes 获取除了注册中心之外的集群所有节点
 func GetNodes(c *gin.Context) {
 
+	if config.Get.Cluster.IsCluster == 0 {
+		c.String(0, "")
+		return
+	}
+
 	var nodes []model.Node
 
 	// 获取当前集群的消息队列节点信息（除去注册中心）
