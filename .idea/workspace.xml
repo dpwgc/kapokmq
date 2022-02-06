@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更换uuid库">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="集群连接模块-接口优化">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/console.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/console.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/producer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/producer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/application.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +41,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Atest" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../serena" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -103,16 +101,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="日志记录-添加WAL日志" />
-    <MESSAGE value="主函数-数据恢复功能优化" />
-    <MESSAGE value="数据恢复-可从WAL日志文件中恢复数据" />
-    <MESSAGE value="生产者消息接收模块-新增消息接收ACK确认机制" />
-    <MESSAGE value="配置更新" />
-    <MESSAGE value="WAL数据回复-文件不存在bug修复" />
-    <MESSAGE value="WAL日志数据回放-文件不存在bug修复" />
-    <MESSAGE value="更新" />
-    <MESSAGE value="消息检查模块" />
-    <MESSAGE value="控制台模块" />
     <MESSAGE value="消费者连接模块" />
     <MESSAGE value="消息标识码生成-更换uuid库" />
     <MESSAGE value="文件读写操作" />
@@ -128,7 +116,17 @@
     <MESSAGE value="文档更新" />
     <MESSAGE value="~" />
     <MESSAGE value="更换uuid库" />
-    <option name="LAST_COMMIT_MESSAGE" value="更换uuid库" />
+    <MESSAGE value="控制台模块-添加删除消息功能" />
+    <MESSAGE value="生产者连接模块-引入sync.Pool" />
+    <MESSAGE value="路由更新" />
+    <MESSAGE value="更新" />
+    <MESSAGE value="控制台模块-接口更新" />
+    <MESSAGE value="消费者连接模块-WAL日志优化" />
+    <MESSAGE value="生产者连接模块-WAL日志优化" />
+    <MESSAGE value="日志记录模块-WAL日志优化" />
+    <MESSAGE value="路由-控制台接口更新" />
+    <MESSAGE value="集群连接模块-接口优化" />
+    <option name="LAST_COMMIT_MESSAGE" value="集群连接模块-接口优化" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
