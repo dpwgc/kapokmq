@@ -142,12 +142,6 @@ func ConsumersConn(c *gin.Context) {
 
 		message := msg.(model.Message)
 
-		//是否立即清除已被消费的消息
-		if isCleanConsumed == 1 {
-			MessageList.Delete(message.MessageCode)
-			continue
-		}
-
 		//更新消息信息
 		message.Status = 1
 		message.ConsumedTime = utils.GetLocalDateTimestamp()
@@ -155,6 +149,12 @@ func ConsumersConn(c *gin.Context) {
 		//持久化：WAL写前日志
 		if config.Get.Mq.IsPersistent == 2 {
 			SetWAL(message)
+		}
+
+		//是否立即清除已被消费的消息
+		if isCleanConsumed == 1 {
+			MessageList.Delete(message.MessageCode)
+			continue
 		}
 
 		//确认消费
