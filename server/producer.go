@@ -20,6 +20,13 @@ var pLock = sync.RWMutex{}
 // Producers 连接的生产者客户端，把每个消费者都放进来。Key为Producer结构体，Value为websocket连接
 var Producers = make(map[model.Producer]*websocket.Conn)
 
+// P 消息对象池
+var P = &sync.Pool{
+	New: func() interface{} {
+		return new(model.Message)
+	},
+}
+
 // ProducersConn 以WebSocket连接方式接收消息
 // ProducersConn 生产者连接，接收生产者发送过来的消息
 func ProducersConn(c *gin.Context) {
@@ -107,7 +114,7 @@ func ProducersConn(c *gin.Context) {
 		}
 
 		//生成消息模板
-		message := model.Message{}
+		message := P.Get().(model.Message)
 		message.MessageCode = utils.CreateCode(s.MessageData)
 		message.MessageData = s.MessageData
 		message.Topic = topic
@@ -136,6 +143,9 @@ func ProducersConn(c *gin.Context) {
 		MessageList.Store(message.MessageCode, message)
 		//把消息写入消息通道
 		MessageChan <- message
+
+		//将该消息模板放入对象池，等待复用
+		P.Put(message)
 	}
 }
 
