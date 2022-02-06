@@ -28,7 +28,7 @@ func InitRouters() (r *gin.Engine) {
 		console.POST("/GetClients", server.GetClients)
 		console.POST("/GetConfig", server.GetConfig)
 		console.POST("/GetMessageList", server.GetMessageList)
-		console.POST("/GetMessageEasy", server.GetMessageEasy)
+		console.POST("/GetMessage", server.GetMessage)
 		console.POST("/CountMessage", server.CountMessage)
 		console.POST("/GetNodes", cluster.GetNodes)
 	}
