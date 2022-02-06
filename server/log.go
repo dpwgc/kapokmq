@@ -50,11 +50,6 @@ func InitWAL() {
 // SetWAL 消息追加写入日志
 func SetWAL(message model.Message) {
 
-	//如果没有开启WAL持久化
-	if isPersistent != 2 {
-		return
-	}
-
 	//追加写入
 	jsonStr, _ := json.Marshal(message)
 	WAL.Println(string(jsonStr))
