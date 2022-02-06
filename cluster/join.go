@@ -90,6 +90,10 @@ func GetNodes(c *gin.Context) {
 		nodes = append(nodes, node)
 	}
 
-	data, _ := json.Marshal(nodes)
+	data, err := json.Marshal(nodes)
+	if err != nil {
+		c.String(0, "")
+		return
+	}
 	c.String(0, string(data))
 }
