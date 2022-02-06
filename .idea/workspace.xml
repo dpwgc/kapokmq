@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="数据持久化优化">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/view/index.html" afterDir="false" />
-    </list>
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="前端更新" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -103,8 +98,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="文件读写操作" />
-    <MESSAGE value="移除viper依赖，更换uuid库" />
     <MESSAGE value="集群连接模块" />
     <MESSAGE value="日志记录" />
     <MESSAGE value="主函数" />
@@ -113,7 +106,6 @@
     <MESSAGE value="数据恢复模块" />
     <MESSAGE value="安全验证" />
     <MESSAGE value="配置模块更新-移除viper依赖" />
-    <MESSAGE value="文档更新" />
     <MESSAGE value="~" />
     <MESSAGE value="更换uuid库" />
     <MESSAGE value="控制台模块-添加删除消息功能" />
@@ -126,9 +118,12 @@
     <MESSAGE value="日志记录模块-WAL日志优化" />
     <MESSAGE value="路由-控制台接口更新" />
     <MESSAGE value="集群连接模块-接口优化" />
-    <MESSAGE value="前端更新" />
     <MESSAGE value="数据持久化优化" />
-    <option name="LAST_COMMIT_MESSAGE" value="数据持久化优化" />
+    <MESSAGE value="消费者连接模块" />
+    <MESSAGE value="配置更新" />
+    <MESSAGE value="文档更新" />
+    <MESSAGE value="前端更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="前端更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
