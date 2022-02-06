@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"kapokmq/config"
 	"kapokmq/model"
@@ -171,13 +170,30 @@ func GetMessageList(c *gin.Context) {
 func GetMessage(c *gin.Context) {
 	messageCode, _ := c.GetPostForm("messageCode")
 
-	message, _ := MessageList.Load(messageCode)
+	message, isOk := MessageList.Load(messageCode)
 
-	fmt.Println(message)
+	if !isOk {
+		c.JSON(0, gin.H{
+			"code": -1,
+			"data": "error",
+		})
+		return
+	}
 
 	c.JSON(0, gin.H{
 		"code": 0,
 		"data": message.(model.Message),
+	})
+}
+
+// DelMessage 根据消息标识码删除消息
+func DelMessage(c *gin.Context) {
+	messageCode, _ := c.GetPostForm("messageCode")
+
+	MessageList.Delete(messageCode)
+
+	c.JSON(0, gin.H{
+		"code": 0,
 	})
 }
 
