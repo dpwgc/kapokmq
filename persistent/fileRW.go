@@ -26,6 +26,12 @@ var copyMapSize int
 // InitFileRW 初始化文件读写模块
 func InitFileRW() {
 
+	//是否开启持久化
+	isPersistent := config.Get.Mq.IsPersistent
+	if isPersistent == 0 {
+		return
+	}
+
 	//持久化文件名
 	dataFile = config.Get.Mq.PersistentFile
 
