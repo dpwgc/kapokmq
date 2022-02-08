@@ -1,9 +1,10 @@
-package server
+package console
 
 import (
 	"github.com/gin-gonic/gin"
 	"kapokmq/config"
 	"kapokmq/model"
+	"kapokmq/server"
 	"kapokmq/utils"
 	"sort"
 	"strconv"
@@ -28,13 +29,13 @@ func GetClients(c *gin.Context) {
 	var producers []model.Producer
 
 	//遍历获取消费者客户端列表
-	for key := range Consumers {
+	for key := range server.Consumers {
 
 		consumers = append(consumers, key)
 	}
 
 	//遍历获取生产者客户端列表
-	for key := range Producers {
+	for key := range server.Producers {
 
 		producers = append(producers, key)
 	}
@@ -107,7 +108,7 @@ func GetMessageList(c *gin.Context) {
 	//如果主题为空-返回全部主题的消息
 	if len(topic) == 0 {
 		//遍历消息列表
-		MessageList.Range(func(key, message interface{}) bool {
+		server.MessageList.Range(func(key, message interface{}) bool {
 
 			ts := message.(model.Message).CreateTime
 
@@ -132,7 +133,7 @@ func GetMessageList(c *gin.Context) {
 	} else {
 
 		//遍历消息列表
-		MessageList.Range(func(key, message interface{}) bool {
+		server.MessageList.Range(func(key, message interface{}) bool {
 
 			ts := message.(model.Message).CreateTime
 
@@ -170,7 +171,7 @@ func GetMessageList(c *gin.Context) {
 func GetMessage(c *gin.Context) {
 	messageCode, _ := c.GetPostForm("messageCode")
 
-	message, isOk := MessageList.Load(messageCode)
+	message, isOk := server.MessageList.Load(messageCode)
 
 	if !isOk {
 		c.JSON(0, gin.H{
@@ -190,7 +191,7 @@ func GetMessage(c *gin.Context) {
 func DelMessage(c *gin.Context) {
 	messageCode, _ := c.GetPostForm("messageCode")
 
-	MessageList.Delete(messageCode)
+	server.MessageList.Delete(messageCode)
 
 	c.JSON(0, gin.H{
 		"code": 0,
@@ -208,7 +209,7 @@ func CountMessage(c *gin.Context) {
 	var unconsumed int64 = 0
 
 	//遍历消息列表
-	MessageList.Range(func(key, message interface{}) bool {
+	server.MessageList.Range(func(key, message interface{}) bool {
 
 		if message.(model.Message).Status == -1 {
 			unconsumed++
