@@ -4,9 +4,13 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更新">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
+      <change afterPath="$PROJECT_DIR$/build.bat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/console.go" beforeDir="false" afterPath="$PROJECT_DIR$/console/api.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/log.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/log.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -49,6 +53,7 @@
       <recent name="D:\GoLand_WORK\kapokmq\utils" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\GoLand_WORK\kapokmq\console" />
       <recent name="D:\GoLand_WORK\kapokmq" />
     </key>
   </component>
@@ -85,7 +90,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="集群连接模块" />
     <MESSAGE value="日志记录" />
     <MESSAGE value="主函数" />
     <MESSAGE value="消息队列相关结构体" />
@@ -107,10 +111,11 @@
     <MESSAGE value="数据持久化优化" />
     <MESSAGE value="消费者连接模块" />
     <MESSAGE value="配置更新" />
-    <MESSAGE value="文档更新" />
     <MESSAGE value="前端更新" />
     <MESSAGE value="更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新" />
+    <MESSAGE value="日志记录模块-注释更新" />
+    <MESSAGE value="文档更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
