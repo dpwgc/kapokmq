@@ -29,16 +29,14 @@ func InitLog() {
 	Loger = log.New(logFile, "", log.LstdFlags|log.Lshortfile|log.LUTC) // 将文件设置为loger作为输出
 }
 
-var isPersistent int
 var WAL *log.Logger
 var WALFile *os.File
 
-// InitWAL WAL持久化日志
+// InitWAL WAL写前日志
 func InitWAL() {
 
-	//是否开启WAL持久化
-	isPersistent = config.Get.Mq.IsPersistent
-	if isPersistent != 2 {
+	//是否开启写前日志
+	if config.Get.Mq.IsPersistent != 2 {
 		return
 	}
 
