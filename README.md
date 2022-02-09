@@ -201,6 +201,163 @@ Windows系统下直接运行./build.bat文件
 
 ***
 
+### 消息格式说明
+
+```yaml
+MessageCode  string   #消息唯一标识码
+MessageData  string   #消息内容（一般为JSON格式的字符串）
+Topic        string   #消息所属主题
+CreateTime   int64    #消息创建时间（秒级时间戳）
+ConsumedTime int64    #消息被消费时间（秒级时间戳）
+DelayTime    int64    #延迟推送时间（单位：秒）
+Status       int      #消息状态（-1：待消费。0：未到推送时间的延时消息。1：已消费）
+```
+
+***
+
+### 客户端连接
+
+#### 生产者客户端连接到消息队列
+
+* WebSocket `ws://localhost:port/Producers/Conn/{topic}/{producerId}`
+
+```
+WebSocket链接中的参数：
+topic        //主题名称
+ProducerId   //生产者客户端Id
+```
+
+* 消息队列接收的消息格式
+
+* 生产者客户端推送给消息队列的Json字符串消息格式
+
+```json
+{
+    "MessageData":"hello",
+    "DelayTime":0
+}
+```
+
+* 消息队列接收到该消息后（写入日志后），通过该websocket连接向生产者客户端发送ACK，ACK内容为字符串"ok"
+
+* 如果生产者客户端选择异步发送消息方式，则可忽略该ACK。
+
+* 如果要追求消息的可靠性，可以利用该ACK机制发送同步消息，即生产者在发送完一条消息后，必须收到消息队列发来的ACK才能继续发送下一条消息。
+
+* 消息队列发送给生产者的ACK字符串样式
+
+```json
+"ok"
+```
+
+#### 消费者客户端连接到消息队列
+
+* WebSocket `ws://localhost:port/Consumers/Conn/{topic}/{consumerId}`
+
+```
+WebSocket链接中的参数：
+topic        //主题名称
+consumerId   //消费者客户端Id
+```
+
+* 通过WriteJSON()函数将model.Message类型的消息转为Json字符串发送
+
+* 消息队列推送给消费者客户端的Json字符串消息格式
+
+```json
+{
+    "MessageCode":"8c01b728ef82ba754a63e61daa43e83c61b744c7",
+    "MessageData":"hello",
+    "Topic":"test_topic",
+    "CreateTime":1640975470,
+    "ConsumedTime":1640975520,
+    "DelayTime":0,
+    "Status":-1
+}
+```
+
+* 消费者客户端接收到该消息后（写入日志后），通过该websocket连接向消息队列发送ACK，ACK内容为消息的唯一标识码MessageCode
+
+* 消费者客户端发送给消息队列的ACK字符串样式
+
+```json
+"8c01b728ef82ba754a63e61daa43e83c61b744c7"
+```
+
+***
+
+### 客户端连接流程演示
+
+生产者、消费者客户端与消息队列建立连接后，需输入密钥登录
+
+#### 生产者客户端与消息队列建立连接
+
+```
+ws://127.0.0.1:8011/Producers/Conn/test_topic/1
+
+服务端回应 2022-01-02 15:14:53
+"Please enter the secret key"   //提示输入密钥
+
+客户端发送 2022-01-02 15:15:06
+"qqq"                           //输入错误的密钥
+
+服务端回应 2022-01-02 15:15:06
+"Secret key matching error"     //提示密钥出错
+
+服务端回应 2022-01-02 15:15:06
+"Please enter the secret key"   //再次提示输入密钥
+
+客户端发送 2022-01-02 15:15:13
+"test"                          //输出正确的密钥
+
+服务端回应 2022-01-02 15:15:13
+"Secret key matching succeeded" //提示密钥验证成功
+
+客户端发送 2022-01-02 15:15:15   //生产者客户端可以向消息队列发送消息
+"{.. Json SendMessage ..}"
+
+服务端回应 2022-01-02 15:15:15   //消息队列接收到消息后，向生产者发送ACK
+"ok"                           //ACK内容为字符串"ok"
+```
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/ws_test1.jpg)
+
+#### 消费者客户端与消息队列建立连接
+
+```
+ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
+
+服务端回应 2022-01-02 15:14:53
+"Please enter the secret key"   //提示输入密钥
+
+客户端发送 2022-01-02 15:15:06
+"qqq"                           //输入错误的密钥
+
+服务端回应 2022-01-02 15:15:06
+"Secret key matching error"     //提示密钥出错
+
+服务端回应 2022-01-02 15:15:06
+"Please enter the secret key"   //再次提示输入密钥
+
+客户端发送 2022-01-02 15:15:13
+"test"                          //输出正确的密钥
+
+服务端回应 2022-01-02 15:15:13
+"Secret key matching succeeded" //提示密钥验证成功
+
+服务端回应 2022-01-02 15:15:13   //消息队列可以向消费者客户端发送消息
+"{.. Json Message ..}"
+"{.. Json Message ..}"
+
+客户端发送 2022-01-02 15:15:14   //消费者接收到消息后，向消息队列发送ACK
+"8c01b728ef82ba754a63e61daa43e83c61b744c7"  //ACK内容为MessageCode
+"sdiw2b7quh82basdsa17sdqdqw81d83c61bqdhhu"  //可异步发送确认消费ACK
+```
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/ws_test2.jpg)
+
+***
+
 ### 主要模块
 
 ##### 消息通道与消息列表 `mq.go`
@@ -259,145 +416,6 @@ var MessageList sync.Map
 
 ```
 http://localhost:port/#/Console
-```
-
-***
-
-### 客户端连接
-
-#### 生产者客户端连接到消息队列
-
-* WebSocket `ws://localhost:port/Producers/Conn/{topic}/{producerId}`
-
-```
-WebSocket链接中的参数：
-topic        //主题名称
-ProducerId   //生产者客户端Id
-```
-
-* 消息队列接收的消息格式 
-
-* 生产者客户端推送给消息队列的Json字符串消息格式
-
-```json
-{
-    "MessageData":"hello",
-    "DelayTime":"0"
-}
-```
-
-* 消息队列接收到该消息后（写入日志后），通过该websocket连接向生产者客户端发送ACK，ACK内容为字符串"ok"
-
-* 如果生产者客户端选择异步发送消息方式，则可忽略该ACK。
-
-* 如果要追求消息的可靠性，可以利用该ACK机制发送同步消息，即生产者在发送完一条消息后，必须收到消息队列发来的ACK才能继续发送下一条消息。
-
-* 消息队列发送给生产者的ACK字符串样式
-
-```json
-"ok"
-```
-
-#### 消费者客户端连接到消息队列
-
-* WebSocket `ws://localhost:port/Consumers/Conn/{topic}/{consumerId}`
-
-```
-WebSocket链接中的参数：
-topic        //主题名称
-consumerId   //消费者客户端Id
-```
-
-* 通过WriteJSON()函数将model.Message类型的消息转为Json字符串发送
-
-* 消息队列推送给消费者客户端的Json字符串消息格式
-
-```json
-{
-    "MessageCode":"8c01b728ef82ba754a63e61daa43e83c61b744c7",
-    "MessageData":"hello",
-    "Topic":"test_topic",
-    "CreateTime":"1640975470",
-    "ConsumedTime":"1640975520",
-    "DelayTime":"0",
-    "Status":"-1"
-}
-```
-
-* 消费者客户端接收到该消息后（写入日志后），通过该websocket连接向消息队列发送ACK，ACK内容为消息的唯一标识码MessageCode
-
-* 消费者客户端发送给消息队列的ACK字符串样式
-
-```json
-"8c01b728ef82ba754a63e61daa43e83c61b744c7"
-```
-
-#### 客户端连接流程演示
-
-生产者、消费者客户端与消息队列进行WebSocket连接后，需输入密钥登录
-
-* 生产者客户端与消息队列建立连接
-
-```
-ws://127.0.0.1:8011/Producers/Conn/test_topic/1
-
-服务端回应 2022-01-02 15:14:53
-"Please enter the secret key"   //提示输入密钥
-
-客户端发送 2022-01-02 15:15:06
-"qqq"                           //输入错误的密钥
-
-服务端回应 2022-01-02 15:15:06
-"Secret key matching error"     //提示密钥出错
-
-服务端回应 2022-01-02 15:15:06
-"Please enter the secret key"   //再次提示输入密钥
-
-客户端发送 2022-01-02 15:15:13
-"test"                          //输出正确的密钥
-
-服务端回应 2022-01-02 15:15:13
-"Secret key matching succeeded" //提示密钥验证成功
-
-客户端发送 2022-01-02 15:15:15   //生产者客户端可以向消息队列发送消息
-"{.. Json SendMessage ..}"
-"{.. Json SendMessage ..}"
-
-服务端回应 2022-01-02 15:15:15   //消息队列接收到消息后，向生产者发送ACK
-"ok"                           //ACK内容为字符串"ok"
-"ok" 
-```
-
-* 消费者客户端与消息队列建立连接
-
-```
-ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
-
-服务端回应 2022-01-02 15:14:53
-"Please enter the secret key"   //提示输入密钥
-
-客户端发送 2022-01-02 15:15:06
-"qqq"                           //输入错误的密钥
-
-服务端回应 2022-01-02 15:15:06
-"Secret key matching error"     //提示密钥出错
-
-服务端回应 2022-01-02 15:15:06
-"Please enter the secret key"   //再次提示输入密钥
-
-客户端发送 2022-01-02 15:15:13
-"test"                          //输出正确的密钥
-
-服务端回应 2022-01-02 15:15:13
-"Secret key matching succeeded" //提示密钥验证成功
-
-服务端回应 2022-01-02 15:15:13   //消息队列可以向消费者客户端发送消息
-"{.. Json Message ..}"
-"{.. Json Message ..}"
-
-客户端发送 2022-01-02 15:15:14   //消费者接收到消息后，向消息队列发送ACK
-"8c01b728ef82ba754a63e61daa43e83c61b744c7"  //ACK内容为MessageCode
-"sdiw2b7quh82basdsa17sdqdqw81d83c61bqdhhu"
 ```
 
 ***
@@ -480,5 +498,4 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 |---|---|---|
 |Java客户端|Maven包，websocket连接，Demo：https://gitee.com/dpwgc/kapokmq-java-client|未完成|
 |拉模式消费|消费者主动拉取消息队列的消息|计划中|
-|注册中心集群化|多个注册中心，保证高可靠|计划中|
 |主备消息队列|为每个mq主节点绑定一个备用节点，宕机时立即切换到备用节点|计划中|

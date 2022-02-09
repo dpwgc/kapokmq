@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
-      <change afterPath="$PROJECT_DIR$/build.bat" afterDir="false" />
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="~">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/console.go" beforeDir="false" afterPath="$PROJECT_DIR$/console/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/log.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/log.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/producer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/producer.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +42,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../kapokmq-go-client" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -90,18 +86,12 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="日志记录" />
-    <MESSAGE value="主函数" />
-    <MESSAGE value="消息队列相关结构体" />
-    <MESSAGE value="数据持久化模块" />
     <MESSAGE value="数据恢复模块" />
     <MESSAGE value="安全验证" />
     <MESSAGE value="配置模块更新-移除viper依赖" />
-    <MESSAGE value="~" />
     <MESSAGE value="更换uuid库" />
     <MESSAGE value="控制台模块-添加删除消息功能" />
     <MESSAGE value="生产者连接模块-引入sync.Pool" />
-    <MESSAGE value="路由更新" />
     <MESSAGE value="控制台模块-接口更新" />
     <MESSAGE value="消费者连接模块-WAL日志优化" />
     <MESSAGE value="生产者连接模块-WAL日志优化" />
@@ -114,8 +104,14 @@
     <MESSAGE value="前端更新" />
     <MESSAGE value="更新" />
     <MESSAGE value="日志记录模块-注释更新" />
+    <MESSAGE value="控制台接口" />
+    <MESSAGE value="打包脚本-批量执行打包命令" />
+    <MESSAGE value="文件读写" />
+    <MESSAGE value="日志记录-注释调整" />
     <MESSAGE value="文档更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
+    <MESSAGE value="路由更新" />
+    <MESSAGE value="~" />
+    <option name="LAST_COMMIT_MESSAGE" value="~" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
