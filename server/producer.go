@@ -183,8 +183,10 @@ func ProducerSend(c *gin.Context) {
 	message.CreateTime = utils.GetLocalDateTimestamp()
 	message.DelayTime = intDelayTime
 
-	//持久化：追加写日志方式
-	SetWAL(message)
+	//持久化：WAL写前日志
+	if config.Get.Mq.IsPersistent == 2 {
+		SetWAL(message)
+	}
 	//将消息记录到消息列表
 	MessageList.Store(message.MessageCode, message)
 	//把消息写入消息通道
