@@ -207,6 +207,12 @@ Windows系统下直接运行./build.bat文件
     WAL.log               # 预写日志  
 ```
 
+* 控制台网页端，启动消息队列后访问：
+
+```
+http://localhost:port/#/Console
+```
+
 ***
 
 ### 消息格式说明
@@ -425,12 +431,6 @@ var MessageList sync.Map
 ##### 控制台接口 `console/api.go`
 
 * 控制台接口：用于获取生产者/消费者客户端列表、消息队列配置信息及集群内消息队列节点列表，对消息进行查询或删除操作。
-
-* 控制台网页端，启动消息队列后访问：
-
-```
-http://localhost:port/#/Console
-```
 
 ***
 
