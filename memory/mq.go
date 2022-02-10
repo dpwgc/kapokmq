@@ -1,4 +1,4 @@
-package server
+package memory
 
 import (
 	"kapokmq/config"
