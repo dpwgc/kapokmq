@@ -1,14 +1,18 @@
-package cluster
+package syncConn
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"kapokmq/config"
+	"kapokmq/memory"
 	"kapokmq/model"
-	"kapokmq/server"
+	"kapokmq/mqLog"
 	"log"
 )
+
+// StopPush 是否停止推送（true：是，false：否），仅在从节点生效
+var StopPush bool
 
 // SlaveConn 从节点连接到主节点
 func SlaveConn() {
@@ -22,9 +26,9 @@ func SlaveConn() {
 
 	//与主节点建立websocket连接
 	wsUrl := fmt.Sprintf("%s://%s:%s%s", masterProtocol, masterAddr, masterPort, "/Sync/Conn")
-	SyncConn, _, err = websocket.DefaultDialer.Dial(wsUrl, nil)
+	Conn, _, err = websocket.DefaultDialer.Dial(wsUrl, nil)
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 		panic(err)
 	}
 }
@@ -32,17 +36,17 @@ func SlaveConn() {
 // SlaveSync 从节点同步协程
 func SlaveSync() {
 
-	defer func(SyncConn *websocket.Conn) {
-		err := SyncConn.Close()
+	defer func(Conn *websocket.Conn) {
+		err := Conn.Close()
 		if err != nil {
-			server.Loger.Println(err)
+			mqLog.Loger.Println(err)
 		}
-	}(SyncConn)
+	}(Conn)
 
 	//验证密钥
 	for {
 		//读取主节点发送过来的提示
-		_, data, err := SyncConn.ReadMessage()
+		_, data, err := Conn.ReadMessage()
 		if err != nil {
 			log.Fatal(err)
 			return
@@ -52,7 +56,7 @@ func SlaveSync() {
 		if string(data) == "Please enter the secret key" {
 
 			//发送密钥
-			err = SyncConn.WriteMessage(1, []byte(config.Get.Mq.SecretKey))
+			err = Conn.WriteMessage(1, []byte(config.Get.Mq.SecretKey))
 			if err != nil {
 				log.Fatal(err)
 				return
@@ -67,16 +71,16 @@ func SlaveSync() {
 		//访问密钥正确
 		if string(data) == "Secret key matching succeeded" {
 			//关闭从节点的推送功能
-			server.Stop = true
+			StopPush = true
 			break
 		}
 	}
 
 	//开始监听数据
 	for {
-		_, data, err := SyncConn.ReadMessage()
+		_, data, err := Conn.ReadMessage()
 		if err != nil {
-			server.Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 
@@ -84,17 +88,17 @@ func SlaveSync() {
 		message := model.Message{}
 		err = json.Unmarshal(data, &message)
 		if err != nil {
-			server.Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 
 		//如果开启了WAL写前日志
 		if config.Get.Mq.IsPersistent == 2 {
-			server.SetWAL(message)
+			mqLog.SetWAL(message)
 		}
 
-		//将消息更新到消息列表
-		server.MessageList.Store(message.MessageCode, message)
+		//将消息更新到从节点消息列表
+		memory.MessageList.Store(message.MessageCode, message)
 	}
 }
 
@@ -102,7 +106,7 @@ func SlaveSync() {
 func checkConn() {
 
 	//向主节点发送心跳检测
-	err := SyncConn.WriteMessage(1, []byte("hi"))
+	err := Conn.WriteMessage(1, []byte("hi"))
 	//如果发送出错，则表明连接已断开
 	if err != nil {
 
@@ -113,21 +117,21 @@ func checkConn() {
 
 		//尝试与主节点建立websocket连接
 		wsUrl := fmt.Sprintf("%s://%s:%s%s", masterProtocol, masterAddr, masterPort, "/Sync/Conn")
-		SyncConn, _, err = websocket.DefaultDialer.Dial(wsUrl, nil)
+		Conn, _, err = websocket.DefaultDialer.Dial(wsUrl, nil)
 		//如果依旧无法连接，则判定主节点宕机
 		if err != nil {
 			//开启从节点的消息推送功能
-			server.Stop = false
-			server.Loger.Println(err)
-			server.Loger.Println("Start push")
+			StopPush = false
+			mqLog.Loger.Println(err)
+			mqLog.Loger.Println("Start push")
 		} else {
 			//重连成功，关闭从节点的消息推送功能
-			server.Stop = true
+			StopPush = true
 			//重新启动从节点同步协程
 			go SlaveSync()
-			server.Loger.Println("Stop push")
+			mqLog.Loger.Println("Stop push")
 		}
 		return
 	}
-	server.Stop = true
+	StopPush = true
 }
