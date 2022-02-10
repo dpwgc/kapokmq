@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"kapokmq/cluster"
 	"kapokmq/config"
 	"kapokmq/model"
 	"kapokmq/utils"
@@ -123,9 +124,15 @@ func ProducersConn(c *gin.Context) {
 		message.CreateTime = utils.GetLocalDateTimestamp()
 		message.DelayTime = s.DelayTime
 
-		//持久化：WAL写前日志
+		//如果开启了WAL写前日志
 		if config.Get.Mq.IsPersistent == 2 {
 			SetWAL(message)
+		}
+
+		//如果开启了主从同步功能，且该节点为主节点
+		if config.Get.Sync.IsSync == 1 && config.Get.Sync.IsSlave == 0 {
+			//向从节点发送消息
+			cluster.SendMessage(message)
 		}
 
 		//消息写入WAL文件后，向生产者客户端发送确认接收ACK
@@ -183,10 +190,17 @@ func ProducerSend(c *gin.Context) {
 	message.CreateTime = utils.GetLocalDateTimestamp()
 	message.DelayTime = intDelayTime
 
-	//持久化：WAL写前日志
+	//如果开启了WAL写前日志
 	if config.Get.Mq.IsPersistent == 2 {
 		SetWAL(message)
 	}
+
+	//如果开启了主从同步功能，且该节点为主节点
+	if config.Get.Sync.IsSync == 1 && config.Get.Sync.IsSlave == 0 {
+		//向从节点发送消息
+		cluster.SendMessage(message)
+	}
+
 	//将消息记录到消息列表
 	MessageList.Store(message.MessageCode, message)
 	//把消息写入消息通道
