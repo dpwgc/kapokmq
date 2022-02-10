@@ -3,9 +3,11 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"kapokmq/cluster"
 	"kapokmq/config"
+	"kapokmq/memory"
 	"kapokmq/model"
+	"kapokmq/mqLog"
+	"kapokmq/syncConn"
 	"kapokmq/utils"
 	"net/http"
 	"sync"
@@ -15,9 +17,6 @@ import (
 /**
  * 消费者连接模块
  */
-
-// Stop 是否停止推送（true：是，false：否），仅在从节点生效
-var Stop bool
 
 //消费者客户端map锁
 var cLock = sync.RWMutex{}
@@ -48,13 +47,13 @@ var UpGrader = websocket.Upgrader{
 // InitConsumersConn 初始化消费者连接模块
 func InitConsumersConn() {
 
-	Stop = false
+	syncConn.StopPush = false
 	secretKey = config.Get.Mq.SecretKey
 	pushCount = config.Get.Mq.PushCount
 	isCleanConsumed = config.Get.Mq.IsCleanConsumed
 	pushMessagesSpeed = config.Get.Mq.PushMessagesSpeed
 
-	Loger.Println("Start pushServer")
+	mqLog.Loger.Println("Start pushServer")
 	//启动消息推送协程，推送消息到各个消费者客户端
 	go pushServer()
 }
@@ -77,21 +76,21 @@ func ConsumersConn(c *gin.Context) {
 		//连接成功，等待消费者客户端输入访问密钥
 		err = ws.WriteMessage(1, []byte("Please enter the secret key"))
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 
 		//读取ws中的数据，获取访问密钥
 		_, sk, err := ws.ReadMessage()
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 		if string(sk) == secretKey {
 			//访问密钥匹配成功
 			err = ws.WriteMessage(1, []byte("Secret key matching succeeded"))
 			if err != nil {
-				Loger.Println(err)
+				mqLog.Loger.Println(err)
 				return
 			}
 			break
@@ -100,7 +99,7 @@ func ConsumersConn(c *gin.Context) {
 		//访问密钥匹配失败
 		err = ws.WriteMessage(1, []byte("Secret key matching error"))
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 	}
@@ -118,7 +117,7 @@ func ConsumersConn(c *gin.Context) {
 	cLock.RUnlock()
 
 	if err != nil {
-		Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return
 	}
 
@@ -126,7 +125,7 @@ func ConsumersConn(c *gin.Context) {
 		delete(Consumers, key) //删除map中的消费者
 		err = ws.Close()
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 		}
 	}(ws)
 
@@ -135,12 +134,12 @@ func ConsumersConn(c *gin.Context) {
 		//读取ws中的数据，获取消费者客户端发来的确认消费信息，ack为messageCode
 		_, ack, err := ws.ReadMessage()
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 
 		//从Map中加载出消息
-		msg, isOk := MessageList.Load(string(ack))
+		msg, isOk := memory.MessageList.Load(string(ack))
 		if !isOk {
 			continue
 		}
@@ -153,23 +152,23 @@ func ConsumersConn(c *gin.Context) {
 
 		//如果开启了WAL写前日志
 		if config.Get.Mq.IsPersistent == 2 {
-			SetWAL(message)
+			mqLog.SetWAL(message)
 		}
 
 		//如果开启了主从同步功能，且该节点为主节点
 		if config.Get.Sync.IsSync == 1 && config.Get.Sync.IsSlave == 0 {
 			//向从节点发送消息
-			cluster.SendMessage(message)
+			syncConn.SendMessage(message)
 		}
 
 		//是否立即清除已被消费的消息
 		if isCleanConsumed == 1 {
-			MessageList.Delete(message.MessageCode)
+			memory.MessageList.Delete(message.MessageCode)
 			continue
 		}
 
 		//确认消费
-		MessageList.Store(string(ack), message)
+		memory.MessageList.Store(string(ack), message)
 	}
 }
 
@@ -177,7 +176,7 @@ func ConsumersConn(c *gin.Context) {
 func pushServer() {
 
 	//如果该节点是从节点，且主节点依然健在
-	if Stop {
+	if syncConn.StopPush {
 		//禁止从节点推送消息
 		return
 	}
@@ -212,7 +211,7 @@ func pushServer() {
 func pushMessagesToConsumers() {
 
 	//读取消息通道中的消息
-	message := <-MessageChan
+	message := <-memory.MessageChan
 
 	//如果是延时消息
 	if message.Status == 0 {
@@ -242,7 +241,7 @@ func pushMessagesToConsumers() {
 					//客户端关闭
 					err = consumer.Close()
 					if err != nil {
-						Loger.Println(err)
+						mqLog.Loger.Println(err)
 					}
 					//删除map中的客户端
 					delete(Consumers, key)
@@ -264,7 +263,7 @@ func pushMessagesToConsumers() {
 func pushMessagesToOneConsumer() {
 
 	//读取消息通道中的消息
-	message := <-MessageChan
+	message := <-memory.MessageChan
 
 	//如果是延时消息
 	if message.Status == 0 {
@@ -288,7 +287,7 @@ func pushMessagesToOneConsumer() {
 				//客户端关闭
 				err = consumer.Close()
 				if err != nil {
-					Loger.Println(err)
+					mqLog.Loger.Println(err)
 				}
 				//删除map中的客户端
 				delete(Consumers, key)
