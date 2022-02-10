@@ -24,8 +24,6 @@
 
 * 具有主从节点消息同步功能，主节点宕机后，从节点可以自动接手消息推送工作。
 
-* 采用KV型内存数据存储方式存储消息列表，哈希表插入与更新数据速度快。
-
 * 提供全量数据持久化方案及WAL预写日志记录，用户可在高性能与高可靠之间自由选择。
 
 * 内置网页端控制台，可直接通过网页查看消息队列的运行情况。
@@ -36,13 +34,13 @@
 * https://github.com/dpwgc/kapokmq-server `github`
 * https://gitee.com/dpwgc/kapokmq-server `gitee`
 
-#### Golang客户端 ~ kapokmq-go-client
-* https://github.com/dpwgc/kapokmq-go-client `github`
-* https://gitee.com/dpwgc/kapokmq-go-client `gitee`
-
 #### 注册中心源码 ~ Serena
 * https://github.com/dpwgc/serena `github`
 * https://gitee.com/dpwgc/serena `gitee`
+
+#### Golang客户端 ~ kapokmq-go-client
+* https://github.com/dpwgc/kapokmq-go-client `github`
+* https://gitee.com/dpwgc/kapokmq-go-client `gitee`
 
 #### 控制台前端源码 ~ kapokmq-console
 * https://gitee.com/dpwgc/kapokmq-console `gitee`
@@ -67,7 +65,7 @@
 * 可对单条消息设定延时时间，秒级延时推送消息，投送时间精确度受mq.checkSpeed消息检查速度的影响。
 
 #### ACK消息确认机制：
-* 消息队列接收到消息后，将向生产者发送确认接收ACK，可确保消息不在消息被持久化之前丢失。
+* 消息队列接收到消息后，将向生产者发送确认接收ACK，可确保消息不在写入WAL日志之前丢失。
 * 消费者接收到消息后，将向消息队列发送确认消费ACK，可确保消息不在消息消费环节丢失。
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/ack2.jpg)
@@ -96,8 +94,9 @@
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/pers.jpg)
 
-#### 过期消息清除：
+#### 消息清理：
 * 自定义过期时间，定期清除过期消息，默认清除两天前的消息。
+* 通过设置可让消息队列立即清除已确认消费的消息。
 
 #### 网页端控制台：
 * 包含查看消息队列配置、生成近一周消息增长折线图、查看各状态消息数量、查看消费者与生产者客户端列表、搜索消息及查看集群节点列表功能。
@@ -181,7 +180,11 @@ Windows系统下直接运行./build.bat文件
 
 ### 部署方式
 
-* 在服务器上部署
+#### 在服务器上部署
+
+##### 详细部署流程
+* https://github.com/dpwgc/kapokmq-server `github`
+* https://gitee.com/dpwgc/kapokmq-server `gitee`
 
 ```
 在Windows上部署
@@ -217,8 +220,10 @@ http://localhost:port/#/Console
 
 ### 消息格式说明
 
+* 消息模板
+
 ```yaml
-MessageCode  string   #消息唯一标识码
+MessageCode  string   #消息唯一标识码（由消息队列生成）
 MessageData  string   #消息内容（一般为JSON格式的字符串）
 Topic        string   #消息所属主题
 CreateTime   int64    #消息创建时间（秒级时间戳）
@@ -227,9 +232,17 @@ DelayTime    int64    #延迟推送时间（单位：秒）
 Status       int      #消息状态（-1：待消费。0：未到推送时间的延时消息。1：已消费）
 ```
 
+* 消息状态变更流程
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/msgStatus.jpg)
+
 ***
 
 ### 客户端连接
+
+#### Golang客户端连接工具
+* https://github.com/dpwgc/kapokmq-go-client `github`
+* https://gitee.com/dpwgc/kapokmq-go-client `gitee`
 
 #### 生产者客户端连接到消息队列
 
@@ -251,12 +264,15 @@ ProducerId   //生产者客户端Id
     "DelayTime":0
 }
 ```
+* 常规消息进入消息通道之前，状态将被设为待消费（Status：-1）。
+
+* 延时消息进入消息通道之前，状态将被设为未到时（Status：0）。
 
 * 消息队列接收到该消息后（写入日志后），通过该websocket连接向生产者客户端发送ACK，ACK内容为字符串"ok"
 
 * 如果生产者客户端选择异步发送消息方式，则可忽略该ACK。
 
-* 如果要追求消息的可靠性，可以利用该ACK机制发送同步消息，即生产者在发送完一条消息后，必须收到消息队列发来的ACK才能继续发送下一条消息。
+* 如果要追求消息的可靠性，可以利用该ACK机制发送同步消息，即生产者在发送完一条消息后，等待消息队列发来的ACK后，再继续发送下一条消息。
 
 * 消息队列发送给生产者的ACK字符串样式
 
@@ -291,6 +307,10 @@ consumerId   //消费者客户端Id
 ```
 
 * 消费者客户端接收并处理完该消息后，通过该websocket连接向消息队列异步发送ACK，ACK内容为消息的唯一标识码MessageCode
+
+* 消息队列接收到ACK后，将指定消息的状态更改为已消费（Status：1）。
+
+* 如果消息到达超时时间（mq.pushRetryTime，默认为300秒）仍未收到ACK，将进行重推。
 
 * 消费者客户端发送给消息队列的ACK字符串样式
 
@@ -376,7 +396,7 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 
 ##### 消息通道与消息列表 `memory/mq.go`
 
-* 使用golang的通道chan充当队列，通道的缓冲空间大小决定了消息队列的容量。
+* 使用golang的通道chan充当队列，所有主题的消息都将进入该通道，通道的缓冲空间大小决定了消息队列的吞吐量。
 
 * 使用sync.Map存储所有消息，用于数据持久化、消息检查、控制台数据获取。
 
@@ -388,11 +408,48 @@ var messageChan = make(chan models.Message, messageChanBuffer)
 var MessageList sync.Map
 ```
 
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/list_chan.jpg)
+
 ##### 生产者消息接收 `server/producer.go`
 
-* 生产者客户端通过WebSocket连接到消息队列（github.com/gorilla/websocket），并发送消息到消息队列，消息被写入消息通道。
+* 生产者客户端通过WebSocket连接到消息队列（github.com/gorilla/websocket），并发送消息到消息队列，消息被写入消息通道与消息列表。
 
 * 额外提供生产者HTTP接口，可通过HTTP请求向消息队列发送消息。
+
+接口URL:
+> http://127.0.0.1:8011/Producer/Send
+
+请求方式
+> POST
+
+Content-Type
+> form-data
+
+
+
+
+
+请求Header参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| secretKey     | test |  必填 | 访问密钥 |
+
+请求Body参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| messageData     | hello |  必填 | 消息主体内容 |
+| topic     | test_topic |  必填 | 消息所属主题 |
+| delayTime     | 0 |  必填 | 延时投送时间 |
+
+成功响应示例
+```json
+{
+    "code":0, 
+    "msg":"cbcebdfc446e237af323098fd125c5b161b7516c"
+}
+```
 
 ##### 消费者消息推送 `server/consumer.go`
 
@@ -414,7 +471,7 @@ var MessageList sync.Map
 
 ##### 消息检查 `server/check.go`
 
-* 每隔一段时间遍历一次MessageList消息列表，检查其中是否有消费失败、延时消费、超时未消费、已过期的消息。可重新推送消息，或清除过期的消息。
+* 每隔一段时间遍历一次MessageList消息列表，检查其中是否有到达推送时间的延时消息、超时未消费的消息、过期消息。可重新推送消息及清除过期的消息。
 
 ##### 主从同步 `syncConn`
 
@@ -489,7 +546,9 @@ var MessageList sync.Map
 ##### syncConn 主从同步
 
 * master.go `主节点向从节点发送消息`
+
 * slave.go `从节点接收消息`
+
 * sync.go `主从同步初始化`
 
 ##### utils 工具类
