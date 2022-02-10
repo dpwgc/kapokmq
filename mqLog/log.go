@@ -1,4 +1,4 @@
-package server
+package mqLog
 
 import (
 	"encoding/json"
