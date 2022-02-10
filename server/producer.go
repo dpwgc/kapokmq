@@ -79,16 +79,19 @@ func ProducersConn(c *gin.Context) {
 	key.JoinTime = utils.GetLocalDateTimestamp()
 
 	//将当前连接的生产者放入map中
-	pLock.RLock()
+	pLock.Lock()
 	Producers[key] = ws
-	pLock.RUnlock()
+	pLock.Unlock()
 
 	if err != nil {
 		mqLog.Loger.Println(err)
 		return
 	}
 	defer func(ws *websocket.Conn) {
+		pLock.Lock()
 		delete(Producers, key) //删除map中的生产者
+		pLock.Unlock()
+
 		err = ws.Close()
 		if err != nil {
 			mqLog.Loger.Println(err)
