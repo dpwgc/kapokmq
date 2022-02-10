@@ -2,6 +2,7 @@ package server
 
 import (
 	"kapokmq/config"
+	"kapokmq/memory"
 	"kapokmq/model"
 	"time"
 )
@@ -40,13 +41,13 @@ func checkMessage() {
 	//获取当前时间戳
 	ts := time.Now().Unix()
 
-	MessageList.Range(func(key, msg interface{}) bool {
+	memory.MessageList.Range(func(key, msg interface{}) bool {
 
 		message := msg.(model.Message)
 
 		//该消息超出记录时间限制，且mq开启了自动清理功能，则彻底删除该消息
 		if ts-message.CreateTime > cleanTime && isClean == 1 {
-			MessageList.Delete(key)
+			memory.MessageList.Delete(key)
 			return true
 		}
 
@@ -60,9 +61,9 @@ func checkMessage() {
 				//将消息状态改为未消费
 				message.Status = -1
 				//更新该消息
-				MessageList.Store(message.MessageCode, message)
+				memory.MessageList.Store(message.MessageCode, message)
 				//推送消息
-				MessageChan <- message
+				memory.MessageChan <- message
 				return true
 			}
 		}
@@ -73,9 +74,9 @@ func checkMessage() {
 			//将消息的推送时间设为当前时间，即将消息超时消费时间阈值移到当前时间的后{pushRetryTime}秒
 			message.DelayTime = ts - message.CreateTime
 			//更新该消息
-			MessageList.Store(message.MessageCode, message)
+			memory.MessageList.Store(message.MessageCode, message)
 			//重新推送
-			MessageChan <- message
+			memory.MessageChan <- message
 			return true
 		}
 
