@@ -6,40 +6,42 @@ import (
 	"kapokmq/config"
 	"kapokmq/model"
 	"kapokmq/mqLog"
-	"time"
 )
 
 // Master 主节点同步协程
 func Master(c *gin.Context) {
 
-	defer func(SyncConn *websocket.Conn) {
-		err := SyncConn.Close()
+	//升级get请求为webSocket协议
+	ws, err := UpGrader.Upgrade(c.Writer, c.Request, nil)
+
+	defer func(ws *websocket.Conn) {
+		err := ws.Close()
+		Conn = nil
 		if err != nil {
 			mqLog.Loger.Println(err)
 		}
-	}(Conn)
+	}(ws)
 
-	//升级get请求为webSocket协议
-	SyncConn, err := UpGrader.Upgrade(c.Writer, c.Request, nil)
+	Conn = ws
 
 	//登录验证
 	for {
 		//连接成功，等待从节点输入访问密钥
-		err = SyncConn.WriteMessage(1, []byte("Please enter the secret key"))
+		err = ws.WriteMessage(1, []byte("Please enter the secret key"))
 		if err != nil {
 			mqLog.Loger.Println(err)
 			return
 		}
 
 		//读取ws中的数据，获取访问密钥
-		_, sk, err := SyncConn.ReadMessage()
+		_, sk, err := ws.ReadMessage()
 		if err != nil {
 			mqLog.Loger.Println(err)
 			return
 		}
 		if string(sk) == config.Get.Mq.SecretKey {
 			//访问密钥匹配成功
-			err = SyncConn.WriteMessage(1, []byte("Secret key matching succeeded"))
+			err = ws.WriteMessage(1, []byte("Secret key matching succeeded"))
 			if err != nil {
 				mqLog.Loger.Println(err)
 				return
@@ -48,22 +50,32 @@ func Master(c *gin.Context) {
 		}
 
 		//访问密钥匹配失败
-		err = SyncConn.WriteMessage(1, []byte("Secret key matching error"))
+		err = ws.WriteMessage(1, []byte("Secret key matching error"))
 		if err != nil {
 			mqLog.Loger.Println(err)
 			return
 		}
 	}
 
-	//挂起连接
 	for {
-		time.Sleep(time.Second * 10)
+		//读取从节点发来的确认接收ACK
+		_, ack, err := ws.ReadMessage()
+		if err != nil {
+			mqLog.Loger.Println(err)
+			return
+		}
+		if string(ack) != "ok" {
+			mqLog.Loger.Println("ACK error")
+			return
+		}
 	}
 }
 
 // SendMessage 主从同步，向从节点发送消息
 func SendMessage(message model.Message) {
+
 	err := Conn.WriteJSON(message)
+
 	if err != nil {
 		mqLog.Loger.Println(err)
 		return
