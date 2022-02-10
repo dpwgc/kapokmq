@@ -2,7 +2,7 @@ package persistent
 
 import (
 	"kapokmq/config"
-	"kapokmq/server"
+	"kapokmq/mqLog"
 	"time"
 )
 
@@ -25,7 +25,7 @@ func InitPers() {
 	//周期性全量持久化方式
 	if isPersistent == 1 {
 		go func() {
-			server.Loger.Println("Start persistence")
+			mqLog.Loger.Println("Start persistence")
 			for {
 				//将消息列表全量持久化到二进制文件
 				Write()
@@ -37,7 +37,7 @@ func InitPers() {
 	//周期性全量持久化与追加写入日志结合
 	if isPersistent == 2 {
 		go func() {
-			server.Loger.Println("Start persistence")
+			mqLog.Loger.Println("Start persistence")
 			for {
 				//将消息列表全量持久化到二进制文件
 				Write()
