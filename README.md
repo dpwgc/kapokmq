@@ -22,6 +22,8 @@
 
 * 集群基于Gossip构建，可自动探测集群节点，能轻易做到水平扩展、断线重连。
 
+* 具有主从节点消息同步功能，主节点宕机后，从节点可以自动接手消息推送工作。
+
 * 采用KV型内存数据存储方式存储消息列表，哈希表插入与更新数据速度快。
 
 * 提供全量数据持久化方案及WAL预写日志记录，用户可在高性能与高可靠之间自由选择。
@@ -49,7 +51,7 @@
 
 ### 软件架构
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/deploy.jpg)
-![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/inner.jpg)
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/inner1.jpg)
 
 ***
 
@@ -72,7 +74,9 @@
 
 #### 主从节点部署
 * 可为单个消息队列节点绑定一个从节点，从节点消息列表会与主节点消息列表保持同步。
-* 主节点健在时，从节点不会进行消息推送，当主节点宕机后，从节点会把剩余的未消费消息推送给备用消费者客户端，
+* 主节点健在时，从节点不会进行消息推送，当主节点宕机后，从节点会把剩余的未消费消息推送给备用消费者客户端。
+
+![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/sync.jpg)
 
 #### 负载均衡集群部署：
 * 采用Gossip协议连接与同步集群节点，生产者客户端从注册中心获取所有消息队列节点地址并与它们连接，进行负载均衡投递（将消息随机投送到其中一个消息队列节点）。可做到不停机水平扩展。
@@ -518,4 +522,3 @@ http://localhost:port/#/Console
 |---|---|---|
 |Java客户端|Maven包，websocket连接，Demo：https://gitee.com/dpwgc/kapokmq-java-client|未完成|
 |拉模式消费|消费者主动拉取消息队列的消息|计划中|
-|主备消息队列|为每个mq主节点绑定一个备用节点，宕机时立即切换到备用节点|计划中|
