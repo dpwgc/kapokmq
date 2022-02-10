@@ -3,6 +3,7 @@ package console
 import (
 	"github.com/gin-gonic/gin"
 	"kapokmq/config"
+	"kapokmq/memory"
 	"kapokmq/model"
 	"kapokmq/server"
 	"kapokmq/utils"
@@ -108,7 +109,7 @@ func GetMessageList(c *gin.Context) {
 	//如果主题为空-返回全部主题的消息
 	if len(topic) == 0 {
 		//遍历消息列表
-		server.MessageList.Range(func(key, message interface{}) bool {
+		memory.MessageList.Range(func(key, message interface{}) bool {
 
 			ts := message.(model.Message).CreateTime
 
@@ -133,7 +134,7 @@ func GetMessageList(c *gin.Context) {
 	} else {
 
 		//遍历消息列表
-		server.MessageList.Range(func(key, message interface{}) bool {
+		memory.MessageList.Range(func(key, message interface{}) bool {
 
 			ts := message.(model.Message).CreateTime
 
@@ -171,7 +172,7 @@ func GetMessageList(c *gin.Context) {
 func GetMessage(c *gin.Context) {
 	messageCode, _ := c.GetPostForm("messageCode")
 
-	message, isOk := server.MessageList.Load(messageCode)
+	message, isOk := memory.MessageList.Load(messageCode)
 
 	if !isOk {
 		c.JSON(0, gin.H{
@@ -191,7 +192,7 @@ func GetMessage(c *gin.Context) {
 func DelMessage(c *gin.Context) {
 	messageCode, _ := c.GetPostForm("messageCode")
 
-	server.MessageList.Delete(messageCode)
+	memory.MessageList.Delete(messageCode)
 
 	c.JSON(0, gin.H{
 		"code": 0,
@@ -209,7 +210,7 @@ func CountMessage(c *gin.Context) {
 	var unconsumed int64 = 0
 
 	//遍历消息列表
-	server.MessageList.Range(func(key, message interface{}) bool {
+	memory.MessageList.Range(func(key, message interface{}) bool {
 
 		if message.(model.Message).Status == -1 {
 			unconsumed++
