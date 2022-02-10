@@ -80,6 +80,12 @@ func GetConfig(c *gin.Context) {
 	configMap["registryAddr"] = config.Get.Cluster.RegistryAddr
 	configMap["registryGossipPort"] = config.Get.Cluster.RegistryGossipPort
 
+	configMap["isSync"] = config.Get.Sync.IsSync
+	configMap["isSlave"] = config.Get.Sync.IsSlave
+	configMap["masterProtocol"] = config.Get.Sync.MasterProtocol
+	configMap["masterAddr"] = config.Get.Sync.MasterAddr
+	configMap["masterPort"] = config.Get.Sync.MasterPort
+
 	c.JSON(0, gin.H{
 		"code": 0,
 		"data": configMap,
