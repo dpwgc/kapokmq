@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"kapokmq/cluster"
 	"kapokmq/config"
+	"kapokmq/memory"
 	"kapokmq/model"
+	"kapokmq/mqLog"
+	"kapokmq/syncConn"
 	"kapokmq/utils"
 	"strconv"
 	"sync"
@@ -41,21 +43,21 @@ func ProducersConn(c *gin.Context) {
 		//连接成功，等待消费者客户端输入访问密钥
 		err = ws.WriteMessage(1, []byte("Please enter the secret key"))
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 
 		//读取ws中的数据，获取访问密钥
 		_, sk, err := ws.ReadMessage()
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 		if string(sk) == secretKey {
 			//访问密钥匹配成功
 			err = ws.WriteMessage(1, []byte("Secret key matching succeeded"))
 			if err != nil {
-				Loger.Println(err)
+				mqLog.Loger.Println(err)
 				return
 			}
 			break
@@ -64,7 +66,7 @@ func ProducersConn(c *gin.Context) {
 		//访问密钥匹配失败
 		err = ws.WriteMessage(1, []byte("Secret key matching error"))
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 	}
@@ -82,14 +84,14 @@ func ProducersConn(c *gin.Context) {
 	pLock.RUnlock()
 
 	if err != nil {
-		Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return
 	}
 	defer func(ws *websocket.Conn) {
 		delete(Producers, key) //删除map中的生产者
 		err = ws.Close()
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 		}
 	}(ws)
 
@@ -97,14 +99,14 @@ func ProducersConn(c *gin.Context) {
 		//读取websocket中的数据
 		_, data, err := ws.ReadMessage()
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 		s := model.SendMessage{}
 		//解析json字符串，获取生产者客户端发送的消息内容和延时推送时间
 		err = json.Unmarshal(data, &s)
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 
@@ -126,26 +128,26 @@ func ProducersConn(c *gin.Context) {
 
 		//如果开启了WAL写前日志
 		if config.Get.Mq.IsPersistent == 2 {
-			SetWAL(message)
+			mqLog.SetWAL(message)
 		}
 
 		//如果开启了主从同步功能，且该节点为主节点
 		if config.Get.Sync.IsSync == 1 && config.Get.Sync.IsSlave == 0 {
 			//向从节点发送消息
-			cluster.SendMessage(message)
+			syncConn.SendMessage(message)
 		}
 
 		//消息写入WAL文件后，向生产者客户端发送确认接收ACK
 		err = ws.WriteMessage(1, []byte("ok"))
 		if err != nil {
-			Loger.Println(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 
 		//将消息记录到消息列表
-		MessageList.Store(message.MessageCode, message)
+		memory.MessageList.Store(message.MessageCode, message)
 		//把消息写入消息通道
-		MessageChan <- message
+		memory.MessageChan <- message
 	}
 }
 
@@ -192,19 +194,19 @@ func ProducerSend(c *gin.Context) {
 
 	//如果开启了WAL写前日志
 	if config.Get.Mq.IsPersistent == 2 {
-		SetWAL(message)
+		mqLog.SetWAL(message)
 	}
 
 	//如果开启了主从同步功能，且该节点为主节点
 	if config.Get.Sync.IsSync == 1 && config.Get.Sync.IsSlave == 0 {
 		//向从节点发送消息
-		cluster.SendMessage(message)
+		syncConn.SendMessage(message)
 	}
 
 	//将消息记录到消息列表
-	MessageList.Store(message.MessageCode, message)
+	memory.MessageList.Store(message.MessageCode, message)
 	//把消息写入消息通道
-	MessageChan <- message
+	memory.MessageChan <- message
 
 	//发送成功，返回消息标识码
 	c.JSON(0, gin.H{
