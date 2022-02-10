@@ -290,7 +290,7 @@ consumerId   //消费者客户端Id
 }
 ```
 
-* 消费者客户端接收到该消息后（写入日志后），通过该websocket连接向消息队列发送ACK，ACK内容为消息的唯一标识码MessageCode
+* 消费者客户端接收并处理完该消息后，通过该websocket连接向消息队列异步发送ACK，ACK内容为消息的唯一标识码MessageCode
 
 * 消费者客户端发送给消息队列的ACK字符串样式
 

@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="更新">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/consumer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/producer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/producer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +41,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Atest" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../serena" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -89,8 +88,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="生产者模块更新-添加主从同步功能" />
-    <MESSAGE value="路由更新-添加主从同步功能" />
     <MESSAGE value="主从同步模块更新" />
     <MESSAGE value="主函数-添加主从同步模块" />
     <MESSAGE value="控制台接口" />
@@ -111,10 +108,12 @@
     <MESSAGE value="配置更新" />
     <MESSAGE value="集群连接模块" />
     <MESSAGE value="主从同步连接" />
-    <MESSAGE value="更新" />
     <MESSAGE value="前端更新" />
     <MESSAGE value="文档更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
+    <MESSAGE value="消费者连接模块-修复map并发报错" />
+    <MESSAGE value="生产者连接模块-修复map并发报错" />
+    <MESSAGE value="更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
