@@ -1,4 +1,4 @@
-package cluster
+package syncConn
 
 import (
 	"github.com/gorilla/websocket"
@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// SyncConn 主从同步连接
-var SyncConn *websocket.Conn
+// Conn 主从同步连接
+var Conn *websocket.Conn
 
 // UpGrader websocket跨域配置
 var UpGrader = websocket.Upgrader{
