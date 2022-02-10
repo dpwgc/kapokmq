@@ -22,6 +22,11 @@ func InitCluster() {
 		return
 	}
 
+	//如果是某个主节点的从节点，则不加入集群
+	if config.Get.Sync.IsSlave == 1 {
+		return
+	}
+
 	//获取该节点的地址
 	addr := config.Get.Server.Addr
 	//获取该节点的Gin服务端口号
