@@ -9,7 +9,7 @@ type Conf struct {
 	Server  Server  `yaml:"server"`
 	Mq      Mq      `yaml:"mq"`
 	Cluster Cluster `yaml:"cluster"`
-	Sync    Sync    `yaml:"sync"`
+	Sync    Sync    `yaml:"syncConn"`
 }
 type Server struct {
 	Addr string `yaml:"addr"`
