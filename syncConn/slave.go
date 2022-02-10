@@ -8,7 +8,6 @@ import (
 	"kapokmq/memory"
 	"kapokmq/model"
 	"kapokmq/mqLog"
-	"log"
 )
 
 // StopPush 是否停止推送（true：是，false：否），仅在从节点生效
@@ -17,8 +16,6 @@ var StopPush bool
 // SlaveConn 从节点连接到主节点
 func SlaveConn() {
 
-	var err error
-
 	//获取主节点的地址
 	masterProtocol := config.Get.Sync.MasterProtocol
 	masterAddr := config.Get.Sync.MasterAddr
@@ -26,9 +23,12 @@ func SlaveConn() {
 
 	//与主节点建立websocket连接
 	wsUrl := fmt.Sprintf("%s://%s:%s%s", masterProtocol, masterAddr, masterPort, "/Sync/Conn")
-	Conn, _, err = websocket.DefaultDialer.Dial(wsUrl, nil)
+	ws, _, err := websocket.DefaultDialer.Dial(wsUrl, nil)
+	Conn = ws
+
 	if err != nil {
 		mqLog.Loger.Println(err)
+		Conn = nil
 		panic(err)
 	}
 }
@@ -38,6 +38,7 @@ func SlaveSync() {
 
 	defer func(Conn *websocket.Conn) {
 		err := Conn.Close()
+		Conn = nil
 		if err != nil {
 			mqLog.Loger.Println(err)
 		}
@@ -48,7 +49,7 @@ func SlaveSync() {
 		//读取主节点发送过来的提示
 		_, data, err := Conn.ReadMessage()
 		if err != nil {
-			log.Fatal(err)
+			mqLog.Loger.Println(err)
 			return
 		}
 
@@ -58,14 +59,14 @@ func SlaveSync() {
 			//发送密钥
 			err = Conn.WriteMessage(1, []byte(config.Get.Mq.SecretKey))
 			if err != nil {
-				log.Fatal(err)
+				mqLog.Loger.Println(err)
 				return
 			}
 		}
 
 		//访问密钥错误
 		if string(data) == "Secret key matching error" {
-			log.Fatal("Secret key matching error")
+			mqLog.Loger.Println("Secret key matching error")
 		}
 
 		//访问密钥正确
@@ -99,16 +100,23 @@ func SlaveSync() {
 
 		//将消息更新到从节点消息列表
 		memory.MessageList.Store(message.MessageCode, message)
+
+		//发送ACK
+		err = Conn.WriteMessage(1, []byte("ok"))
+		if err != nil {
+			mqLog.Loger.Println(err)
+			return
+		}
 	}
 }
 
 //检查与重连
 func checkConn() {
 
-	//向主节点发送心跳检测
-	err := Conn.WriteMessage(1, []byte("hi"))
-	//如果发送出错，则表明连接已断开
-	if err != nil {
+	var err error
+
+	//如果连接已断开
+	if Conn == nil {
 
 		//获取主节点的地址
 		masterProtocol := config.Get.Sync.MasterProtocol
@@ -118,6 +126,7 @@ func checkConn() {
 		//尝试与主节点建立websocket连接
 		wsUrl := fmt.Sprintf("%s://%s:%s%s", masterProtocol, masterAddr, masterPort, "/Sync/Conn")
 		Conn, _, err = websocket.DefaultDialer.Dial(wsUrl, nil)
+
 		//如果依旧无法连接，则判定主节点宕机
 		if err != nil {
 			//开启从节点的消息推送功能
