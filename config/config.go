@@ -9,6 +9,7 @@ type Conf struct {
 	Server  Server  `yaml:"server"`
 	Mq      Mq      `yaml:"mq"`
 	Cluster Cluster `yaml:"cluster"`
+	Sync    Sync    `yaml:"sync"`
 }
 type Server struct {
 	Addr string `yaml:"addr"`
@@ -36,6 +37,13 @@ type Cluster struct {
 	GossipPort         int    `yaml:"gossipPort"`
 	RegistryAddr       string `yaml:"registryAddr"`
 	RegistryGossipPort string `yaml:"registryGossipPort"`
+}
+type Sync struct {
+	IsSync         int    `yaml:"isSync"`
+	IsSlave        int    `yaml:"isSlave"`
+	MasterAddr     string `yaml:"masterAddr"`
+	MasterPort     string `yaml:"masterPort"`
+	MasterProtocol string `yaml:"master_protocol"`
 }
 
 var Get Conf
