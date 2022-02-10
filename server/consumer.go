@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"kapokmq/cluster"
 	"kapokmq/config"
 	"kapokmq/model"
 	"kapokmq/utils"
@@ -14,6 +15,9 @@ import (
 /**
  * 消费者连接模块
  */
+
+// Stop 是否停止推送（true：是，false：否），仅在从节点生效
+var Stop bool
 
 //消费者客户端map锁
 var cLock = sync.RWMutex{}
@@ -44,6 +48,7 @@ var UpGrader = websocket.Upgrader{
 // InitConsumersConn 初始化消费者连接模块
 func InitConsumersConn() {
 
+	Stop = false
 	secretKey = config.Get.Mq.SecretKey
 	pushCount = config.Get.Mq.PushCount
 	isCleanConsumed = config.Get.Mq.IsCleanConsumed
@@ -146,9 +151,15 @@ func ConsumersConn(c *gin.Context) {
 		message.Status = 1
 		message.ConsumedTime = utils.GetLocalDateTimestamp()
 
-		//持久化：WAL写前日志
+		//如果开启了WAL写前日志
 		if config.Get.Mq.IsPersistent == 2 {
 			SetWAL(message)
+		}
+
+		//如果开启了主从同步功能，且该节点为主节点
+		if config.Get.Sync.IsSync == 1 && config.Get.Sync.IsSlave == 0 {
+			//向从节点发送消息
+			cluster.SendMessage(message)
 		}
 
 		//是否立即清除已被消费的消息
@@ -164,6 +175,13 @@ func ConsumersConn(c *gin.Context) {
 
 //消息推送服务
 func pushServer() {
+
+	//如果该节点是从节点，且主节点依然健在
+	if Stop {
+		//禁止从节点推送消息
+		return
+	}
+
 	//获取推送模式
 	pushType := config.Get.Mq.PushType
 	cnt := 0
