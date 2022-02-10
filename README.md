@@ -70,6 +70,10 @@
 
 ![avatar](https://dpwgc-1302119999.cos.ap-guangzhou.myqcloud.com/kapokmq/ack2.jpg)
 
+#### 主从节点部署
+* 可为单个消息队列节点绑定一个从节点，从节点消息列表会与主节点消息列表保持同步。
+* 主节点健在时，从节点不会进行消息推送，当主节点宕机后，从节点会把剩余的未消费消息推送给备用消费者客户端，
+
 #### 负载均衡集群部署：
 * 采用Gossip协议连接与同步集群节点，生产者客户端从注册中心获取所有消息队列节点地址并与它们连接，进行负载均衡投递（将消息随机投送到其中一个消息队列节点）。可做到不停机水平扩展。
 
@@ -360,7 +364,7 @@ ws://127.0.0.1:8011/Consumers/Conn/test_topic/1
 
 ### 主要模块
 
-##### 消息通道与消息列表 `mq.go`
+##### 消息通道与消息列表 `memory/mq.go`
 
 * 使用golang的通道chan充当队列，通道的缓冲空间大小决定了消息队列的容量。
 
@@ -402,6 +406,12 @@ var MessageList sync.Map
 
 * 每隔一段时间遍历一次MessageList消息列表，检查其中是否有消费失败、延时消费、超时未消费、已过期的消息。可重新推送消息，或清除过期的消息。
 
+##### 主从同步 `syncConn`
+
+* 主从节点之间通过websocket连接同步消息。需先启动主节点，再启动从节点。
+
+* 主从节点连接后，从节点会定期对主节点进行心跳探测，如果检测到主节点宕机，从节点会自动开始推送消息给备用消费者客户端，当主节点重连后，从节点将重新关闭推送功能。
+
 ##### 加入Gossip集群 `cluster/join.go`
 
 * 使用 github.com/hashicorp/memberlist 构建并链接Gossip集群服务。
@@ -434,15 +444,23 @@ http://localhost:port/#/Console
 
 * api.go `控制台接口`
 
+##### memory 内存数据容器
+
+* mq.go `消息通道与消息列表`
+
 ##### middleware 中间件
 
 * cors.go `跨域配置`
 
 * safe.go `安全验证`
 
-##### model 实体类
+##### model 模板类
 
 * model.go `数据模板`
+
+##### mqLog 日志记录
+
+* log.go `常规日志与WAL日志写入`
 
 ##### persistent 持久化
 
@@ -462,11 +480,13 @@ http://localhost:port/#/Console
 
 * consumer.go `消费者消息推送`
 
-* mq.go `消息队列`
-
-* log.go `日志记录`
-
 * check.go `消息检查-消息重推与过期消息清理`
+
+##### syncConn 主从同步
+
+* master.go `主节点向从节点发送消息`
+* slave.go `从节点接收消息`
+* sync.go `主从同步初始化`
 
 ##### utils 工具类
 
