@@ -50,10 +50,17 @@ func InitRouters() (r *gin.Engine) {
 	{
 		consumersConn.GET("/Conn/:topic/:consumerId", server.ConsumersConn)
 	}
+
 	//生产者连接（websocket连接，用于发送消息到消息队列）ws://127.0.0.1:8011/Producers/Conn/test_topic/1
 	producersConn := r.Group("/Producers")
 	{
 		producersConn.GET("/Conn/:topic/:producerId", server.ProducersConn)
+	}
+
+	//主从同步连接，主节点连接地址，从节点通过此接口连接到主节点
+	syncConn := r.Group("/Sync")
+	{
+		syncConn.GET("/Conn", cluster.Master)
 	}
 	return
 }
