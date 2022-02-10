@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/memberlist"
 	"kapokmq/config"
 	"kapokmq/model"
-	"kapokmq/server"
+	"kapokmq/mqLog"
 	"strings"
 )
 
@@ -55,7 +55,7 @@ func InitCluster() {
 	//申请创建一个Gossip服务节点
 	list, err = memberlist.Create(conf)
 	if err != nil {
-		server.Loger.Println("Failed to create memberlist: " + err.Error())
+		mqLog.Loger.Println("Failed to create memberlist: " + err.Error())
 		panic(err)
 		return
 	}
@@ -63,7 +63,7 @@ func InitCluster() {
 	//将节点加入到已存在的集群（即注册中心所在集群）
 	_, err = list.Join([]string{registryAddr + ":" + registryGossipPort})
 	if err != nil {
-		server.Loger.Println("Failed to join cluster: " + err.Error())
+		mqLog.Loger.Println("Failed to join cluster: " + err.Error())
 		panic(err)
 		return
 	}
