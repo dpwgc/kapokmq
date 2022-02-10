@@ -4,16 +4,23 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="文档更新">
-      <change afterPath="$PROJECT_DIR$/cluster/master.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster/slave.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cluster/sync.go" afterDir="false" />
+    <list default="true" id="2732c5cd-e6d8-4112-bfe4-d4f546ef8438" name="Changes" comment="主函数-添加主从同步模块">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster/join.go" beforeDir="false" afterPath="$PROJECT_DIR$/cluster/join.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster/master.go" beforeDir="false" afterPath="$PROJECT_DIR$/syncConn/master.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster/slave.go" beforeDir="false" afterPath="$PROJECT_DIR$/syncConn/slave.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster/sync.go" beforeDir="false" afterPath="$PROJECT_DIR$/syncConn/sync.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persistent/fileRW.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/fileRW.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persistent/persData.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/persData.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persistent/recovery.go" beforeDir="false" afterPath="$PROJECT_DIR$/persistent/recovery.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/router/router.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/consumer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/log.go" beforeDir="false" afterPath="$PROJECT_DIR$/mqLog/log.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/producer.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/producer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view/js/chunk-vendors.94d3650e.js" beforeDir="false" afterPath="$PROJECT_DIR$/view/js/chunk-vendors.94d3650e.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +62,8 @@
       <recent name="D:\GoLand_WORK\kapokmq\utils" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\GoLand_WORK\kapokmq\mqLog" />
+      <recent name="D:\GoLand_WORK\kapokmq\sync" />
       <recent name="D:\GoLand_WORK\kapokmq\console" />
       <recent name="D:\GoLand_WORK\kapokmq" />
     </key>
@@ -92,12 +101,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="安全验证" />
-    <MESSAGE value="配置模块更新-移除viper依赖" />
-    <MESSAGE value="更换uuid库" />
-    <MESSAGE value="控制台模块-添加删除消息功能" />
-    <MESSAGE value="生产者连接模块-引入sync.Pool" />
-    <MESSAGE value="控制台模块-接口更新" />
     <MESSAGE value="消费者连接模块-WAL日志优化" />
     <MESSAGE value="生产者连接模块-WAL日志优化" />
     <MESSAGE value="日志记录模块-WAL日志优化" />
@@ -117,7 +120,13 @@
     <MESSAGE value="~" />
     <MESSAGE value="生产者连接模块" />
     <MESSAGE value="文档更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="文档更新" />
+    <MESSAGE value="配置更新-添加主从同步配置" />
+    <MESSAGE value="消费者模块更新-添加主从同步功能" />
+    <MESSAGE value="生产者模块更新-添加主从同步功能" />
+    <MESSAGE value="路由更新-添加主从同步功能" />
+    <MESSAGE value="主从同步模块更新" />
+    <MESSAGE value="主函数-添加主从同步模块" />
+    <option name="LAST_COMMIT_MESSAGE" value="主函数-添加主从同步模块" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
