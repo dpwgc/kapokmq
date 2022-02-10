@@ -1,8 +1,10 @@
 package syncConn
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"kapokmq/config"
+	"kapokmq/mqLog"
 	"net/http"
 	"time"
 )
@@ -26,6 +28,9 @@ func InitSync() {
 		return
 	}
 
+	fmt.Println("[Enable master-slave synchronization mode]")
+	mqLog.Loger.Println("Enable master-slave synchronization mode")
+
 	//如果是从节点
 	if config.Get.Sync.IsSlave == 1 {
 
@@ -42,5 +47,14 @@ func InitSync() {
 				checkConn()
 			}
 		}()
+
+		fmt.Println("--------[Slave node]--------")
+		mqLog.Loger.Println("Slave node running")
+	}
+
+	//如果是主节点
+	if config.Get.Sync.IsSlave == 0 {
+		fmt.Println("--------[Master node]--------")
+		mqLog.Loger.Println("Master node running")
 	}
 }
