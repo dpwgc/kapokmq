@@ -54,3 +54,16 @@ cluster:
   registryAddr: 127.0.0.1
   # Serena注册中心的Gossip服务端口号
   registryGossipPort: 8041
+
+# 主从同步配置
+sync:
+  # 是否开启主从同步功能（1：是。0：否）
+  isSync: 1
+  # 是否是从节点（1：是。0：否）
+  isSlave: 1
+  # 主节点网络协议
+  masterProtocol: ws
+  # 主节点的ip地址/域名（此配置在{isSlave}为1时生效）
+  masterAddr: 127.0.0.1
+  # 主节点的Gin http服务端口号
+  masterPort: 8011
