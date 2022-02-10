@@ -6,6 +6,7 @@ import (
 	"kapokmq/console"
 	"kapokmq/middleware"
 	"kapokmq/server"
+	"kapokmq/syncConn"
 	"net/http"
 )
 
@@ -58,9 +59,6 @@ func InitRouters() (r *gin.Engine) {
 	}
 
 	//主从同步连接，主节点连接地址，从节点通过此接口连接到主节点
-	syncConn := r.Group("/Sync")
-	{
-		syncConn.GET("/Conn", cluster.Master)
-	}
+	r.GET("/Sync/Conn", syncConn.Master)
 	return
 }
