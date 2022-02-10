@@ -5,9 +5,12 @@ import (
 	_ "github.com/gin-gonic/gin"
 	"kapokmq/cluster"
 	"kapokmq/config"
+	"kapokmq/memory"
+	"kapokmq/mqLog"
 	"kapokmq/persistent"
 	"kapokmq/router"
 	"kapokmq/server"
+	"kapokmq/syncConn"
 	_ "net/http"
 )
 
@@ -17,10 +20,10 @@ func main() {
 	config.InitConfig()
 
 	//加载常规日志模块
-	server.InitLog()
+	mqLog.InitLog()
 
 	//初始化消息队列
-	server.InitMQ()
+	memory.InitMQ()
 
 	//初始化Gossip集群连接模块
 	cluster.InitCluster()
@@ -32,7 +35,7 @@ func main() {
 	persistent.InitRecovery()
 
 	//加载WAL持久化模块
-	server.InitWAL()
+	mqLog.InitWAL()
 
 	//加载持久化模块
 	persistent.InitPers()
@@ -44,7 +47,7 @@ func main() {
 	server.InitConsumersConn()
 
 	//初始化主从同步模块
-	cluster.InitSync()
+	syncConn.InitSync()
 
 	//初始化路由
 	r := router.InitRouters()
