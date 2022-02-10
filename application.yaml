@@ -19,7 +19,7 @@ mq:
   # 单批次推送的消息数量
   pushCount: 1000
   # 消息消费超时阈值（如果在消息插入队列的{delayTime消息延时推送时间 + pushRetryTime消息消费超时阈值}秒后，仍未被消费，就重新推送消息）
-  pushRetryTime: 60
+  pushRetryTime: 300
 
   # 持久化文件
   persistentFile: MQDATA
