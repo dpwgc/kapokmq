@@ -112,9 +112,9 @@ func ConsumersConn(c *gin.Context) {
 	key.JoinTime = utils.GetLocalDateTimestamp()
 
 	//将当前连接的消费者放入map中
-	cLock.RLock()
+	cLock.Lock()
 	Consumers[key] = ws
-	cLock.RUnlock()
+	cLock.Unlock()
 
 	if err != nil {
 		mqLog.Loger.Println(err)
@@ -122,7 +122,10 @@ func ConsumersConn(c *gin.Context) {
 	}
 
 	defer func(ws *websocket.Conn) {
+		cLock.Lock()
 		delete(Consumers, key) //删除map中的消费者
+		cLock.Unlock()
+
 		err = ws.Close()
 		if err != nil {
 			mqLog.Loger.Println(err)
