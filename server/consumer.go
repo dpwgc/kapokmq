@@ -175,12 +175,6 @@ func ConsumersConn(c *gin.Context) {
 //消息推送服务
 func pushServer() {
 
-	//如果该节点是从节点，且主节点依然健在
-	if syncConn.StopPush {
-		//禁止从节点推送消息
-		return
-	}
-
 	//获取推送模式
 	pushType := config.Get.Mq.PushType
 	cnt := 0
@@ -190,6 +184,15 @@ func pushServer() {
 			time.Sleep(time.Second * time.Duration(pushMessagesSpeed))
 			cnt = 0
 		}
+
+		//如果该节点是从节点，且主节点依然健在
+		if syncConn.StopPush {
+			//取出消息通道中的消息
+			<-memory.MessageChan
+			//禁止从节点推送消息
+			continue
+		}
+
 		//选择对应的推送模式
 		switch pushType {
 		case 1:
