@@ -43,6 +43,9 @@ func main() {
 	//初始化消费者客户端连接模块
 	server.InitConsumersConn()
 
+	//初始化主从同步模块
+	cluster.InitSync()
+
 	//初始化路由
 	r := router.InitRouters()
 
