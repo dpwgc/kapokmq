@@ -2,7 +2,7 @@ package persistent
 
 import (
 	"kapokmq/config"
-	"kapokmq/server"
+	"kapokmq/mqLog"
 )
 
 /*
@@ -21,7 +21,7 @@ func InitRecovery() {
 		Read()
 		//再读取WAL日志文件中的消息
 		ReadWAL()
-		server.Loger.Println("Recovery from local")
+		mqLog.Loger.Println("Recovery from local")
 	}
 	//recoveryStrategy为其他数值时不进行数据恢复操作
 }
