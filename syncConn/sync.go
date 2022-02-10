@@ -28,7 +28,9 @@ func InitSync() {
 		return
 	}
 
-	fmt.Println("[Enable master-slave synchronization mode]")
+	Conn = nil
+
+	fmt.Printf("\033[1;32;40m%s\033[0m\n", "[Enable master-slave synchronization mode]")
 	mqLog.Loger.Println("Enable master-slave synchronization mode")
 
 	//如果是从节点
@@ -48,13 +50,13 @@ func InitSync() {
 			}
 		}()
 
-		fmt.Println("--------[Slave node]--------")
+		fmt.Printf("\033[1;32;40m%s\033[0m\n", "--------[Slave node]--------")
 		mqLog.Loger.Println("Slave node running")
 	}
 
 	//如果是主节点
 	if config.Get.Sync.IsSlave == 0 {
-		fmt.Println("--------[Master node]--------")
+		fmt.Printf("\033[1;32;40m%s\033[0m\n", "--------[Master node]--------")
 		mqLog.Loger.Println("Master node running")
 	}
 }

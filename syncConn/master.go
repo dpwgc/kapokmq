@@ -6,7 +6,10 @@ import (
 	"kapokmq/config"
 	"kapokmq/model"
 	"kapokmq/mqLog"
+	"sync"
 )
+
+var SendLock sync.Mutex
 
 // Master 主节点同步协程
 func Master(c *gin.Context) {
@@ -58,14 +61,10 @@ func Master(c *gin.Context) {
 	}
 
 	for {
-		//读取从节点发来的确认接收ACK
-		_, ack, err := ws.ReadMessage()
+		//读取从节点发来的心跳检测
+		_, _, err = ws.ReadMessage()
 		if err != nil {
 			mqLog.Loger.Println(err)
-			return
-		}
-		if string(ack) != "ok" {
-			mqLog.Loger.Println("ACK error")
 			return
 		}
 	}
@@ -74,7 +73,9 @@ func Master(c *gin.Context) {
 // SendMessage 主从同步，向从节点发送消息
 func SendMessage(message model.Message) {
 
+	SendLock.Lock()
 	err := Conn.WriteJSON(message)
+	SendLock.Unlock()
 
 	if err != nil {
 		mqLog.Loger.Println(err)

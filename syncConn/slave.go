@@ -100,13 +100,6 @@ func SlaveSync() {
 
 		//将消息更新到从节点消息列表
 		memory.MessageList.Store(message.MessageCode, message)
-
-		//发送ACK
-		err = Conn.WriteMessage(1, []byte("ok"))
-		if err != nil {
-			mqLog.Loger.Println(err)
-			return
-		}
 	}
 }
 
@@ -115,8 +108,14 @@ func checkConn() {
 
 	var err error
 
-	//如果连接已断开
-	if Conn == nil {
+	//向主节点发送心跳检测
+	if Conn != nil {
+		err = Conn.WriteMessage(1, []byte("hi"))
+	}
+	//如果连接失败
+	if Conn == nil || err != nil {
+
+		fmt.Printf("\033[1;31;40m%s\033[0m\n", "Master node lost contact")
 
 		//获取主节点的地址
 		masterProtocol := config.Get.Sync.MasterProtocol
@@ -125,7 +124,9 @@ func checkConn() {
 
 		//尝试与主节点建立websocket连接
 		wsUrl := fmt.Sprintf("%s://%s:%s%s", masterProtocol, masterAddr, masterPort, "/Sync/Conn")
-		Conn, _, err = websocket.DefaultDialer.Dial(wsUrl, nil)
+		ws, _, err := websocket.DefaultDialer.Dial(wsUrl, nil)
+
+		Conn = ws
 
 		//如果依旧无法连接，则判定主节点宕机
 		if err != nil {
