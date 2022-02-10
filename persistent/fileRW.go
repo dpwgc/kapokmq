@@ -7,8 +7,9 @@ import (
 	"fmt"
 	"io"
 	"kapokmq/config"
+	"kapokmq/memory"
 	"kapokmq/model"
-	"kapokmq/server"
+	"kapokmq/mqLog"
 	"os"
 )
 
@@ -51,17 +52,17 @@ func InitFileRW() {
 	f, err := os.Open(dataFile)
 	if err != nil {
 		//创建持久化文件
-		server.Loger.Println(err)
-		server.Loger.Println(fmt.Sprintf("%s%s", "Create persistent file: ", dataFile))
+		mqLog.Loger.Println(err)
+		mqLog.Loger.Println(fmt.Sprintf("%s%s", "Create persistent file: ", dataFile))
 		_, err = os.Create(dataFile)
 		if err != nil {
-			server.Loger.Println(err)
+			mqLog.Loger.Println(err)
 		}
 	}
 	defer func(f *os.File) {
 		err = f.Close()
 		if err != nil {
-			server.Loger.Println(err)
+			mqLog.Loger.Println(err)
 		}
 	}(f)
 }
@@ -77,7 +78,7 @@ func Write() {
 
 	//复制消息列表
 	copyMap := make(map[string]interface{}, copyMapSize)
-	server.MessageList.Range(func(key, value interface{}) bool {
+	memory.MessageList.Range(func(key, value interface{}) bool {
 		//如果是已经消费的消息
 		if value.(model.Message).Status == 1 {
 			return true
@@ -90,13 +91,13 @@ func Write() {
 	copyBytes, _ := json.Marshal(copyMap)
 	err = writer.Encode(copyBytes)
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return
 	}
 	//关闭文件流
 	err = wFile.Close()
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 	}
 }
 
@@ -106,7 +107,7 @@ func Read() {
 	//读文件，设置为只读，权限设置为777
 	rFile, err = os.OpenFile(dataFile, os.O_RDONLY, 0777)
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return
 	}
 
@@ -115,11 +116,11 @@ func Read() {
 	var info []byte
 	err = reader.Decode(&info)
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return
 	}
 	if len(info) == 0 {
-		server.Loger.Println("The file is empty")
+		mqLog.Loger.Println("The file is empty")
 		return
 	}
 
@@ -127,11 +128,11 @@ func Read() {
 
 	//将本地持久化文件数据（copyMap）循环写入消息列表（MessageList）
 	for key, value := range copyMap {
-		server.MessageList.Store(key, value)
+		memory.MessageList.Store(key, value)
 	}
 	err = rFile.Close()
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 	}
 }
 
@@ -140,7 +141,7 @@ func ReadWAL() {
 	f, err := os.Open("./WAL.log")
 	//如果文件不存在，则直接返回
 	if err != nil {
-		server.Loger.Println("WAL.log does not exist")
+		mqLog.Loger.Println("WAL.log does not exist")
 		return
 	}
 	r := bufio.NewReader(f)
@@ -151,7 +152,7 @@ func ReadWAL() {
 		//将行字符串解析为Message结构体
 		message := jsonToMessage(slice)
 		//将读取到的消息更新到消息列表
-		server.MessageList.Store(message.MessageCode, message)
+		memory.MessageList.Store(message.MessageCode, message)
 
 		//如果读取到文件末尾
 		if err == io.EOF {
@@ -160,7 +161,7 @@ func ReadWAL() {
 	}
 	err = f.Close()
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return
 	}
 }
@@ -169,21 +170,21 @@ func ReadWAL() {
 func CleanWAL() {
 
 	//关闭WAL日志文件
-	err := server.WALFile.Close()
+	err := mqLog.WALFile.Close()
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return
 	}
 
 	//删除WAL日志文件
 	err = os.Remove("WAL.log")
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return
 	}
 
 	//重新创建WAL日志文件
-	server.InitWAL()
+	mqLog.InitWAL()
 }
 
 //json字符串转Message Map
@@ -191,7 +192,7 @@ func jsonToMessageMap(jsonStr string) map[string]model.Message {
 	m := make(map[string]model.Message, copyMapSize)
 	err := json.Unmarshal([]byte(jsonStr), &m)
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return nil
 	}
 	return m
@@ -202,7 +203,7 @@ func jsonToMessage(jsonStr string) model.Message {
 	m := model.Message{}
 	err := json.Unmarshal([]byte(jsonStr), &m)
 	if err != nil {
-		server.Loger.Println(err)
+		mqLog.Loger.Println(err)
 		return m
 	}
 	return m
