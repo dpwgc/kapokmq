@@ -9,7 +9,7 @@ type Conf struct {
 	Server  Server  `yaml:"server"`
 	Mq      Mq      `yaml:"mq"`
 	Cluster Cluster `yaml:"cluster"`
-	Sync    Sync    `yaml:"syncConn"`
+	Sync    Sync    `yaml:"sync"`
 }
 type Server struct {
 	Addr string `yaml:"addr"`
@@ -43,7 +43,7 @@ type Sync struct {
 	IsSlave        int    `yaml:"isSlave"`
 	MasterAddr     string `yaml:"masterAddr"`
 	MasterPort     string `yaml:"masterPort"`
-	MasterProtocol string `yaml:"master_protocol"`
+	MasterProtocol string `yaml:"masterProtocol"`
 }
 
 var Get Conf
