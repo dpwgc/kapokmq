@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"kapokmq/config"
@@ -72,15 +71,11 @@ func ProducersConn(c *gin.Context) {
 	}
 
 	//生成生产者客户端模板
-	key := model.Producer{}
-	key.ProducerId = producerId
-	key.Topic = topic
-	key.ProducerIp = producerIp
-	key.JoinTime = utils.GetLocalDateTimestamp()
+	producer := model.NewProducer(topic, producerId, producerIp)
 
 	//将当前连接的生产者放入map中
 	pLock.Lock()
-	Producers[key] = ws
+	Producers[*producer] = ws
 	pLock.Unlock()
 
 	if err != nil {
@@ -89,7 +84,7 @@ func ProducersConn(c *gin.Context) {
 	}
 	defer func(ws *websocket.Conn) {
 		pLock.Lock()
-		delete(Producers, key) //删除map中的生产者
+		delete(Producers, *producer) //删除map中的生产者
 		pLock.Unlock()
 
 		err = ws.Close()
@@ -105,39 +100,22 @@ func ProducersConn(c *gin.Context) {
 			mqLog.Loger.Println(err)
 			return
 		}
-		s := model.SendMessage{}
-		//解析json字符串，获取生产者客户端发送的消息内容和延时推送时间
-		err = json.Unmarshal(data, &s)
+
+		message, err := model.NewMessage(topic, data)
 		if err != nil {
 			mqLog.Loger.Println(err)
 			return
 		}
 
-		//生成消息模板
-		message := model.Message{}
-		message.MessageCode = utils.CreateCode(s.MessageData)
-		message.MessageData = s.MessageData
-		message.Topic = topic
-
-		//如果是延时消息
-		if s.DelayTime > 0 {
-			message.Status = 0
-		} else {
-			message.Status = -1
-		}
-
-		message.CreateTime = utils.GetLocalDateTimestamp()
-		message.DelayTime = s.DelayTime
-
 		//如果开启了WAL写前日志
 		if config.Get.Mq.IsPersistent == 2 {
-			mqLog.SetWAL(message)
+			mqLog.SetWAL(*message)
 		}
 
 		//如果开启了主从同步功能，且该节点为主节点
 		if config.Get.Sync.IsSync == 1 && config.Get.Sync.IsSlave == 0 {
 			//向从节点发送消息
-			syncConn.SendMessage(message)
+			syncConn.SendMessage(*message)
 		}
 
 		//消息写入WAL文件后，向生产者客户端发送确认接收ACK
@@ -148,9 +126,9 @@ func ProducersConn(c *gin.Context) {
 		}
 
 		//将消息记录到消息列表
-		memory.MessageList.Store(message.MessageCode, message)
+		memory.MessageList.Store(message.MessageCode, *message)
 		//把消息写入消息通道
-		memory.MessageChan <- message
+		memory.MessageChan <- *message
 	}
 }
 
