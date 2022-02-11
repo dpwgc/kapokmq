@@ -105,15 +105,11 @@ func ConsumersConn(c *gin.Context) {
 	}
 
 	//生成消费者客户端模板
-	key := model.Consumer{}
-	key.ConsumerId = consumerId
-	key.Topic = topic
-	key.ConsumerIp = consumerIp
-	key.JoinTime = utils.GetLocalDateTimestamp()
+	consumer := model.NewConsumer(topic, consumerId, consumerIp)
 
 	//将当前连接的消费者放入map中
 	cLock.Lock()
-	Consumers[key] = ws
+	Consumers[*consumer] = ws
 	cLock.Unlock()
 
 	if err != nil {
@@ -123,7 +119,7 @@ func ConsumersConn(c *gin.Context) {
 
 	defer func(ws *websocket.Conn) {
 		cLock.Lock()
-		delete(Consumers, key) //删除map中的消费者
+		delete(Consumers, *consumer) //删除map中的消费者
 		cLock.Unlock()
 
 		err = ws.Close()
