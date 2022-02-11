@@ -517,7 +517,11 @@ Content-Type
 
 ##### model 模板类
 
-* model.go `数据模板`
+* client.go `客户端模板`
+
+* message.go `消息模板`
+
+* node.go `集群节点模板`
 
 ##### mqLog 日志记录
 
